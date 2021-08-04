@@ -1,0 +1,12 @@
+/*
+* Yakov Nadler
+* 29/8/2018
+*/
+
+In order to enable multi top-level buckets aggregations, 
+I had to change the dsl we send to Elasticserach. 
+In order to do it without writing the whole VIS structure, 
+I used Kibana's objects, and replaced the relevant functions in Kibana's instances on runtime.
+I did it on 2 places:
+1) in the custom request handler: multi_bucket_handler.js, I changed the vis.aggs.toDsl function and the searchSource's agg fetching.
+2) in cdf_line_controller, on init and when vis.aggs updates, I change the vis.aggs.toDsl function.

@@ -1,0 +1,52 @@
+<div>
+  <div class="euiSpacer euiSpacer--s"></div>
+
+  <!-- Custom Extents -->
+  <div class="euiPanel euiPanel--paddingSmall">
+    <h2 class="euiTitle euiTitle--xsmall">X-Axis</h2>
+    <div class="euiSpacer euiSpacer--s"></div>
+    <div class="visEditorSidebar__switchOptionFormRow">
+      <span class="euiToolTipAnchor">
+        <div class="euiSwitch">
+          <input class="euiSwitch__input" id="setXExtents" type="checkbox" ng-model="vis.params.categoryAxis.scale.setExtents" ng-change="updateXExtents()">
+          <span class="euiSwitch__body">
+            <span class="euiSwitch__thumb"></span>
+            <span class="euiSwitch__track">
+              <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="euiIcon euiIcon--medium euiIcon-isLoaded euiSwitch__icon" focusable="false">
+                <path d="M7.293 8L3.146 3.854a.5.5 0 1 1 .708-.708L8 7.293l4.146-4.147a.5.5 0 0 1 .708.708L8.707 8l4.147 4.146a.5.5 0 0 1-.708.708L8 8.707l-4.146 4.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
+              </svg>
+              <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" class="euiIcon euiIcon--medium euiIcon-isLoaded euiSwitch__icon euiSwitch__icon--checked" focusable="false">
+                <path fill-rule="evenodd" d="M6.5 12a.502.502 0 0 1-.354-.146l-4-4a.502.502 0 0 1 .708-.708L6.5 10.793l6.646-6.647a.502.502 0 0 1 .708.708l-7 7A.502.502 0 0 1 6.5 12"></path>
+              </svg>
+            </span>
+          </span>
+          <label class="euiSwitch__label" for="setXExtents">Set Axis Extents</label>
+        </div>
+      </span>
+    </div>
+    
+    <div class="euiFormRow euiFormRow--fullWidth euiFormRow--compressed" ng-if="vis.params.categoryAxis.scale.setExtents">
+      <div>
+        <label class="euiFormLabel" for="xMax">Max</label>
+      </div>
+      <div class="euiFormControlLayout euiFormControlLayout--fullWidth euiFormControlLayout--compressed">
+        <div class="euiFormControlLayout__childrenWrapper">
+          <input type="number" step="0.1" name="xMax" id="xMax" class="euiFieldNumber euiFieldNumber--fullWidth euiFieldNumber--compressed" ng-model="vis.params.categoryAxis.scale.max">
+        </div>
+      </div>
+    </div>
+  
+    <div class="euiFormRow euiFormRow--fullWidth euiFormRow--compressed" ng-if="vis.params.categoryAxis.scale.setExtents">
+      <div>
+        <label class="euiFormLabel" for="xMin">Min</label>
+      </div>
+      <div class="euiFormControlLayout euiFormControlLayout--fullWidth euiFormControlLayout--compressed">
+        <div class="euiFormControlLayout__childrenWrapper">
+          <input type="number" step="0.1" name="xMin" id="xMin" class="euiFieldNumber euiFieldNumber--fullWidth euiFieldNumber--compressed" ng-model="vis.params.categoryAxis.scale.min">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
