@@ -26,6 +26,8 @@ export interface CDFVisParams {
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
   isSplitAccordionClicked: boolean;
+  isVerticalGrid: boolean;
+  isHorizontalGrid: boolean;
 }
 
 export interface CDFVisRenderValue {
@@ -52,6 +54,8 @@ export interface CDFVisRenderValue {
     isSplitedShowMissingValues: boolean;
     splitedCustomLabel: string;
     isSplitAccordionClicked: boolean;
+    isVerticalGrid: boolean;
+    isHorizontalGrid: boolean;
   };
 }
 
@@ -175,7 +179,17 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       types: ['boolean'],
       default: false,
       help: 'Visualization only argument with type boolean',
-    }
+    },
+    isVerticalGrid: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
+    },
+    isHorizontalGrid: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
+    },
     // timeFilterInput: {
     //   types: ['filter'],
     //   default: '',
@@ -221,6 +235,8 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isSplitedShowMissingValues: args.isSplitedShowMissingValues,
           splitedCustomLabel: args.splitedCustomLabel,
           isSplitAccordionClicked: args.isSplitAccordionClicked,
+          isVerticalGrid: args.isVerticalGrid,
+          isHorizontalGrid: args.isHorizontalGrid,
         },
       },
     };

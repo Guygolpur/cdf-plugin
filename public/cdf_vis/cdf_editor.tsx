@@ -3,6 +3,7 @@ import React, { Fragment } from 'react';
 
 import {
   EuiCheckboxGroup,
+  EuiCheckbox,
   EuiFormRow,
   EuiSelect,
   EuiSwitch,
@@ -19,12 +20,6 @@ import {
   EuiCollapsibleNavGroup,
   EuiTextArea,
   EuiIconTip,
-  EuiPopover,
-  EuiContextMenuPanel,
-  EuiButtonEmpty,
-  EuiIcon,
-  EuiButton,
-  EuiScreenReaderOnly,
 } from '@elastic/eui';
 
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
@@ -33,9 +28,6 @@ import { htmlIdGenerator } from '@elastic/eui/lib/services';
 import axios from 'axios';
 import { AddSubBucket } from '../components/addSubBucket';
 // import * as data from 'src/plugins/data/public';
-
-const idPrefix = htmlIdGenerator()();
-
 
 interface CounterParams {
   isUpdate: boolean;
@@ -61,23 +53,14 @@ interface CounterParams {
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
   isSplitAccordionClicked: boolean;
+  isVerticalGrid: boolean;
+  isHorizontalGrid: boolean;
 }
 
 export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterParams>> {
   constructor(props: any) {
     super(props);
     this.state = {
-      checkboxIdToSelectedMap: { [`${idPrefix}0`]: false },
-      panel_settings_cb: [
-        {
-          id: `${idPrefix}0`,
-          label: 'X-Axis Lines',
-        },
-        {
-          id: `${idPrefix}1`,
-          label: 'Y-Axis Lines',
-        }
-      ],
       AxisExtents: false,
       comboBoxSelectionOptions: [],
       value: 100,
@@ -87,7 +70,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       jsonInput: '',
       aggregationArr: [],
       isAddPopoverOpen: false,
-
       splitedAggregationArr: [],
       isSplitedSeperateBucket: false,
       isSplitedShowMissingValues: false
@@ -138,15 +120,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('min_interval', e.target.value);
   }
 
-  onChange = (optionId: any) => {
-    const newCheckboxIdToSelectedMap = {
-      ...this.state.checkboxIdToSelectedMap,
-      ...{
-        [optionId]: !this.state.checkboxIdToSelectedMap[optionId],
-      },
-    };
-    this.setState({ checkboxIdToSelectedMap: newCheckboxIdToSelectedMap })
-  };
+  onXAxisGridChange = () => {
+    this.props.setValue('isVerticalGrid', !this.props.stateParams.isVerticalGrid);
+  }
+
+  onYAxisGridChange = () => {
+    this.props.setValue('isHorizontalGrid', !this.props.stateParams.isHorizontalGrid);
+  }
+
 
   onSetAxis = () => {
     this.setState(prevState => ({
@@ -514,10 +495,23 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   description={
                     <span>
                       <EuiAccordion id="accordion1" buttonContent="Settings">
-                        <EuiCheckboxGroup
-                          options={this.state.panel_settings_cb}
-                          idToSelectedMap={this.state.checkboxIdToSelectedMap}
-                          onChange={(id) => this.onChange(id)}
+
+                        <EuiCheckbox
+                          id={htmlIdGenerator()()}
+                          label="X-Axis Lines"
+                          checked={this.props.stateParams.isVerticalGrid}
+                          onChange={(e) => this.onXAxisGridChange()}
+                          compressed
+                        />
+
+                        <EuiSpacer size="m" />
+
+                        <EuiCheckbox
+                          id={htmlIdGenerator()()}
+                          label="Y-Axis Lines"
+                          checked={this.props.stateParams.isHorizontalGrid}
+                          onChange={(e) => this.onYAxisGridChange()}
+                          compressed
                         />
                       </EuiAccordion>
                     </span>

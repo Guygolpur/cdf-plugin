@@ -8,7 +8,6 @@ import { cdfVisRenderer } from './cdf_vis_renderer';
 import { toExpressionAst } from './to_ast';
 import { CDFEditor } from './cdf_vis/cdf_editor';
 import cdfSvgIcon from './public/images/cdf_line.svg';
-import cdfLineTemplate from './public/templates/cdf_line.html';
 import { Subscription } from 'rxjs';
 import { DataPublicPluginStart } from 'src/plugins/data/public';
 
@@ -20,9 +19,9 @@ export interface SetupDependencies {
 
 export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
   public setup(core: CoreSetup, { expressions, visualizations, data }: SetupDependencies) {
-    console.log('data: ', data.query.timefilter.timefilter)
-    console.log('data from: ', data.query.timefilter.timefilter.getAbsoluteTime().from)
-    console.log('data to: ', data.query.timefilter.timefilter.getAbsoluteTime().to)
+    // console.log('data: ', data.query.timefilter.timefilter)
+    // console.log('data from: ', data.query.timefilter.timefilter.getAbsoluteTime().from)
+    // console.log('data to: ', data.query.timefilter.timefilter.getAbsoluteTime().to)
 
     expressions.registerFunction(cdfVisFn);
     expressions.registerRenderer(cdfVisRenderer);
@@ -57,6 +56,8 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isSplitedShowMissingValues: false,
           splitedCustomLabel: '',
           isSplitAccordionClicked: false,
+          isVerticalGrid: false,
+          isHorizontalGrid: false,
           grid: {
             categoryLines: false,
             valueAxis: false
@@ -67,7 +68,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
             }
           }
         },
-        // template: cdfLineTemplate,
       },
       editorConfig: {
         optionTabs: [
