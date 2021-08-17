@@ -226,5 +226,3 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
     };
   },
 };
-
-//16/08 17:30

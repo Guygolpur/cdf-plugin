@@ -44,5 +44,3 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
 
   return ast.toAst();
 };
-
-//15/08 17:30

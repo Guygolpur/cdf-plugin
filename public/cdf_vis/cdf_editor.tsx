@@ -543,5 +543,3 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     );
   }
 }
-
-//16/08 17:30

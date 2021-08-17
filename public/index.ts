@@ -8,5 +8,3 @@ export function plugin() {
   return new CDFPlugin();
 }
 export { CdfPluginSetup, CdfPluginStart } from './types';
-
-//16/08 17:30

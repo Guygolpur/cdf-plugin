@@ -28,8 +28,6 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     if (!props.visParams.isSplitAccordionClicked) {
-      console.log('first')
-
       axios({
         url: 'http://localhost:9200/arc-*/_search',
         method: 'post',
@@ -83,7 +81,6 @@ export function CdfComponent(props: CdfComponentProps) {
       })
     }
     else {
-      console.log('second')
       axios({
         url: 'http://localhost:9200/arc-*/_search',
         method: 'post',
@@ -110,8 +107,6 @@ export function CdfComponent(props: CdfComponentProps) {
           }
         })
       }).then(function (response) {
-
-        console.log('response.data.aggregations.cdfAgg.buckets: ', response.data.aggregations.cdfAgg.buckets)
 
         let innerAggLineData: any[] = [];
 
@@ -150,7 +145,6 @@ export function CdfComponent(props: CdfComponentProps) {
               }
             });
 
-            console.log(el);
             let newElement: any[] = [];
             newElement[0] = el.x;
             newElement[1] = (tempCounter / totalHits) * 100;
@@ -201,5 +195,3 @@ export function CdfComponent(props: CdfComponentProps) {
     </Fragment>
   );
 }
-
-//16/08 17:30

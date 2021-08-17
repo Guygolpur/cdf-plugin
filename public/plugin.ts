@@ -87,14 +87,10 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
     timeFilterSubscription = plugins.data.query.timefilter.timefilter
       .getTimeUpdate$()
       .subscribe(() => {
-        // debugger
         const initialRefreshInterval = plugins.data.query.timefilter.timefilter.getAbsoluteTime()
-        // console.log('initialRefreshInterval: ', initialRefreshInterval)
       });
     return {};
   } public stop() { }
 }
 export type CDFPluginSetup = ReturnType<CDFPlugin['setup']>;
 export type CDFPluginStart = ReturnType<CDFPlugin['start']>;
-
-//16/08 17:30
