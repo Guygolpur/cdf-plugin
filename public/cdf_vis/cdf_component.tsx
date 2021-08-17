@@ -19,6 +19,8 @@ interface CdfComponentProps {
 
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
+  const [isHorizontalGrid, setIsHorizontalGrid] = useState(false)
+  const [isVerticalGrid, setIsVerticalGrid] = useState(false)
 
   useEffect(() => {
     props.renderComplete();
@@ -169,6 +171,7 @@ export function CdfComponent(props: CdfComponentProps) {
           position={Position.Bottom}
           showOverlappingTicks
           tickFormat={(d) => Number(d).toFixed(0)}
+          showGridLines ={props.visParams.isVerticalGrid}
         />
         <Axis
           id="left"
@@ -176,6 +179,7 @@ export function CdfComponent(props: CdfComponentProps) {
           position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
           domain={{ max: 100 }}
+          showGridLines={props.visParams.isHorizontalGrid}
         />
         {Object.keys(aggLineData).map((item: any, index: any) => {
           return (
