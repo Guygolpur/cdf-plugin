@@ -19,148 +19,85 @@ interface CdfComponentProps {
 
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
-  const [isHorizontalGrid, setIsHorizontalGrid] = useState(false)
-  const [isVerticalGrid, setIsVerticalGrid] = useState(false)
 
   useEffect(() => {
     props.renderComplete();
-    // console.log('props.visParams.timeFilterFromInput: ', props.visParams.timeFilterFromInput)
-    // console.log('props.visParams.timeFilterToInput: ', props.visParams.timeFilterToInput)
   })
 
+  const {
+    field,
+    min_interval,
+    isSplitAccordionClicked,
+    aggregation,
+    splitedAggregation,
+    splitedField,
+    isEmptyBucket,
+    isExtendBounds,
+    customLabel,
+    advancedValue,
+    jsonInput,
+    isVerticalGrid,
+    isHorizontalGrid
+  } = props.visParams
+
   useEffect(() => {
-    if (!props.visParams.isSplitAccordionClicked) {
-      axios({
-        url: 'http://localhost:9200/arc-*/_search',
-        method: 'post',
-        timeout: 0,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: JSON.stringify({
-          size: 0,
-          aggs: {
-            cdfAgg: {
-              histogram: {
-                field: props.visParams.field,
-                interval: props.visParams.min_interval
-              }
-            }
+    let data: any = {
+      size: 0,
+      aggs: {
+        cdfAgg: {
+          histogram: {
+            field: field,
+            interval: min_interval
           }
-        })
-      }).then(function (response) {
-
-        const totalScores = response.data.aggregations.cdfAgg.buckets.reduce(
-          (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
-          0);
-
-        let aggLineData = [];
-        let linePoint = [];
-
-
-        aggLineData = response.data.aggregations.cdfAgg.buckets.map((item: any, index: number) => {
-          let tempCounter = 0
-          response.data.aggregations.cdfAgg.buckets.forEach((element: any, i: number) => {
-            if (i <= index) {
-              tempCounter += element.doc_count
-            }
-            else {
-              return
-            }
-          });
-
-          linePoint = [item.key, (tempCounter / totalScores) * 100]
-          return linePoint
-        })
-        let aggLineDataObj: any = {};
-        aggLineDataObj[props.visParams.field] = {
-          points: aggLineData
         }
-        setAggLineData(aggLineDataObj);
-
-      }).then(function (error) {
-        // console.log('error', error);
-      })
+      }
     }
-    else {
-      axios({
-        url: 'http://localhost:9200/arc-*/_search',
-        method: 'post',
-        timeout: 0,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: JSON.stringify({
-          size: 0,
-          aggs: {
-            cdfAgg: {
-              histogram: {
-                field: props.visParams.field,
-                interval: props.visParams.min_interval
-              },
-              aggs: {
-                innerAgg: {
-                  [props.visParams.splitedAggregation]: {
-                    field: props.visParams.splitedField
-                  }
-                }
-              }
-            }
+    if (isSplitAccordionClicked) {
+      data.aggs.cdfAgg['aggs'] = {
+        innerAgg: {
+          [splitedAggregation]: {
+            field: splitedField
           }
-        })
-      }).then(function (response) {
-
-        let innerAggLineData: any[] = [];
-
-        // populate graph field names
-        var graphObj: any = {};
-        response.data.aggregations.cdfAgg.buckets.forEach((element: any, i: number) => {
-          innerAggLineData = element.innerAgg.buckets.map((key: any, doc_count: number) => {
-            graphObj[key.key] = {}
-            graphObj[key.key]['points'] = []
-          })
-        });
-        // add points array to each corresponding graph
-        response.data.aggregations.cdfAgg.buckets.forEach((element: any, i: number) => {
-          let xPoint = element.key
-          innerAggLineData = element.innerAgg.buckets.map((key: any, doc_count: number) => {
-            graphObj[key.key]['points'].push({ x: xPoint, doc_count: key.doc_count })
-            element.innerAgg.buckets.forEach((element: any, inner_i: number) => {
-            });
-          })
-        });
-        // parse points data
-        Object.keys(graphObj).forEach(element => {
-          let totalHits: number = graphObj[element].points.reduce(
-            (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
-            0);
-
-          graphObj[element].points = graphObj[element].points.map((el: any, currPointIndex: number) => {
-            let tempCounter: number = 0
-
-            graphObj[element].points.forEach((point: any, pointIndex: number) => {
-              if (pointIndex <= currPointIndex) {
-                tempCounter += point.doc_count
-              }
-              else {
-                return
-              }
-            });
-
-            let newElement: any[] = [];
-            newElement[0] = el.x;
-            newElement[1] = (tempCounter / totalHits) * 100;
-
-            return newElement
-          });
-        });
-        setAggLineData(graphObj);
-
-      }).then(function (error) {
-        // console.log('error', error);
-      })
+        }
+      }
     }
-  }, [props.visParams.min_interval, props.visParams.field, props.visParams.aggregation, props.visParams.isEmptyBucket, props.visParams.isExtendBounds, props.visParams.customLabel, props.visParams.advancedValue, props.visParams.jsonInput, props.visParams.isSplitAccordionClicked]);
+    const reqObj: any = {
+      url: 'http://localhost:9200/arc-*/_search',
+      method: 'post',
+      timeout: 0,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: JSON.stringify(data)
+    }
+    axios(reqObj).then(function (response) {
+      let aggLineDataObj: any = {};
+      console.log('isSplitAccordionClicked', isSplitAccordionClicked);
+
+      if (!isSplitAccordionClicked) {
+        aggLineDataObj[field] = {
+          points: parseSingleResponseData(response.data)
+        }
+      } else {
+        aggLineDataObj = parseMultiResponseData(response.data)
+      }
+      setAggLineData(aggLineDataObj);
+    }).catch(function (error) {
+      console.log('error', error);
+    })
+  }, [field,
+    min_interval,
+    isSplitAccordionClicked,
+    aggregation,
+    splitedAggregation,
+    splitedField,
+    isEmptyBucket,
+    isExtendBounds,
+    customLabel,
+    advancedValue,
+    jsonInput,
+    isVerticalGrid,
+    isHorizontalGrid]);
 
   return (
     <Fragment>
@@ -171,7 +108,7 @@ export function CdfComponent(props: CdfComponentProps) {
           position={Position.Bottom}
           showOverlappingTicks
           tickFormat={(d) => Number(d).toFixed(0)}
-          showGridLines ={props.visParams.isVerticalGrid}
+          showGridLines={isVerticalGrid}
         />
         <Axis
           id="left"
@@ -179,9 +116,9 @@ export function CdfComponent(props: CdfComponentProps) {
           position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
           domain={{ max: 100 }}
-          showGridLines={props.visParams.isHorizontalGrid}
+          showGridLines={isHorizontalGrid}
         />
-        {Object.keys(aggLineData).map((item: any, index: any) => {
+        {Object.keys(aggLineData).map((item: any) => {
           return (
             <LineSeries
               id={item}
@@ -194,8 +131,73 @@ export function CdfComponent(props: CdfComponentProps) {
             />
           )
         })}
-
       </Chart>
     </Fragment>
   );
+}
+
+function parseSingleResponseData(data: any): any {
+  const totalScores = data.aggregations.cdfAgg.buckets.reduce(
+    (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
+    0);
+  let aggLineData: any[] = [];
+  let linePoint: any[] = [];
+
+  aggLineData = data.aggregations.cdfAgg.buckets.map((item: any, index: number) => {
+    let tempCounter = 0
+    data.aggregations.cdfAgg.buckets.forEach((element: any, i: number) => {
+      if (i <= index) {
+        tempCounter += element.doc_count
+      }
+      else {
+        return
+      }
+    });
+
+    linePoint = [item.key, (tempCounter / totalScores) * 100]
+    return linePoint
+  })
+  return aggLineData;
+}
+
+function parseMultiResponseData(data: any): any {
+  let graphResponse: any = {}
+  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
+    let xPoint = bucket.key
+    bucket.innerAgg.buckets.forEach((innerBucket: any) => {
+      if (graphResponse[innerBucket.key] === undefined) {
+        graphResponse[innerBucket.key] = {}
+        graphResponse[innerBucket.key]['points'] = []
+      }
+      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+
+    })
+  });
+
+  // parse points data
+  Object.keys(graphResponse).forEach(graphName => {
+    let totalHits: number = graphResponse[graphName].points.reduce(
+      (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
+      0);
+
+    graphResponse[graphName].points = graphResponse[graphName].points.map((el: any, currPointIndex: number) => {
+      let tempCounter: number = 0
+
+      graphResponse[graphName].points.forEach((point: any, pointIndex: number) => {
+        if (pointIndex <= currPointIndex) {
+          tempCounter += point.doc_count
+        } else {
+          return
+        }
+      });
+
+      let newElement: any[] = [];
+      newElement[0] = el.x;
+      newElement[1] = (tempCounter / totalHits) * 100;
+
+      return newElement
+    });
+  });
+
+  return graphResponse;
 }
