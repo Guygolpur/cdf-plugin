@@ -72,7 +72,6 @@ export function CdfComponent(props: CdfComponentProps) {
     }
     axios(reqObj).then(function (response) {
       let aggLineDataObj: any = {};
-      console.log('isSplitAccordionClicked', isSplitAccordionClicked);
 
       if (!isSplitAccordionClicked) {
         aggLineDataObj[field] = {
