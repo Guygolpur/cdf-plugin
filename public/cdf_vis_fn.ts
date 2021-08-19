@@ -14,9 +14,6 @@ export interface CDFVisParams {
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
-  // timeFilterInput: Filter;
-  timeFilterFromInput: string;
-  timeFilterToInput: string;
   splitedAggregation: string;
   splitedField: string;
   splitedOrderBy: string;
@@ -42,9 +39,6 @@ export interface CDFVisRenderValue {
     customLabel: string;
     advancedValue: string;
     jsonInput: string;
-    // timeFilterInput: Filter;
-    timeFilterFromInput: string;
-    timeFilterToInput: string;
     splitedAggregation: string;
     splitedField: string;
     splitedOrderBy: string;
@@ -125,16 +119,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '',
       help: 'Visualization only argument with type string',
     },
-    timeFilterFromInput: {
-      types: ['string'],
-      default: '',
-      help: 'Visualization only argument with type string',
-    },
-    timeFilterToInput: {
-      types: ['string'],
-      default: '',
-      help: 'Visualization only argument with type string',
-    },
     splitedAggregation: {
       types: ['string'],
       default: '',
@@ -190,11 +174,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: false,
       help: 'Visualization only argument with type boolean',
     },
-    // timeFilterInput: {
-    //   types: ['filter'],
-    //   default: '',
-    //   help: 'Visualization only argument with type filter',
-    // },
   },
   async fn(input, args) {
     /**
@@ -223,9 +202,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           customLabel: args.customLabel,
           advancedValue: args.advancedValue,
           jsonInput: args.jsonInput,
-          // timeFilterInput: args.timeFilterInput,
-          timeFilterFromInput: args.timeFilterFromInput,
-          timeFilterToInput: args.timeFilterToInput,
           splitedAggregation: args.splitedAggregation,
           splitedField: args.splitedField,
           splitedOrderBy: args.splitedOrderBy,

@@ -43,10 +43,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           customLabel: '',
           advancedValue: '',
           jsonInput: '',  // json syntax validation
-          timeFilterFromInput: data.query.timefilter.timefilter.getAbsoluteTime().from,
-          timeFilterToInput: data.query.timefilter.timefilter.getAbsoluteTime().to,
           numberOfTickTexts: 10,
-
           splitedAggregation: 'terms',
           splitedField: 'Projects',
           splitedOrderBy: 'Metric: Count',
