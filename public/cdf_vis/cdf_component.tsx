@@ -100,7 +100,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
   return (
     <Fragment>
-      <Chart className="story-chart">
+      <Chart className="story-chart" size={["100%", "50%"]}>
         <Settings showLegend showLegendExtra legendPosition={Position.Right} />
         <Axis
           id="bottom"
@@ -117,7 +117,7 @@ export function CdfComponent(props: CdfComponentProps) {
           domain={{ max: 100 }}
           showGridLines={isHorizontalGrid}
         />
-        {Object.keys(aggLineData).map((item: any) => {
+        {Object.keys(aggLineData).map((item: any, i: any) => {
           return (
             <LineSeries
               id={item}
@@ -127,6 +127,7 @@ export function CdfComponent(props: CdfComponentProps) {
               yAccessors={[1]}
               data={aggLineData[item]['points']}
               curve={CurveType.LINEAR}
+              key={i}
             />
           )
         })}

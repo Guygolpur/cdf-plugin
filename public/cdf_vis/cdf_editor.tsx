@@ -41,9 +41,6 @@ interface CounterParams {
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
-  // timeFilterInput: data.SavedQueryTimeFilter;
-  timeFilterFromInput: string;
-  timeFilterToInput: string;
   splitedAggregation: string;
   splitedField: string;
   splitedOrderBy: string;

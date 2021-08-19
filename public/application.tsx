@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppMountParameters, CoreStart } from '......srccorepublic';
+import { AppMountParameters, CoreStart } from 'src/core/public';
 import { AppPluginStartDependencies } from './types';
 import { CdfApp } from './components/app';
 
