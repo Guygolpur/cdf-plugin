@@ -57,18 +57,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   constructor(props: any) {
     super(props);
     this.state = {
-      AxisExtents: false,
       comboBoxSelectionOptions: [],
       value: 100,
-      isShowBucket: false,
-      isShowBounds: false,
-      advancedValue: '',
-      jsonInput: '',
       aggregationArr: [],
       isAddPopoverOpen: false,
       splitedAggregationArr: [],
-      isSplitedSeperateBucket: false,
-      isSplitedShowMissingValues: false
     };
   }
 
@@ -126,23 +119,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
 
   onSetAxis = () => {
-    this.setState(prevState => ({
-      AxisExtents: !prevState.AxisExtents
-    }));
+    this.props.setValue('AxisExtents', !this.props.stateParams.AxisExtents);
   }
 
   onShowBucketChange = () => {
     this.props.setValue('isEmptyBucket', !this.props.stateParams.isEmptyBucket);
-    this.setState(prevState => ({
-      isShowBucket: !prevState.isShowBucket
-    }));
   };
 
   onShowBoundsChange = () => {
     this.props.setValue('isExtendBounds', !this.props.stateParams.isExtendBounds);
-    this.setState(prevState => ({
-      isShowBounds: !prevState.isShowBounds
-    }));
   };
 
   onCustomLabelChange = (e: any) => {
@@ -151,11 +136,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   onAdvanceChange = (e: any) => {
     this.props.setValue('advancedValue', e.target.value);
-    this.setState({ advancedValue: e.target.value })
   };
 
   onJsonChange = (e: any) => {
-    this.setState({ jsonInput: e.target.value })
     this.props.setValue('jsonInput', e.target.value);
   };
 
@@ -187,16 +170,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   onSplitedSeperateBucketChange = () => {
     this.props.setValue('isSplitedSeperateBucket', !this.props.stateParams.isSplitedSeperateBucket);
-    this.setState(prevState => ({
-      isSplitedSeperateBucket: !prevState.isSplitedSeperateBucket
-    }));
   };
 
   onSplitedShowMissingValuesChange = () => {
     this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
-    this.setState(prevState => ({
-      isSplitedShowMissingValues: !prevState.isSplitedShowMissingValues
-    }));
   };
 
   onSplitedCustomLabelChange = (e: any) => {
@@ -262,7 +239,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiSwitch
                         label="Show empty buckets"
                         name="switch"
-                        checked={this.state.isShowBucket}
+                        checked={this.props.stateParams.isEmptyBucket}
                         onChange={this.onShowBucketChange}
                       />
                     </EuiFormRow>
@@ -273,7 +250,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiSwitch
                         label="Extend bounds"
                         name="switch"
-                        checked={this.state.isShowBounds}
+                        checked={this.props.stateParams.isExtendBounds}
                         onChange={this.onShowBoundsChange}
                       />
                     </EuiFormRow>
@@ -306,7 +283,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiText size="s" color="subdued">
                         <EuiTextArea
                           aria-label="Use aria labels when no actual label is in use"
-                          value={this.state.advancedValue}
+                          value={this.props.stateParams.advancedValue}
                           onChange={(e) => this.onAdvanceChange(e)}
                         />
                       </EuiText>
@@ -396,7 +373,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiSwitch
                         label="Group other values in seperate bucket"
                         name="switch"
-                        checked={this.state.isSplitedSeperateBucket}
+                        checked={this.props.stateParams.isSplitedSeperateBucket}
                         onChange={this.onSplitedSeperateBucketChange}
                       />
                     </EuiFormRow>
@@ -407,7 +384,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiSwitch
                         label="Show missing values"
                         name="switch"
-                        checked={this.state.isSplitedShowMissingValues}
+                        checked={this.props.stateParams.isSplitedShowMissingValues}
                         onChange={this.onSplitedShowMissingValuesChange}
                       />
                     </EuiFormRow>
@@ -440,7 +417,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       <EuiText size="s" color="subdued">
                         <EuiTextArea
                           aria-label="Use aria labels when no actual label is in use"
-                          value={this.state.advancedValue}
+                          value={this.props.stateParams.advancedValue}
                           onChange={(e) => this.onAdvanceChange(e)}
                         />
                       </EuiText>
@@ -470,7 +447,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   title="X-Axis"
                   description={
                     <span>
-                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.state.AxisExtents} />
+                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.AxisExtents} />
                     </span>
                   }></EuiCard>
               </EuiFlexItem>
