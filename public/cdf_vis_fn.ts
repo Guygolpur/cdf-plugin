@@ -25,6 +25,8 @@ export interface CDFVisParams {
   isSplitAccordionClicked: boolean;
   isVerticalGrid: boolean;
   isHorizontalGrid: boolean;
+  dateFilterFrom: string;
+  dateFilterTo: string;
 }
 
 export interface CDFVisRenderValue {
@@ -50,6 +52,8 @@ export interface CDFVisRenderValue {
     isSplitAccordionClicked: boolean;
     isVerticalGrid: boolean;
     isHorizontalGrid: boolean;
+    dateFilterFrom: string;
+    dateFilterTo: string;
   };
 }
 
@@ -174,6 +178,16 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: false,
       help: 'Visualization only argument with type boolean',
     },
+    dateFilterFrom: {
+      types: ['string'],
+      default: '',
+      help: 'Visualization only argument with type string',
+    },
+    dateFilterTo: {
+      types: ['string'],
+      default: '',
+      help: 'Visualization only argument with type string',
+    },
   },
   async fn(input, args) {
     /**
@@ -213,6 +227,8 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isSplitAccordionClicked: args.isSplitAccordionClicked,
           isVerticalGrid: args.isVerticalGrid,
           isHorizontalGrid: args.isHorizontalGrid,
+          dateFilterFrom: args.dateFilterFrom,
+          dateFilterTo: args.dateFilterTo,
         },
       },
     };
