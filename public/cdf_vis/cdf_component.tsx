@@ -101,9 +101,10 @@ export function CdfComponent(props: CdfComponentProps) {
   return (
     <Fragment>
       <Chart className="story-chart" size={["100%", "50%"]}>
-        <Settings showLegend showLegendExtra legendPosition={Position.Right} />
+        <Settings showLegend legendPosition={Position.Right} />
         <Axis
           id="bottom"
+          title={customLabel}
           position={Position.Bottom}
           showOverlappingTicks
           tickFormat={(d) => Number(d).toFixed(0)}
