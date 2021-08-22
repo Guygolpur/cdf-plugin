@@ -55,6 +55,8 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isSplitAccordionClicked: false,
           isVerticalGrid: false,
           isHorizontalGrid: false,
+          dateFilterFrom: '',
+          dateFilterTo: '',
           grid: {
             categoryLines: false,
             valueAxis: false

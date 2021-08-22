@@ -37,11 +37,21 @@ export function CdfComponent(props: CdfComponentProps) {
     advancedValue,
     jsonInput,
     isVerticalGrid,
-    isHorizontalGrid
+    isHorizontalGrid,
+    dateFilterFrom,
+    dateFilterTo,
   } = props.visParams
 
   useEffect(() => {
     let data: any = {
+      query: {
+        range: {
+          time: {
+            gte: dateFilterFrom,
+            lt: dateFilterTo
+          }
+        }
+      },
       size: 0,
       aggs: {
         cdfAgg: {
@@ -96,7 +106,9 @@ export function CdfComponent(props: CdfComponentProps) {
     advancedValue,
     jsonInput,
     isVerticalGrid,
-    isHorizontalGrid]);
+    isHorizontalGrid,
+    dateFilterFrom,
+    dateFilterTo,]);
 
   return (
     <Fragment>

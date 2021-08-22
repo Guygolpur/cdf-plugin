@@ -31,7 +31,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     splitedCustomLabel,
     isSplitAccordionClicked,
     isVerticalGrid,
-    isHorizontalGrid } = vis.params;
+    isHorizontalGrid,
+    dateFilterFrom,
+    dateFilterTo } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
@@ -57,6 +59,8 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       isSplitAccordionClicked,
       isVerticalGrid,
       isHorizontalGrid,
+      dateFilterFrom,
+      dateFilterTo,
     }
   );
 

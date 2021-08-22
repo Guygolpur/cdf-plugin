@@ -51,6 +51,8 @@ interface CounterParams {
   isSplitAccordionClicked: boolean;
   isVerticalGrid: boolean;
   isHorizontalGrid: boolean;
+  dateFilterFrom: string,
+  dateFilterTo: string,
 }
 
 export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterParams>> {
@@ -84,6 +86,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         this.setState({ aggregationArr: fieldOptions })
       })
       .catch(error => { console.log('err: ', error) })
+  }
+
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.timeRange.from !== this.props.timeRange.from) {
+      this.props.setValue('dateFilterFrom', this.props.timeRange.from);
+    }
+    if (prevProps.timeRange.to !== this.props.timeRange.to) {
+      this.props.setValue('dateFilterTo', this.props.timeRange.to);
+    }
   }
 
   getIndicesMapping = () => {
