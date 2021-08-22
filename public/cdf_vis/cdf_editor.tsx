@@ -2,7 +2,6 @@
 import React, { Fragment } from 'react';
 
 import {
-  EuiCheckboxGroup,
   EuiCheckbox,
   EuiFormRow,
   EuiSelect,
@@ -281,7 +280,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                     <EuiSpacer size="s" />
 
-                    <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onCustomLabelChange(e)}>
+                    <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onCustomLabelChange(e)}>
                       <EuiFieldText name="first" fullWidth />
                     </EuiFormRow>
 
@@ -292,7 +291,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       arrowDisplay="left"
                       isCollapsible={true}
                       initialIsOpen={false}>
-                      <EuiText style={{ display: "inline" }} onChange={(e) => onJsonChange(e)} >
+                      <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
                         <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
                           <dt style={{ display: "inline" }}>JSON input</dt>
                         </dl>
@@ -326,15 +325,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     <EuiFormRow label="Sub aggregation" fullWidth>
                       <EuiSelect
                         options={[
-                          { value: 'Date Histogram', text: 'Date Histogram' },
-                          { value: 'Date Range', text: 'Date Range' },
+                          { value: 'date_histogram', text: 'Date Histogram' },
+                          { value: 'range', text: 'Date Range' },   // timestamp
                           { value: 'filter', text: 'Filter' },
                           { value: 'filter', text: 'Filters' },
                           { value: 'Geotile', text: 'Geotile' },
                           { value: 'histogram', text: 'Histogram' },
-                          { value: 'IPv4 Range', text: 'IPv4 Range' },
+                          { value: 'ip_ranges', text: 'IPv4 Range' },
                           { value: 'range', text: 'Range' },
-                          { value: 'Significant Terms', text: 'Significant Terms' },
+                          { value: 'significant_terms', text: 'Significant Terms' },
                           { value: 'terms', text: 'Terms' },
                         ]}
                         onChange={(e) => this.onSplitedAggregationChange(e)}
@@ -415,7 +414,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                     <EuiSpacer size="s" />
 
-                    <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onSplitedCustomLabelChange(e)}>
+                    <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onSplitedCustomLabelChange(e)}>
                       <EuiFieldText name="first" fullWidth />
                     </EuiFormRow>
 
@@ -426,7 +425,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       arrowDisplay="left"
                       isCollapsible={true}
                       initialIsOpen={false}>
-                      <EuiText style={{ display: "inline" }} onChange={(e) => onJsonChange(e)} >
+                      <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
                         <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
                           <dt style={{ display: "inline" }}>JSON input</dt>
                         </dl>
