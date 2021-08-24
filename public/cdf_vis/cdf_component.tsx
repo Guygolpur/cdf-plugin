@@ -46,14 +46,14 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     let data: any = {
-      // query: {
-      //   range: {
-      //     time: {
-      //       gte: dateFilterFrom,
-      //       lt: dateFilterTo
-      //     }
-      //   }
-      // },
+      query: {
+        range: {
+          time: {
+            gte: dateFilterFrom,
+            lt: dateFilterTo
+          }
+        }
+      },
       size: 0,
       aggs: {
         cdfAgg: {

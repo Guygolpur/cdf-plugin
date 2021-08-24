@@ -231,8 +231,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   
   }
   render() {
-    console.log('domainMax' + this.props.stateParams.domain_max)
-    console.log('domainMin' + this.props.stateParams.domain_min)
 
     let tabs = [
       {
