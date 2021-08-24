@@ -11,12 +11,12 @@ import {
 
 export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
   const {
-    isUpdate,
     aggregation,
     field,
     min_interval,
     isEmptyBucket,
     isExtendBounds,
+    isAxisExtents,
     handleNoResults,
     customLabel,
     advancedValue,
@@ -33,17 +33,19 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
-    dateFilterTo } = vis.params;
+    dateFilterTo,
+    splitedHistogramMinInterval,
+    splitedDateHistogramMinInterval, } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
     {
-      isUpdate,
       aggregation,
       field,
       min_interval,
       isEmptyBucket,
       isExtendBounds,
+      isAxisExtents,
       handleNoResults,
       customLabel,
       advancedValue,
@@ -61,6 +63,8 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       isHorizontalGrid,
       dateFilterFrom,
       dateFilterTo,
+      splitedHistogramMinInterval,
+      splitedDateHistogramMinInterval,
     }
   );
 
