@@ -40,6 +40,8 @@ export function CdfComponent(props: CdfComponentProps) {
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
+    splitedHistogramMinInterval,
+    splitedDateHistogramMinInterval,
   } = props.visParams
 
   useEffect(() => {
@@ -63,10 +65,33 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
     if (isSplitAccordionClicked) {
-      data.aggs.cdfAgg['aggs'] = {
-        innerAgg: {
-          [splitedAggregation]: {
-            field: splitedField
+      if (splitedAggregation == 'terms') {
+        data.aggs.cdfAgg['aggs'] = {
+          innerAgg: {
+            [splitedAggregation]: {
+              field: splitedField
+            }
+          }
+        }
+      }
+      else if (splitedAggregation == 'histogram') {
+        data.aggs.cdfAgg['aggs'] = {
+          innerAgg: {
+            [splitedAggregation]: {
+              field: splitedField,
+              interval: splitedHistogramMinInterval,
+              min_doc_count: 1
+            }
+          }
+        }
+      }
+      else if (splitedAggregation == 'date_histogram') {
+        data.aggs.cdfAgg['aggs'] = {
+          innerAgg: {
+            [splitedAggregation]: {
+              field: splitedField,
+              calendar_interval: splitedDateHistogramMinInterval
+            }
           }
         }
       }
@@ -108,12 +133,14 @@ export function CdfComponent(props: CdfComponentProps) {
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
-    dateFilterTo,]);
+    dateFilterTo,
+    splitedHistogramMinInterval,
+    splitedDateHistogramMinInterval]);
 
   return (
     <Fragment>
-      <Chart className="story-chart" size={["100%", "50%"]}>
-        <Settings showLegend legendPosition={Position.Right} />
+      <Chart className="story-chart" size={["100%", "80%"]}>
+        <Settings showLegend legendPosition={Position.Bottom} />
         <Axis
           id="bottom"
           title={customLabel}

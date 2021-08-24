@@ -19,9 +19,6 @@ export interface SetupDependencies {
 
 export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
   public setup(core: CoreSetup, { expressions, visualizations, data }: SetupDependencies) {
-    // console.log('data: ', data.query.timefilter.timefilter)
-    // console.log('data from: ', data.query.timefilter.timefilter.getAbsoluteTime().from)
-    // console.log('data to: ', data.query.timefilter.timefilter.getAbsoluteTime().to)
 
     expressions.registerFunction(cdfVisFn);
     expressions.registerRenderer(cdfVisRenderer);
@@ -33,30 +30,32 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       description: 'The CDF (cumulative distribution function) uses a line chart to represent symbolic distribution.',
       visConfig: {
         defaults: {
-          isUpdate: false,
-          aggregation: 'histogram',
-          field: '',
-          min_interval: 1,
           isEmptyBucket: false,
+          isAxisExtents: false,
           isExtendBounds: false,
           handleNoResults: true,
+          isVerticalGrid: false,
+          isHorizontalGrid: false,
+          isSplitedSeperateBucket: false,
+          isSplitedShowMissingValues: false,
+          isSplitAccordionClicked: false,
+          aggregation: 'histogram',
+          field: '',
           customLabel: '',
           advancedValue: '',
           jsonInput: '',  // json syntax validation
-          numberOfTickTexts: 10,
-          splitedAggregation: 'terms',
+          splitedAggregation: 'date_histogram',
           splitedField: 'Projects',
           splitedOrderBy: 'Metric: Count',
           splitedOrder: 'Descending',
-          splitedSize: 1,
-          isSplitedSeperateBucket: false,
-          isSplitedShowMissingValues: false,
           splitedCustomLabel: '',
-          isSplitAccordionClicked: false,
-          isVerticalGrid: false,
-          isHorizontalGrid: false,
-          dateFilterFrom: '',
-          dateFilterTo: '',
+          dateFilterFrom: 'now-15m',
+          dateFilterTo: 'now',
+          splitedDateHistogramMinInterval: 'auto',
+          numberOfTickTexts: 10,
+          min_interval: 1,
+          splitedSize: 1,
+          splitedHistogramMinInterval: 1,
           grid: {
             categoryLines: false,
             valueAxis: false

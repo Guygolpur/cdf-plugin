@@ -4,11 +4,11 @@ import { ExpressionFunctionDefinition, Render } from 'src/plugins/expressions/pu
 import { Filter, KibanaContext } from 'src/plugins/data/public';
 
 export interface CDFVisParams {
-  isUpdate: boolean;
   aggregation: string;
   field: string;
   min_interval: number;
   isEmptyBucket: boolean;
+  isAxisExtents: boolean;
   isExtendBounds: boolean;
   handleNoResults: boolean;
   customLabel: string;
@@ -27,15 +27,17 @@ export interface CDFVisParams {
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
   dateFilterTo: string;
+  splitedHistogramMinInterval: number;
+  splitedDateHistogramMinInterval: string;
 }
 
 export interface CDFVisRenderValue {
   visParams: {
-    isUpdate: boolean;
     aggregation: string;
     field: string;
     min_interval: number;
     isEmptyBucket: boolean;
+    isAxisExtents: boolean;
     isExtendBounds: boolean;
     handleNoResults: boolean;
     customLabel: string;
@@ -54,6 +56,8 @@ export interface CDFVisRenderValue {
     isHorizontalGrid: boolean;
     dateFilterFrom: string;
     dateFilterTo: string;
+    splitedHistogramMinInterval: number;
+    splitedDateHistogramMinInterval: string;
   };
 }
 
@@ -73,11 +77,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
   help:
     'The expression function definition should be registered for a custom visualization to be rendered',
   args: {
-    isUpdate: {
-      types: ['boolean'],
-      default: false,
-      help: 'Visualization only argument with type boolean',
-    },
     aggregation: {
       types: ['string'],
       default: '',
@@ -99,6 +98,11 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       help: 'Visualization only argument with type boolean',
     },
     isExtendBounds: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
+    },
+    isAxisExtents: {
       types: ['boolean'],
       default: false,
       help: 'Visualization only argument with type boolean',
@@ -125,7 +129,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
     },
     splitedAggregation: {
       types: ['string'],
-      default: '',
+      default: 'date_histogram',
       help: 'Visualization only argument with type string',
     },
     splitedField: {
@@ -180,14 +184,24 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
     },
     dateFilterFrom: {
       types: ['string'],
-      default: '',
+      default: 'now-15m',
       help: 'Visualization only argument with type string',
     },
     dateFilterTo: {
       types: ['string'],
-      default: '',
+      default: 'now',
       help: 'Visualization only argument with type string',
     },
+    splitedHistogramMinInterval: {
+      types: ['number'],
+      default: 1,
+      help: 'Visualization only argument with type number',
+    },
+    splitedDateHistogramMinInterval: {
+      types: ['string'],
+      default: 'auto',
+      help: 'Visualization only argument with type string',
+    }
   },
   async fn(input, args) {
     /**
@@ -206,12 +220,12 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       as: 'cdf_vis',
       value: {
         visParams: {
-          isUpdate: args.isUpdate,
           aggregation: args.aggregation,
           field: args.field,
           min_interval: args.min_interval,
           isEmptyBucket: args.isEmptyBucket,
           isExtendBounds: args.isExtendBounds,
+          isAxisExtents: args.isAxisExtents,
           handleNoResults: args.handleNoResults,
           customLabel: args.customLabel,
           advancedValue: args.advancedValue,
@@ -229,6 +243,8 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isHorizontalGrid: args.isHorizontalGrid,
           dateFilterFrom: args.dateFilterFrom,
           dateFilterTo: args.dateFilterTo,
+          splitedHistogramMinInterval: args.splitedHistogramMinInterval,
+          splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
         },
       },
     };
