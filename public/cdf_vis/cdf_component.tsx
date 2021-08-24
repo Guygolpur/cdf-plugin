@@ -40,20 +40,21 @@ export function CdfComponent(props: CdfComponentProps) {
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
-    domain_min,
-    domain_max
+    xMin,
+    xMax,
+    axisExtents
   } = props.visParams
 
   useEffect(() => {
     let data: any = {
-      query: {
-        range: {
-          time: {
-            gte: dateFilterFrom,
-            lt: dateFilterTo
-          }
-        }
-      },
+      // query: {
+      //   range: {
+      //     time: {
+      //       gte: dateFilterFrom,
+      //       lt: dateFilterTo
+      //     }
+      //   }
+      // },
       size: 0,
       aggs: {
         cdfAgg: {
@@ -92,6 +93,10 @@ export function CdfComponent(props: CdfComponentProps) {
       } else {
         aggLineDataObj = parseMultiResponseData(response.data)
       }
+
+      if(axisExtents) {
+        aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax ) 
+      }
       setAggLineData(aggLineDataObj);
     }).catch(function (error) {
       console.log('error', error);
@@ -111,8 +116,9 @@ export function CdfComponent(props: CdfComponentProps) {
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
-    domain_min,
-    domain_max]);
+    xMin,
+    xMax,
+    axisExtents]);
     
   return (
     <Fragment>
@@ -131,7 +137,6 @@ export function CdfComponent(props: CdfComponentProps) {
           title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title}
           position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
-          domain={{ min: domain_min, max: domain_max }}
           showGridLines={isHorizontalGrid}
         />
         {Object.keys(aggLineData).map((item: any, i: any) => {
@@ -153,6 +158,26 @@ export function CdfComponent(props: CdfComponentProps) {
   );
 }
 
+
+function filterbyXAxis(data: any, xMin: number, xMax: number) {
+  
+  let filteredObj :any = {}
+  Object.keys(data).forEach((graphName, index) => { 
+    filteredObj[graphName] = {}
+    filteredObj[graphName].points = []
+
+    data[graphName].points.forEach((point:any) => {
+      if(point[0] > xMin && point[0] < xMax) {
+        const pointsLength: number = filteredObj[graphName].points.length
+        filteredObj[graphName].points[pointsLength] = []
+        filteredObj[graphName].points[pointsLength].push(point[0])
+        filteredObj[graphName].points[pointsLength].push(point[1])
+      }
+    });
+   });
+
+  return filteredObj
+}
 function parseSingleResponseData(data: any): any {
   const totalScores = data.aggregations.cdfAgg.buckets.reduce(
     (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,

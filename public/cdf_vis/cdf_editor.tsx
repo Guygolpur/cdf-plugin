@@ -30,7 +30,7 @@ import { AddSubBucket } from '../components/addSubBucket';
 
 interface CounterParams {
   isUpdate: boolean;
-  AxisExtents: boolean;
+  axisExtents: boolean;
   aggregation: string;
   field: string;
   min_interval: number;
@@ -53,8 +53,8 @@ interface CounterParams {
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
   dateFilterTo: string;
-  domain_min: number;
-  domain_max: number;
+  xMin: number;
+  xMax: number;
 }
 
 export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterParams>> {
@@ -123,11 +123,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   onAxisExtentsMinChange = (e: any) => {
-    this.props.setValue('domain_min', e.target.value);
+    this.props.setValue('xMin', e.target.value);
   }
 
   onAxisExtentsMaxChange = (e: any) => {
-    this.props.setValue('domain_max', e.target.value);
+    this.props.setValue('xMax', e.target.value);
   }
   
   onXAxisGridChange = () => {
@@ -139,7 +139,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   onSetAxis = () => {
-    this.props.setValue('AxisExtents', !this.props.stateParams.AxisExtents);
+    this.props.setValue('axisExtents', !this.props.stateParams.axisExtents);
   }
 
   onShowBucketChange = () => {
@@ -211,14 +211,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <span>
           <EuiFlexItem grow={false} style={{ width: '100%' }}>
             <EuiFormRow label="Min">
-              <EuiFieldNumber value={this.props.stateParams.domain_min} placeholder={'0'} min={0} onChange={(e) => this.onAxisExtentsMinChange(e)} />
+              <EuiFieldNumber value={this.props.stateParams.xMin} min={0} onChange={(e) => this.onAxisExtentsMinChange(e)} />
+              {/* value={this.props.stateParams.xMin} */}
             </EuiFormRow>
           </EuiFlexItem>
     
           <EuiSpacer size="s" />
           <EuiFlexItem grow={false} style={{ width: '100%' }}>
             <EuiFormRow label="Max">
-              <EuiFieldNumber value={this.props.stateParams.domain_max} placeholder={'100'} min={0} onChange={(e) => this.onAxisExtentsMaxChange(e)} />
+              <EuiFieldNumber value={this.props.stateParams.xMax} min={0} onChange={(e) => this.onAxisExtentsMaxChange(e)} />
+              {/* value={this.props.stateParams.xMax} */}
             </EuiFormRow>
           </EuiFlexItem>
           <EuiSpacer size="s" />
@@ -493,10 +495,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   title="X-Axis"
                   description={
                     <span>
-                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.AxisExtents} />
+                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.axisExtents} />
                     </span>
                   }>
-                  {this.showAxisExtent(this.props.stateParams.AxisExtents)}
+                  {this.showAxisExtent(this.props.stateParams.axisExtents)}
                   </EuiCard>
               </EuiFlexItem>
             </EuiFlexGroup>

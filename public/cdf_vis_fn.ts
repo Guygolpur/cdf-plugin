@@ -27,8 +27,9 @@ export interface CDFVisParams {
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
   dateFilterTo: string;
-  domain_min: number;
-  domain_max: number;
+  xMin: number;
+  xMax: number;
+  axisExtents: boolean;
 }
 
 export interface CDFVisRenderValue {
@@ -56,8 +57,9 @@ export interface CDFVisRenderValue {
     isHorizontalGrid: boolean;
     dateFilterFrom: string;
     dateFilterTo: string;
-    domain_min: number;
-    domain_max: number;
+    xMin: number;
+    xMax: number;
+    axisExtents: boolean;
   };
 }
 
@@ -192,17 +194,22 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '',
       help: 'Visualization only argument with type string',
     },
-    domain_min: {
+    xMin: {
       types: ['number'],
       default: 1,
       help: 'Visualization only argument with type number',
     },
-    domain_max: {
+    xMax: {
       types: ['number'],
       default: 100,
       help: 'Visualization only argument with type number',
     },
-
+    axisExtents: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
+    },
+    
   },
   async fn(input, args) {
     /**
@@ -244,8 +251,9 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isHorizontalGrid: args.isHorizontalGrid,
           dateFilterFrom: args.dateFilterFrom,
           dateFilterTo: args.dateFilterTo,
-          domain_min: args.domain_min,
-          domain_max:  args.domain_max
+          xMin: args.xMin,
+          xMax:  args.xMax,
+          axisExtents: args.axisExtents
         },
       },
     };

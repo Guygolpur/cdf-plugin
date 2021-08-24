@@ -57,8 +57,9 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isHorizontalGrid: false,
           dateFilterFrom: '',
           dateFilterTo: '',
-          domain_min: 0,
-          domain_max: 100,
+          Xmin: null,
+          Xmax: null,
+          axisExtents: false,
           grid: {
             categoryLines: false,
             valueAxis: false
