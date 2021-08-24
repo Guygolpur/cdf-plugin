@@ -56,6 +56,8 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           min_interval: 1,
           splitedSize: 1,
           splitedHistogramMinInterval: 1,
+          Xmin: null,
+          Xmax: null,
           grid: {
             categoryLines: false,
             valueAxis: false
@@ -81,14 +83,9 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
   }
 
   public start(core: CoreStart, plugins: SetupDependencies) {
-    let timeFilterSubscription: Subscription
-    timeFilterSubscription = plugins.data.query.timefilter.timefilter
-      .getTimeUpdate$()
-      .subscribe(() => {
-        const initialRefreshInterval = plugins.data.query.timefilter.timefilter.getAbsoluteTime()
-      });
     return {};
-  } public stop() { }
+  }
+  public stop() { }
 }
 export type CDFPluginSetup = ReturnType<CDFPlugin['setup']>;
 export type CDFPluginStart = ReturnType<CDFPlugin['start']>;

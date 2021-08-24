@@ -51,6 +51,8 @@ interface CounterParams {
   dateFilterTo: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
+  xMin: number;
+  xMax: number;
 }
 
 interface CDFEditorComponentState {
@@ -135,6 +137,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('min_interval', e.target.value);
   }
 
+  onAxisExtentsMinChange = (e: any) => {
+    this.props.setValue('xMin', e.target.value);
+  }
+
+  onAxisExtentsMaxChange = (e: any) => {
+    this.props.setValue('xMax', e.target.value);
+  }
+
   onXAxisGridChange = () => {
     this.props.setValue('isVerticalGrid', !this.props.stateParams.isVerticalGrid);
   }
@@ -206,6 +216,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   };
 
   splitAccordionClicked = () => {
+    console.log('clicked')
     this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
   }
 
@@ -215,6 +226,30 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   onSplitedDateHistogramMinIntervalChange = (e: any) => {
     this.props.setValue('splitedDateHistogramMinInterval', e.target.value);
+  }
+
+  showAxisExtent(show: boolean) {
+    if (show) {
+      return (
+        <span>
+          <EuiFlexItem grow={false} style={{ width: '100%' }}>
+            <EuiFormRow label="Min">
+              <EuiFieldNumber value={this.props.stateParams.xMin} min={0} onChange={(e) => this.onAxisExtentsMinChange(e)} />
+            </EuiFormRow>
+          </EuiFlexItem>
+
+          <EuiSpacer size="s" />
+          <EuiFlexItem grow={false} style={{ width: '100%' }}>
+            <EuiFormRow label="Max">
+              <EuiFieldNumber value={this.props.stateParams.xMax} min={0} onChange={(e) => this.onAxisExtentsMaxChange(e)} />
+            </EuiFormRow>
+          </EuiFlexItem>
+          <EuiSpacer size="s" />
+        </span>
+      )
+    } else {
+      return null
+    }
   }
 
   render() {
@@ -697,7 +732,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     <span>
                       <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.isAxisExtents} />
                     </span>
-                  }></EuiCard>
+                  }>
+                  {this.showAxisExtent(this.props.stateParams.isAxisExtents)}
+                </EuiCard>
               </EuiFlexItem>
             </EuiFlexGroup>
           </Fragment>
