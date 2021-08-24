@@ -7,7 +7,7 @@ import { cdfVisFn, CDFVisParams } from './cdf_vis_fn';
 import { cdfVisRenderer } from './cdf_vis_renderer';
 import { toExpressionAst } from './to_ast';
 import { CDFEditor } from './cdf_vis/cdf_editor';
-import cdfSvgIcon from './public/images/cdf_line.svg';
+import cdfSvgIcon from './images/cdf_line.svg';
 import { Subscription } from 'rxjs';
 import { DataPublicPluginStart } from 'src/plugins/data/public';
 
