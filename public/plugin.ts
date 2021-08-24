@@ -59,7 +59,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           dateFilterTo: '',
           Xmin: null,
           Xmax: null,
-          axisExtents: false,
+          isAxisExtents: false,
           grid: {
             categoryLines: false,
             valueAxis: false

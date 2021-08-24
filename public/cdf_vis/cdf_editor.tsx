@@ -30,7 +30,7 @@ import { AddSubBucket } from '../components/addSubBucket';
 
 interface CounterParams {
   isUpdate: boolean;
-  axisExtents: boolean;
+  isAxisExtents: boolean;
   aggregation: string;
   field: string;
   min_interval: number;
@@ -139,7 +139,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   onSetAxis = () => {
-    this.props.setValue('axisExtents', !this.props.stateParams.axisExtents);
+    this.props.setValue('isAxisExtents', !this.props.stateParams.isAxisExtents);
   }
 
   onShowBucketChange = () => {
@@ -495,10 +495,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   title="X-Axis"
                   description={
                     <span>
-                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.axisExtents} />
+                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.isAxisExtents} />
                     </span>
                   }>
-                  {this.showAxisExtent(this.props.stateParams.axisExtents)}
+                  {this.showAxisExtent(this.props.stateParams.isAxisExtents)}
                   </EuiCard>
               </EuiFlexItem>
             </EuiFlexGroup>

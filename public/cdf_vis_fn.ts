@@ -29,7 +29,7 @@ export interface CDFVisParams {
   dateFilterTo: string;
   xMin: number;
   xMax: number;
-  axisExtents: boolean;
+  isAxisExtents: boolean;
 }
 
 export interface CDFVisRenderValue {
@@ -59,7 +59,7 @@ export interface CDFVisRenderValue {
     dateFilterTo: string;
     xMin: number;
     xMax: number;
-    axisExtents: boolean;
+    isAxisExtents: boolean;
   };
 }
 
@@ -204,7 +204,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: 100,
       help: 'Visualization only argument with type number',
     },
-    axisExtents: {
+    isAxisExtents: {
       types: ['boolean'],
       default: false,
       help: 'Visualization only argument with type boolean',
@@ -253,7 +253,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateFilterTo: args.dateFilterTo,
           xMin: args.xMin,
           xMax:  args.xMax,
-          axisExtents: args.axisExtents
+          axisExtents: args.isAxisExtents
         },
       },
     };

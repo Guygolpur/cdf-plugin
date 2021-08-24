@@ -36,7 +36,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     dateFilterTo,
     xMin,
     xMax,
-    axisExtents } = vis.params;
+    isAxisExtents } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
@@ -66,7 +66,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       dateFilterTo,
       xMin,
       xMax,
-      axisExtents
+      isAxisExtents
     }
   );
 

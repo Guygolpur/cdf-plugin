@@ -42,19 +42,19 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     xMin,
     xMax,
-    axisExtents
+    isAxisExtents
   } = props.visParams
 
   useEffect(() => {
     let data: any = {
-      query: {
-        range: {
-          time: {
-            gte: dateFilterFrom,
-            lt: dateFilterTo
-          }
-        }
-      },
+      // query: {
+      //   range: {
+      //     time: {
+      //       gte: dateFilterFrom,
+      //       lt: dateFilterTo
+      //     }
+      //   }
+      // },
       size: 0,
       aggs: {
         cdfAgg: {
@@ -94,7 +94,7 @@ export function CdfComponent(props: CdfComponentProps) {
         aggLineDataObj = parseMultiResponseData(response.data)
       }
 
-      if(axisExtents) {
+      if(isAxisExtents) {
         aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax ) 
       }
       setAggLineData(aggLineDataObj);
@@ -118,7 +118,7 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     xMin,
     xMax,
-    axisExtents]);
+    isAxisExtents]);
     
   return (
     <Fragment>
