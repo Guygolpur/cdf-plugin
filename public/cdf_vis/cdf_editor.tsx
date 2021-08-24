@@ -51,8 +51,10 @@ interface CounterParams {
   isSplitAccordionClicked: boolean;
   isVerticalGrid: boolean;
   isHorizontalGrid: boolean;
-  dateFilterFrom: string,
-  dateFilterTo: string,
+  dateFilterFrom: string;
+  dateFilterTo: string;
+  domain_min: number;
+  domain_max: number;
 }
 
 export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterParams>> {
@@ -120,6 +122,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('min_interval', e.target.value);
   }
 
+  onAxisExtentsMinChange = (e: any) => {
+    this.props.setValue('domain_min', e.target.value);
+  }
+
+  onAxisExtentsMaxChange = (e: any) => {
+    this.props.setValue('domain_max', e.target.value);
+  }
+  
   onXAxisGridChange = () => {
     this.props.setValue('isVerticalGrid', !this.props.stateParams.isVerticalGrid);
   }
@@ -127,7 +137,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   onYAxisGridChange = () => {
     this.props.setValue('isHorizontalGrid', !this.props.stateParams.isHorizontalGrid);
   }
-
 
   onSetAxis = () => {
     this.props.setValue('AxisExtents', !this.props.stateParams.AxisExtents);
@@ -194,8 +203,36 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   splitAccordionClicked = () => {
     this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
   }
+  
 
+  showAxisExtent(show:boolean) {
+    if(show) {
+      return (
+        <span>
+          <EuiFlexItem grow={false} style={{ width: '100%' }}>
+            <EuiFormRow label="Min">
+              <EuiFieldNumber value={this.props.stateParams.domain_min} placeholder={'0'} min={0} onChange={(e) => this.onAxisExtentsMinChange(e)} />
+            </EuiFormRow>
+          </EuiFlexItem>
+    
+          <EuiSpacer size="s" />
+          <EuiFlexItem grow={false} style={{ width: '100%' }}>
+            <EuiFormRow label="Max">
+              <EuiFieldNumber value={this.props.stateParams.domain_max} placeholder={'100'} min={0} onChange={(e) => this.onAxisExtentsMaxChange(e)} />
+            </EuiFormRow>
+          </EuiFlexItem>
+          <EuiSpacer size="s" />
+        </span>
+      )
+    } else {
+      return null
+    }
+  
+  
+  }
   render() {
+    console.log('domainMax' + this.props.stateParams.domain_max)
+    console.log('domainMin' + this.props.stateParams.domain_min)
 
     let tabs = [
       {
@@ -373,7 +410,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                       <EuiFlexItem grow={false} >
                         <EuiFormRow label="Size">
-                          <EuiFieldNumber placeholder={1} min={1} onChange={(e) => this.onSplitedSizeChange(e)} />
+                          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onSplitedSizeChange(e)} />
                         </EuiFormRow>
                       </EuiFlexItem>
                     </EuiFlexGroup>
@@ -460,7 +497,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     <span>
                       <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.AxisExtents} />
                     </span>
-                  }></EuiCard>
+                  }>
+                  {this.showAxisExtent(this.props.stateParams.AxisExtents)}
+                  </EuiCard>
               </EuiFlexItem>
             </EuiFlexGroup>
           </Fragment>

@@ -33,7 +33,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
-    dateFilterTo } = vis.params;
+    dateFilterTo,
+    domain_min,
+    domain_max } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
@@ -61,6 +63,8 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       isHorizontalGrid,
       dateFilterFrom,
       dateFilterTo,
+      domain_min,
+      domain_max
     }
   );
 

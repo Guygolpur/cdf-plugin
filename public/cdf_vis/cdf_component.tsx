@@ -40,18 +40,20 @@ export function CdfComponent(props: CdfComponentProps) {
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
+    domain_min,
+    domain_max
   } = props.visParams
 
   useEffect(() => {
     let data: any = {
-      query: {
-        range: {
-          time: {
-            gte: dateFilterFrom,
-            lt: dateFilterTo
-          }
-        }
-      },
+      // query: {
+      //   range: {
+      //     time: {
+      //       gte: dateFilterFrom,
+      //       lt: dateFilterTo
+      //     }
+      //   }
+      // },
       size: 0,
       aggs: {
         cdfAgg: {
@@ -108,8 +110,10 @@ export function CdfComponent(props: CdfComponentProps) {
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
-    dateFilterTo,]);
-
+    dateFilterTo,
+    domain_min,
+    domain_max]);
+    
   return (
     <Fragment>
       <Chart className="story-chart" size={["100%", "50%"]}>
@@ -127,7 +131,7 @@ export function CdfComponent(props: CdfComponentProps) {
           title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title}
           position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
-          domain={{ max: 100 }}
+          domain={{ min: domain_min, max: domain_max }}
           showGridLines={isHorizontalGrid}
         />
         {Object.keys(aggLineData).map((item: any, i: any) => {
