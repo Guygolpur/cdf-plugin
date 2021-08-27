@@ -6,14 +6,20 @@ import {
     EuiFormControlLayoutDelimited,
     EuiFormLabel,
     EuiPanel,
-    EuiFormRow
 } from '@elastic/eui';
 
-export function DatePicker() {
+interface DatePickerComponentProps {
+    start: any;
+    end: any;
+    setStart(start: any): any;
+    setEnd(end: any): any;
+}
+
+export function DatePicker(props: DatePickerComponentProps) {
     const [recentlyUsedRanges, setRecentlyUsedRanges] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [start, setStart] = useState('now-30m');
-    const [end, setEnd] = useState('now');
+    // const [start, setStart] = useState('now-30m');
+    // const [end, setEnd] = useState('now');
     const [isPaused, setIsPaused] = useState(true);
     const [refreshInterval, setRefreshInterval] = useState();
 
@@ -24,8 +30,10 @@ export function DatePicker() {
             return !isDuplicate;
         });
         recentlyUsedRange.unshift({ start, end });
-        setStart(start);
-        setEnd(end);
+        props.setStart(start)
+        props.setEnd(end)
+        // setStart(start);
+        // setEnd(end);
         setRecentlyUsedRanges(
             recentlyUsedRange.length > 10
                 ? recentlyUsedRange.slice(0, 9)
@@ -35,20 +43,14 @@ export function DatePicker() {
         startLoading();
     };
 
-    const onRefresh = ({ start, end, refreshInterval }: any) => {
-        return new Promise((resolve) => {
-            setTimeout(resolve, 100);
-        }).then(() => {
-            console.log(start, end, refreshInterval);
-        });
+    const onStartInputChange = (e: any) => {
+        // setStart(e.target.value);
+        props.setStart(e.target.value)
     };
 
-    const onStartInputChange = (e) => {
-        setStart(e.target.value);
-    };
-
-    const onEndInputChange = (e) => {
-        setEnd(e.target.value);
+    const onEndInputChange = (e: any) => {
+        // setEnd(e.target.value);
+        props.setEnd(e.target.value)
     };
 
     const startLoading = () => {
@@ -64,24 +66,18 @@ export function DatePicker() {
         setRefreshInterval(refreshInterval);
     };
 
-    const errors = [
-        "Here's an example of an error",
-        'You might have more than one error, so pass an array.',
-    ];
-
     const renderTimeRange = () => {
         return (
             <Fragment>
                 <EuiPanel paddingSize="m">
                     <EuiSpacer />
-
                     <EuiFormControlLayoutDelimited
                         prepend={<EuiFormLabel>Range</EuiFormLabel>}
                         startControl={
                             <input
                                 onChange={onStartInputChange}
                                 type="text"
-                                value={start}
+                                value={props.start}
                                 placeholder="start"
                                 className="euiFieldText"
                             />
@@ -91,12 +87,11 @@ export function DatePicker() {
                                 onChange={onEndInputChange}
                                 type="text"
                                 placeholder="end"
-                                value={end}
+                                value={props.end}
                                 className="euiFieldText"
                             />
                         }
                     />
-
                 </EuiPanel>
             </Fragment>
         );
@@ -106,14 +101,14 @@ export function DatePicker() {
         <>
             <EuiSuperDatePicker
                 isLoading={isLoading}
-                start={start}
-                end={end}
+                start={props.start}
+                end={props.end}
                 onTimeChange={onTimeChange}
-                onRefresh={onRefresh}
                 isPaused={isPaused}
                 refreshInterval={refreshInterval}
                 onRefreshChange={onRefreshChange}
                 recentlyUsedRanges={recentlyUsedRanges}
+                showUpdateButton={false}
             />
             <EuiSpacer />
             {renderTimeRange()}
