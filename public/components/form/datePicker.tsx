@@ -18,8 +18,6 @@ interface DatePickerComponentProps {
 export function DatePicker(props: DatePickerComponentProps) {
     const [recentlyUsedRanges, setRecentlyUsedRanges] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    // const [start, setStart] = useState('now-30m');
-    // const [end, setEnd] = useState('now');
     const [isPaused, setIsPaused] = useState(true);
     const [refreshInterval, setRefreshInterval] = useState();
 
@@ -32,8 +30,6 @@ export function DatePicker(props: DatePickerComponentProps) {
         recentlyUsedRange.unshift({ start, end });
         props.setStart(start)
         props.setEnd(end)
-        // setStart(start);
-        // setEnd(end);
         setRecentlyUsedRanges(
             recentlyUsedRange.length > 10
                 ? recentlyUsedRange.slice(0, 9)
@@ -44,12 +40,10 @@ export function DatePicker(props: DatePickerComponentProps) {
     };
 
     const onStartInputChange = (e: any) => {
-        // setStart(e.target.value);
         props.setStart(e.target.value)
     };
 
     const onEndInputChange = (e: any) => {
-        // setEnd(e.target.value);
         props.setEnd(e.target.value)
     };
 
