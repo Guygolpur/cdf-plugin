@@ -49,6 +49,8 @@ interface CounterParams {
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
   dateFilterTo: string;
+  dateRangeStart: string;
+  dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   xMin: number;
@@ -226,6 +228,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   onSplitedDateHistogramMinIntervalChange = (e: any) => {
     this.props.setValue('splitedDateHistogramMinInterval', e.target.value);
+  }
+
+  setDateRangeStart = (start: any) => {
+    this.props.setValue('dateRangeStart', start);
+  }
+
+  setDateRangeEnd = (end: any) => {
+    this.props.setValue('dateRangeEnd', end);
   }
 
   showAxisExtent(show: boolean) {
@@ -538,7 +548,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="m" />
 
-        < DatePicker />
+        < DatePicker start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
 
         <EuiSpacer size="m" />
 
@@ -694,8 +704,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                         options={[
                           { value: 'date_histogram', text: 'Date Histogram' },
                           { value: 'date_range', text: 'Date Range' },
-                          { value: 'filter', text: 'Filter' },
-                          { value: 'filter', text: 'Filters' },
                           { value: 'histogram', text: 'Histogram' },
                           { value: 'terms', text: 'Terms' },
                         ]}

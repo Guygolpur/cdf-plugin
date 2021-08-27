@@ -27,6 +27,8 @@ export interface CDFVisParams {
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
   dateFilterTo: string;
+  dateRangeStart: string;
+  dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   xMin: number;
@@ -58,6 +60,8 @@ export interface CDFVisRenderValue {
     isHorizontalGrid: boolean;
     dateFilterFrom: string;
     dateFilterTo: string;
+    dateRangeStart: string;
+    dateRangeEnd: string;
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
     xMin: number;
@@ -196,6 +200,16 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: 'now',
       help: 'Visualization only argument with type string',
     },
+    dateRangeStart: {
+      types: ['string'],
+      default: 'now-15m',
+      help: 'Visualization only argument with type string',
+    },
+    dateRangeEnd: {
+      types: ['string'],
+      default: 'now',
+      help: 'Visualization only argument with type string',
+    },
     splitedHistogramMinInterval: {
       types: ['number'],
       default: 1,
@@ -257,6 +271,8 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isHorizontalGrid: args.isHorizontalGrid,
           dateFilterFrom: args.dateFilterFrom,
           dateFilterTo: args.dateFilterTo,
+          dateRangeStart: args.dateRangeStart,
+          dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
           xMin: args.xMin,
