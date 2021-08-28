@@ -41,6 +41,8 @@ export function CdfComponent(props: CdfComponentProps) {
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
+    dateRangeStart,
+    dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
     xMin,
@@ -95,6 +97,20 @@ export function CdfComponent(props: CdfComponentProps) {
             [splitedAggregation]: {
               field: splitedField,
               calendar_interval: splitedDateHistogramMinInterval
+            }
+          }
+        }
+      }
+      else if (splitedAggregation == 'date_range') {
+        data.aggs.cdfAgg['aggs'] = {
+          innerAgg: {
+            [splitedAggregation]: {
+              field: splitedField,
+              format: "MM-yyy",
+              ranges: [
+                { to: dateRangeEnd },
+                { from: dateRangeStart }
+              ]
             }
           }
         }
