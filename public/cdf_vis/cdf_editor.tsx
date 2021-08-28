@@ -120,7 +120,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   getIndicesMapping = () => {
     return axios({
-      url: 'http://localhost:9200/arc-*/_mapping',
+      url: 'http://135.76.211.13:9212/arc-*/_mapping',
       method: 'GET',
     })
   }

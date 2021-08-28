@@ -11,6 +11,7 @@ import {
   ScaleType,
   CurveType,
 } from '@elastic/charts';
+import {sumBy} from 'lodash';
 
 interface CdfComponentProps {
   renderComplete(): void;
@@ -49,14 +50,14 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     let data: any = {
-      query: {
-        range: {
-          time: {
-            gte: dateFilterFrom,
-            lt: dateFilterTo
-          }
-        }
-      },
+      // query: {
+      //   range: {
+      //     time: {
+      //       gte: dateFilterFrom,
+      //       lt: dateFilterTo
+      //     }
+      //   }
+      // },
       size: 0,
       aggs: {
         cdfAgg: {
@@ -100,7 +101,8 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
     const reqObj: any = {
-      url: 'http://localhost:9200/arc-*/_search',
+      // url: 'http://localhost:9200/arc-*/_search',
+      url: 'http://135.76.211.13:9212/arc-*/_search',
       method: 'post',
       timeout: 0,
       headers: {
@@ -244,9 +246,9 @@ function parseMultiResponseData(data: any): any {
 
   // parse points data
   Object.keys(graphResponse).forEach(graphName => {
-    let totalHits: number = graphResponse[graphName].points.reduce(
-      (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
-      0);
+    let totalHits: number = sumBy(graphResponse[graphName].points, 'doc_count')
+    
+  
 
     graphResponse[graphName].points = graphResponse[graphName].points.map((el: any, currPointIndex: number) => {
       let tempCounter: number = 0
