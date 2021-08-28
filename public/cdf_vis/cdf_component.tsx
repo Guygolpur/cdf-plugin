@@ -25,17 +25,25 @@ export function CdfComponent(props: CdfComponentProps) {
   })
 
   const {
+    // X-axis
+    aggregation,
     field,
     min_interval,
-    isSplitAccordionClicked,
-    aggregation,
-    splitedAggregation,
-    splitedField,
     isEmptyBucket,
     isExtendBounds,
     customLabel,
     advancedValue,
     jsonInput,
+    //////////
+    // Metrix & Axes
+    isAxisExtents,
+    xMin,
+    xMax,
+    ////////////////
+    isSplitAccordionClicked,
+   
+    splitedAggregation,
+    splitedField,
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
@@ -44,9 +52,8 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    xMin,
-    xMax,
-    isAxisExtents
+   
+    
   } = props.visParams
 
   useEffect(() => {
@@ -141,26 +148,32 @@ export function CdfComponent(props: CdfComponentProps) {
     }).catch(function (error) {
       console.log('error', error);
     })
-  }, [field,
-    min_interval,
-    isSplitAccordionClicked,
+  }, [
+    // X-axis
     aggregation,
-    splitedAggregation,
-    splitedField,
+    field,
+    min_interval,
     isEmptyBucket,
     isExtendBounds,
     customLabel,
     advancedValue,
     jsonInput,
+    //////////
+    // Metrix & Axes
+    isAxisExtents,
+    xMin,
+    xMax,
+    ////////////////
+    isSplitAccordionClicked,
+    splitedAggregation,
+    splitedField,
     isVerticalGrid,
     isHorizontalGrid,
     dateFilterFrom,
     dateFilterTo,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    xMin,
-    xMax,
-    isAxisExtents]);
+    ]);
 
   return (
     <Fragment>

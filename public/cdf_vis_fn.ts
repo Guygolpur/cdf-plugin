@@ -4,16 +4,24 @@ import { ExpressionFunctionDefinition, Render } from 'src/plugins/expressions/pu
 import { Filter, KibanaContext } from 'src/plugins/data/public';
 
 export interface CDFVisParams {
-  aggregation: string;
+  // X-axix
   field: string;
   min_interval: number;
   isEmptyBucket: boolean;
-  isAxisExtents: boolean;
   isExtendBounds: boolean;
-  handleNoResults: boolean;
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
+  //////////
+  handleNoResults: boolean;
+  aggregation: string;
+  // Metrix & Axes
+  isAxisExtents: boolean;
+  xMin: number;
+  xMax: number;
+  ////////////////
+  
+  
   splitedAggregation: string;
   splitedField: string;
   splitedOrderBy: string;
@@ -31,22 +39,30 @@ export interface CDFVisParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-  xMin: number;
-  xMax: number;
+
 }
 
 export interface CDFVisRenderValue {
   visParams: {
+    // X-axis
     aggregation: string;
     field: string;
     min_interval: number;
     isEmptyBucket: boolean;
-    isAxisExtents: boolean;
     isExtendBounds: boolean;
-    handleNoResults: boolean;
     customLabel: string;
     advancedValue: string;
     jsonInput: string;
+    //////////
+
+    // Metrix & Axes
+    isAxisExtents: boolean;
+    xMin: number;
+    xMax: number;
+    ////////////////
+ 
+    
+    handleNoResults: boolean;
     splitedAggregation: string;
     splitedField: string;
     splitedOrderBy: string;
@@ -64,8 +80,7 @@ export interface CDFVisRenderValue {
     dateRangeEnd: string;
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
-    xMin: number;
-    xMax: number;
+    
   };
 }
 
@@ -85,6 +100,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
   help:
     'The expression function definition should be registered for a custom visualization to be rendered',
   args: {
+    // X-axis
     aggregation: {
       types: ['string'],
       default: '',
@@ -110,16 +126,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: false,
       help: 'Visualization only argument with type boolean',
     },
-    isAxisExtents: {
-      types: ['boolean'],
-      default: false,
-      help: 'Visualization only argument with type boolean',
-    },
-    handleNoResults: {
-      types: ['boolean'],
-      default: false,
-      help: 'Visualization only argument with type boolean',
-    },
     customLabel: {
       types: ['string'],
       default: '',
@@ -134,6 +140,30 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       types: ['string'],
       default: '',
       help: 'Visualization only argument with type string',
+    },
+    /////////////////////
+
+    // Metrix & Axes
+    isAxisExtents: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
+    },
+    xMin: {
+      types: ['number'],
+      default: 1,
+      help: 'Visualization only argument with type number',
+    },
+    xMax: {
+      types: ['number'],
+      default: 100,
+      help: 'Visualization only argument with type number',
+    },
+    //////////////////
+    handleNoResults: {
+      types: ['boolean'],
+      default: false,
+      help: 'Visualization only argument with type boolean',
     },
     splitedAggregation: {
       types: ['string'],
@@ -220,16 +250,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: 'auto',
       help: 'Visualization only argument with type string',
     },
-    xMin: {
-      types: ['number'],
-      default: 1,
-      help: 'Visualization only argument with type number',
-    },
-    xMax: {
-      types: ['number'],
-      default: 100,
-      help: 'Visualization only argument with type number',
-    },
+
   },
   async fn(input, args) {
     /**
@@ -248,16 +269,23 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       as: 'cdf_vis',
       value: {
         visParams: {
+          // X-axis
           aggregation: args.aggregation,
           field: args.field,
           min_interval: args.min_interval,
           isEmptyBucket: args.isEmptyBucket,
           isExtendBounds: args.isExtendBounds,
-          isAxisExtents: args.isAxisExtents,
-          handleNoResults: args.handleNoResults,
           customLabel: args.customLabel,
           advancedValue: args.advancedValue,
           jsonInput: args.jsonInput,
+          ////////
+          
+          // Metrix & Axes
+          isAxisExtents: args.isAxisExtents,
+          xMin: args.xMin,
+          xMax: args.xMax,
+          ////////////////
+          handleNoResults: args.handleNoResults,
           splitedAggregation: args.splitedAggregation,
           splitedField: args.splitedField,
           splitedOrderBy: args.splitedOrderBy,
@@ -275,8 +303,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
-          xMin: args.xMin,
-          xMax: args.xMax,
+        
         },
       },
     };

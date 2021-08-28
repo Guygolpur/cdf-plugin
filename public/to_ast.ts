@@ -11,16 +11,23 @@ import {
 
 export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
   const {
+    // X-axis
     aggregation,
     field,
     min_interval,
     isEmptyBucket,
     isExtendBounds,
-    isAxisExtents,
-    handleNoResults,
     customLabel,
     advancedValue,
     jsonInput,
+    ///////////
+    // Metrix & Axes
+    isAxisExtents,
+    xMin,
+    xMax,
+    ////////////////
+    
+    handleNoResults,
     splitedAggregation,
     splitedField,
     splitedOrderBy,
@@ -38,41 +45,46 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    xMin,
-    xMax, } = vis.params;
+    } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
     {
-      aggregation,
-      field,
-      min_interval,
-      isEmptyBucket,
-      isExtendBounds,
-      isAxisExtents,
-      handleNoResults,
-      customLabel,
-      advancedValue,
-      jsonInput,
-      splitedAggregation,
-      splitedField,
-      splitedOrderBy,
-      splitedOrder,
-      splitedSize,
-      isSplitedSeperateBucket,
-      isSplitedShowMissingValues,
-      splitedCustomLabel,
-      isSplitAccordionClicked,
-      isVerticalGrid,
-      isHorizontalGrid,
-      dateFilterFrom,
-      dateFilterTo,
-      dateRangeStart,
-      dateRangeEnd,
-      splitedHistogramMinInterval,
-      splitedDateHistogramMinInterval,
-      xMin,
-      xMax,
+    // X-axis
+    aggregation,
+    field,
+    min_interval,
+    isEmptyBucket,
+    isExtendBounds,
+    customLabel,
+    advancedValue,
+    jsonInput,
+    ///////////
+
+    // Metrix & Axes
+    isAxisExtents,
+    xMin,
+    xMax,
+    ////////////////
+   
+    handleNoResults,
+    splitedAggregation,
+    splitedField,
+    splitedOrderBy,
+    splitedOrder,
+    splitedSize,
+    isSplitedSeperateBucket,
+    isSplitedShowMissingValues,
+    splitedCustomLabel,
+    isSplitAccordionClicked,
+    isVerticalGrid,
+    isHorizontalGrid,
+    dateFilterFrom,
+    dateFilterTo,
+    dateRangeStart,
+    dateRangeEnd,
+    splitedHistogramMinInterval,
+    splitedDateHistogramMinInterval,
     }
   );
 
