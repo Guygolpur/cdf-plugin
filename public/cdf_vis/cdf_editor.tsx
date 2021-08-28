@@ -37,14 +37,12 @@ interface CounterParams {
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
-  /////////
 
   // Metrix & Axes
   isAxisExtents: boolean;
   xMin: number;
   xMax: number;
-  ////////////////
-  
+
   handleNoResults: boolean;
   splitedAggregation: string;
   splitedField: string;
@@ -63,7 +61,6 @@ interface CounterParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-
 }
 
 interface CDFEditorComponentState {
@@ -136,21 +133,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     })
   }
 
-
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
-    console.log('valName: ' + valName)
-    console.log('new val: ' + e.target.value)
     this.props.setValue(valName, e.target.value);
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
   // isSplitedSeperateBucket, isSplitedShowMissingValues, isSplitAccordionClicked
   onGeneralBoolValChange = (valName: (keyof CounterParams)) => {
-    console.log('valName: ' + valName)
-    console.log('new val: ' + !this.props.stateParams[valName])
     this.props.setValue(valName, !this.props.stateParams[valName]);
   }
 
@@ -161,10 +153,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
   };
   splitAccordionClicked = () => {
-    console.log('clicked')
     this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
   }
-
 
   closeAddPopover = () => {
     this.setState({ isAddPopoverOpen: false })
@@ -172,7 +162,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   /*Splited Lines*/
 
- 
   setDateRangeStart = (start: any) => {
     this.props.setValue('dateRangeStart', start);
   }
@@ -181,9 +170,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('dateRangeEnd', end);
   }
 
-
   render() {
-
     let splitedSubAggregationContent;
     if (this.props.stateParams.splitedAggregation == 'terms') {
       splitedSubAggregationContent = <>
@@ -214,7 +201,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         </EuiFormRow>
 
         <EuiSpacer size="m" />
-
 
         <EuiFlexGroup style={{ maxWidth: 800 }}>
           <EuiFlexItem>
@@ -522,8 +508,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               >
                 <EuiAccordion id="accordion1" buttonContent={`X-Axis ${this.props.stateParams.field}`}>
                   <AxisBucket
-                    onGeneralValChange={(e:any, valName: (keyof CounterParams))=> this.onGeneralValChange(e, valName)}
-                    onGeneralBoolValChange={(valName: (keyof CounterParams))=> this.onGeneralBoolValChange(valName)}
+                    onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                    onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
                     field={this.props.stateParams.field}
                     isEmptyBucket={this.props.stateParams.isEmptyBucket}
                     isExtendBounds={this.props.stateParams.isExtendBounds}
@@ -573,8 +559,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           <Fragment>
 
             <MetrixAndAxes
-              onGeneralValChange={(e:any, valName: (keyof CounterParams))=> this.onGeneralValChange(e, valName)}
-              onGeneralBoolValChange={(valName: (keyof CounterParams))=> this.onGeneralBoolValChange(valName)}
+              onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+              onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
               isAxisExtents={this.props.stateParams.isAxisExtents}
               xMin={this.props.stateParams.xMin}
               xMax={this.props.stateParams.xMax}

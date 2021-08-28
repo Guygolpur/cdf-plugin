@@ -1,7 +1,5 @@
-
-
 import { ExpressionFunctionDefinition, Render } from 'src/plugins/expressions/public';
-import { Filter, KibanaContext } from 'src/plugins/data/public';
+import { KibanaContext } from 'src/plugins/data/public';
 
 export interface CDFVisParams {
   // X-axix
@@ -12,16 +10,14 @@ export interface CDFVisParams {
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
-  //////////
+
   handleNoResults: boolean;
   aggregation: string;
   // Metrix & Axes
   isAxisExtents: boolean;
   xMin: number;
   xMax: number;
-  ////////////////
-  
-  
+
   splitedAggregation: string;
   splitedField: string;
   splitedOrderBy: string;
@@ -39,7 +35,6 @@ export interface CDFVisParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-
 }
 
 export interface CDFVisRenderValue {
@@ -53,15 +48,12 @@ export interface CDFVisRenderValue {
     customLabel: string;
     advancedValue: string;
     jsonInput: string;
-    //////////
 
     // Metrix & Axes
     isAxisExtents: boolean;
     xMin: number;
     xMax: number;
-    ////////////////
- 
-    
+
     handleNoResults: boolean;
     splitedAggregation: string;
     splitedField: string;
@@ -80,7 +72,6 @@ export interface CDFVisRenderValue {
     dateRangeEnd: string;
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
-    
   };
 }
 
@@ -141,7 +132,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '',
       help: 'Visualization only argument with type string',
     },
-    /////////////////////
 
     // Metrix & Axes
     isAxisExtents: {
@@ -159,7 +149,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: 100,
       help: 'Visualization only argument with type number',
     },
-    //////////////////
+
     handleNoResults: {
       types: ['boolean'],
       default: false,
@@ -278,13 +268,12 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           customLabel: args.customLabel,
           advancedValue: args.advancedValue,
           jsonInput: args.jsonInput,
-          ////////
-          
+
           // Metrix & Axes
           isAxisExtents: args.isAxisExtents,
           xMin: args.xMin,
           xMax: args.xMax,
-          ////////////////
+
           handleNoResults: args.handleNoResults,
           splitedAggregation: args.splitedAggregation,
           splitedField: args.splitedField,
@@ -303,7 +292,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
-        
         },
       },
     };

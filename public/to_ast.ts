@@ -1,4 +1,3 @@
-
 import { VisToExpressionAst } from 'src/plugins/visualizations/public';
 import {
   buildExpression,
@@ -20,13 +19,12 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     customLabel,
     advancedValue,
     jsonInput,
-    ///////////
+
     // Metrix & Axes
     isAxisExtents,
     xMin,
     xMax,
-    ////////////////
-    
+
     handleNoResults,
     splitedAggregation,
     splitedField,
@@ -45,50 +43,47 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    } = vis.params;
+  } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
     {
-    // X-axis
-    aggregation,
-    field,
-    min_interval,
-    isEmptyBucket,
-    isExtendBounds,
-    customLabel,
-    advancedValue,
-    jsonInput,
-    ///////////
+      // X-axis
+      aggregation,
+      field,
+      min_interval,
+      isEmptyBucket,
+      isExtendBounds,
+      customLabel,
+      advancedValue,
+      jsonInput,
 
-    // Metrix & Axes
-    isAxisExtents,
-    xMin,
-    xMax,
-    ////////////////
-   
-    handleNoResults,
-    splitedAggregation,
-    splitedField,
-    splitedOrderBy,
-    splitedOrder,
-    splitedSize,
-    isSplitedSeperateBucket,
-    isSplitedShowMissingValues,
-    splitedCustomLabel,
-    isSplitAccordionClicked,
-    isVerticalGrid,
-    isHorizontalGrid,
-    dateFilterFrom,
-    dateFilterTo,
-    dateRangeStart,
-    dateRangeEnd,
-    splitedHistogramMinInterval,
-    splitedDateHistogramMinInterval,
+      // Metrix & Axes
+      isAxisExtents,
+      xMin,
+      xMax,
+
+      handleNoResults,
+      splitedAggregation,
+      splitedField,
+      splitedOrderBy,
+      splitedOrder,
+      splitedSize,
+      isSplitedSeperateBucket,
+      isSplitedShowMissingValues,
+      splitedCustomLabel,
+      isSplitAccordionClicked,
+      isVerticalGrid,
+      isHorizontalGrid,
+      dateFilterFrom,
+      dateFilterTo,
+      dateRangeStart,
+      dateRangeEnd,
+      splitedHistogramMinInterval,
+      splitedDateHistogramMinInterval,
     }
   );
 
   const ast = buildExpression([cdfVis]);
-
   return ast.toAst();
 };

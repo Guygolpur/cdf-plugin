@@ -38,22 +38,19 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           customLabel: '',
           advancedValue: '',
           jsonInput: '',  // json syntax validation
-          /////////
-          
+
           // Metrix & Axes
           isAxisExtents: false,
           xMin: null,
           xMax: null,
-          ////////////////
-        
+
           handleNoResults: true,
           isVerticalGrid: false,
           isHorizontalGrid: false,
           isSplitedSeperateBucket: false,
           isSplitedShowMissingValues: false,
           isSplitAccordionClicked: false,
-          
-      
+
           splitedAggregation: 'date_histogram',
           splitedField: 'Projects',
           splitedOrderBy: 'Metric: Count',
@@ -65,10 +62,10 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           dateRangeEnd: 'now',
           splitedDateHistogramMinInterval: 'auto',
           numberOfTickTexts: 10,
-          
+
           splitedSize: 1,
           splitedHistogramMinInterval: 1,
-       
+
           grid: {
             categoryLines: false,
             valueAxis: false
