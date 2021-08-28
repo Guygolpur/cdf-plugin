@@ -8,7 +8,6 @@ import { cdfVisRenderer } from './cdf_vis_renderer';
 import { toExpressionAst } from './to_ast';
 import { CDFEditor } from './cdf_vis/cdf_editor';
 import cdfSvgIcon from './images/cdf_line.svg';
-import { Subscription } from 'rxjs';
 import { DataPublicPluginStart } from 'src/plugins/data/public';
 
 export interface SetupDependencies {
@@ -30,20 +29,28 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       description: 'The CDF (cumulative distribution function) uses a line chart to represent symbolic distribution.',
       visConfig: {
         defaults: {
+          // X-axis
+          aggregation: 'histogram',
+          field: '',
+          min_interval: 1,
           isEmptyBucket: false,
-          isAxisExtents: false,
           isExtendBounds: false,
+          customLabel: '',
+          advancedValue: '',
+          jsonInput: '',  // json syntax validation
+
+          // Metrix & Axes
+          isAxisExtents: false,
+          xMin: null,
+          xMax: null,
+
           handleNoResults: true,
           isVerticalGrid: false,
           isHorizontalGrid: false,
           isSplitedSeperateBucket: false,
           isSplitedShowMissingValues: false,
           isSplitAccordionClicked: false,
-          aggregation: 'histogram',
-          field: '',
-          customLabel: '',
-          advancedValue: '',
-          jsonInput: '',  // json syntax validation
+
           splitedAggregation: 'date_histogram',
           splitedField: 'Projects',
           splitedOrderBy: 'Metric: Count',
@@ -55,11 +62,10 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           dateRangeEnd: 'now',
           splitedDateHistogramMinInterval: 'auto',
           numberOfTickTexts: 10,
-          min_interval: 1,
+
           splitedSize: 1,
           splitedHistogramMinInterval: 1,
-          Xmin: null,
-          Xmax: null,
+
           grid: {
             categoryLines: false,
             valueAxis: false

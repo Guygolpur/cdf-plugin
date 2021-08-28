@@ -1,4 +1,3 @@
-
 import { VisToExpressionAst } from 'src/plugins/visualizations/public';
 import {
   buildExpression,
@@ -11,16 +10,22 @@ import {
 
 export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
   const {
+    // X-axis
     aggregation,
     field,
     min_interval,
     isEmptyBucket,
     isExtendBounds,
-    isAxisExtents,
-    handleNoResults,
     customLabel,
     advancedValue,
     jsonInput,
+
+    // Metrix & Axes
+    isAxisExtents,
+    xMin,
+    xMax,
+
+    handleNoResults,
     splitedAggregation,
     splitedField,
     splitedOrderBy,
@@ -38,22 +43,27 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    xMin,
-    xMax, } = vis.params;
+  } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
     {
+      // X-axis
       aggregation,
       field,
       min_interval,
       isEmptyBucket,
       isExtendBounds,
-      isAxisExtents,
-      handleNoResults,
       customLabel,
       advancedValue,
       jsonInput,
+
+      // Metrix & Axes
+      isAxisExtents,
+      xMin,
+      xMax,
+
+      handleNoResults,
       splitedAggregation,
       splitedField,
       splitedOrderBy,
@@ -71,12 +81,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       dateRangeEnd,
       splitedHistogramMinInterval,
       splitedDateHistogramMinInterval,
-      xMin,
-      xMax,
     }
   );
 
   const ast = buildExpression([cdfVis]);
-
   return ast.toAst();
 };

@@ -24,18 +24,26 @@ import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
 import { htmlIdGenerator } from '@elastic/eui/lib/services';
 import { AddSubBucket } from '../components/addSubBucket';
 import { DatePicker } from '../components/form/datePicker';
+import { AxisBucket } from '../components/xAxisBucket';
+import { MetrixAndAxes } from '../components/metrixAndAxes';
 
 interface CounterParams {
-  isAxisExtents: boolean;
+  // X-axis
   aggregation: string;
   field: string;
   min_interval: number;
   isEmptyBucket: boolean;
   isExtendBounds: boolean;
-  handleNoResults: boolean;
   customLabel: string;
   advancedValue: string;
   jsonInput: string;
+
+  // Metrix & Axes
+  isAxisExtents: boolean;
+  xMin: number;
+  xMax: number;
+
+  handleNoResults: boolean;
   splitedAggregation: string;
   splitedField: string;
   splitedOrderBy: string;
@@ -53,8 +61,6 @@ interface CounterParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-  xMin: number;
-  xMax: number;
 }
 
 interface CDFEditorComponentState {
@@ -127,108 +133,34 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     })
   }
 
-  onAggregationChange = (e: any) => {
-    this.props.setValue('aggregation', e.target.value);
+  // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
+  // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
+  // splitedHistogramMinInterval, splitedDateHistogramMinInterval
+  onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
+    this.props.setValue(valName, e.target.value);
   }
 
-  onFieldChange = (e: any) => {
-    this.props.setValue('field', e.target.value);
+  // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
+  // isSplitedSeperateBucket, isSplitedShowMissingValues, isSplitAccordionClicked
+  onGeneralBoolValChange = (valName: (keyof CounterParams)) => {
+    this.props.setValue(valName, !this.props.stateParams[valName]);
   }
 
-  onMinIntervalChange = (e: any) => {
-    this.props.setValue('min_interval', e.target.value);
-  }
-
-  onAxisExtentsMinChange = (e: any) => {
-    this.props.setValue('xMin', e.target.value);
-  }
-
-  onAxisExtentsMaxChange = (e: any) => {
-    this.props.setValue('xMax', e.target.value);
-  }
-
-  onXAxisGridChange = () => {
-    this.props.setValue('isVerticalGrid', !this.props.stateParams.isVerticalGrid);
-  }
-
-  onYAxisGridChange = () => {
-    this.props.setValue('isHorizontalGrid', !this.props.stateParams.isHorizontalGrid);
-  }
-
-  onSetAxis = () => {
-    this.props.setValue('isAxisExtents', !this.props.stateParams.isAxisExtents);
-  }
-
-  onShowBucketChange = () => {
-    this.props.setValue('isEmptyBucket', !this.props.stateParams.isEmptyBucket);
+  onSplitedSeperateBucketChange = () => {
+    this.props.setValue('isSplitedSeperateBucket', !this.props.stateParams.isSplitedSeperateBucket);
   };
-
-  onShowBoundsChange = () => {
-    this.props.setValue('isExtendBounds', !this.props.stateParams.isExtendBounds);
+  onSplitedShowMissingValuesChange = () => {
+    this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
   };
-
-  onCustomLabelChange = (e: any) => {
-    this.props.setValue('customLabel', e.target.value);
-  };
-
-  onAdvanceChange = (e: any) => {
-    this.props.setValue('advancedValue', e.target.value);
-  };
-
-  onJsonChange = (e: any) => {
-    this.props.setValue('jsonInput', e.target.value);
-  };
+  splitAccordionClicked = () => {
+    this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
+  }
 
   closeAddPopover = () => {
     this.setState({ isAddPopoverOpen: false })
   }
 
   /*Splited Lines*/
-
-  onSplitedAggregationChange = (e: any) => {
-    this.props.setValue('splitedAggregation', e.target.value);
-  }
-
-  onSplitedFieldChange = (e: any) => {
-    this.props.setValue('splitedField', e.target.value);
-  }
-
-  onSplitedOrderByChange = (e: any) => {
-    this.props.setValue('splitedOrderBy', e.target.value);
-  }
-
-  onSplitedOrderChange = (e: any) => {
-    this.props.setValue('splitedOrder', e.target.value);
-  }
-
-  onSplitedSizeChange = (e: any) => {
-    this.props.setValue('splitedSize', e.target.value);
-  }
-
-  onSplitedSeperateBucketChange = () => {
-    this.props.setValue('isSplitedSeperateBucket', !this.props.stateParams.isSplitedSeperateBucket);
-  };
-
-  onSplitedShowMissingValuesChange = () => {
-    this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
-  };
-
-  onSplitedCustomLabelChange = (e: any) => {
-    this.props.setValue('splitedCustomLabel', e.target.value);
-  };
-
-  splitAccordionClicked = () => {
-    console.log('clicked')
-    this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
-  }
-
-  onSplitedHistogramMinIntervalChange = (e: any) => {
-    this.props.setValue('splitedHistogramMinInterval', e.target.value);
-  }
-
-  onSplitedDateHistogramMinIntervalChange = (e: any) => {
-    this.props.setValue('splitedDateHistogramMinInterval', e.target.value);
-  }
 
   setDateRangeStart = (start: any) => {
     this.props.setValue('dateRangeStart', start);
@@ -238,32 +170,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('dateRangeEnd', end);
   }
 
-  showAxisExtent(show: boolean) {
-    if (show) {
-      return (
-        <span>
-          <EuiFlexItem grow={false} style={{ width: '100%' }}>
-            <EuiFormRow label="Min">
-              <EuiFieldNumber value={this.props.stateParams.xMin} min={0} onChange={(e) => this.onAxisExtentsMinChange(e)} />
-            </EuiFormRow>
-          </EuiFlexItem>
-
-          <EuiSpacer size="s" />
-          <EuiFlexItem grow={false} style={{ width: '100%' }}>
-            <EuiFormRow label="Max">
-              <EuiFieldNumber value={this.props.stateParams.xMax} min={0} onChange={(e) => this.onAxisExtentsMaxChange(e)} />
-            </EuiFormRow>
-          </EuiFlexItem>
-          <EuiSpacer size="s" />
-        </span>
-      )
-    } else {
-      return null
-    }
-  }
-
   render() {
-
     let splitedSubAggregationContent;
     if (this.props.stateParams.splitedAggregation == 'terms') {
       splitedSubAggregationContent = <>
@@ -274,7 +181,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onSplitedFieldChange(e)
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
             }
           />
         </EuiFormRow>
@@ -288,13 +195,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               { value: 'Custom metric', text: 'Custom metric' },
               { value: 'Alphabetical', text: 'Alphabetical' },
             ]}
-            onChange={(e) => this.onSplitedOrderByChange(e)}
+            onChange={(e) => this.onGeneralValChange(e, 'splitedOrderBy')}
             fullWidth
           />
         </EuiFormRow>
 
         <EuiSpacer size="m" />
-
 
         <EuiFlexGroup style={{ maxWidth: 800 }}>
           <EuiFlexItem>
@@ -304,14 +210,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   { value: 'Descending', text: 'Descending' },
                   { value: 'Ascending', text: 'Ascending' },
                 ]}
-                onChange={(e) => this.onSplitedOrderChange(e)}
+                onChange={(e) => this.onGeneralValChange(e, 'splitedOrder')}
               />
             </EuiFormRow>
           </EuiFlexItem>
 
           <EuiFlexItem grow={false} >
             <EuiFormRow label="Size">
-              <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onSplitedSizeChange(e)} />
+              <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedSize')} />
             </EuiFormRow>
           </EuiFlexItem>
         </EuiFlexGroup>
@@ -340,7 +246,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onSplitedCustomLabelChange(e)}>
+        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
           <EuiFieldText name="first" fullWidth />
         </EuiFormRow>
 
@@ -351,7 +257,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           arrowDisplay="left"
           isCollapsible={true}
           initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
+          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')} >
             <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
               <dt style={{ display: "inline" }}>JSON input</dt>
             </dl>
@@ -367,7 +273,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             <EuiTextArea
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onAdvanceChange(e)}
+              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -382,7 +288,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onSplitedFieldChange(e)
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
             }
           />
         </EuiFormRow>
@@ -391,7 +297,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiFlexItem grow={false} style={{ width: '100%' }}>
           <EuiFormRow label="Minimum interval">
-            <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onSplitedHistogramMinIntervalChange(e)} />
+            <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} />
           </EuiFormRow>
         </EuiFlexItem>
 
@@ -419,7 +325,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onSplitedCustomLabelChange(e)}>
+        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
           <EuiFieldText name="first" fullWidth />
         </EuiFormRow>
 
@@ -430,7 +336,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           arrowDisplay="left"
           isCollapsible={true}
           initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
+          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')}  >
             <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
               <dt style={{ display: "inline" }}>JSON input</dt>
             </dl>
@@ -446,7 +352,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             <EuiTextArea
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onAdvanceChange(e)}
+              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -461,7 +367,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onSplitedFieldChange(e)
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
             }
           />
         </EuiFormRow>
@@ -479,7 +385,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               { value: '1y', text: 'Yearly' },
             ]}
             fullWidth
-            onChange={(e: any) => this.onSplitedDateHistogramMinIntervalChange(e)
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedDateHistogramMinInterval')
             }
           />
         </EuiFormRow>
@@ -499,7 +405,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onSplitedCustomLabelChange(e)}>
+        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
           <EuiFieldText name="first" fullWidth />
         </EuiFormRow>
 
@@ -510,7 +416,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           arrowDisplay="left"
           isCollapsible={true}
           initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
+          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')}  >
             <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
               <dt style={{ display: "inline" }}>JSON input</dt>
             </dl>
@@ -526,7 +432,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             <EuiTextArea
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onAdvanceChange(e)}
+              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -541,7 +447,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onSplitedFieldChange(e)
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
             }
           />
         </EuiFormRow>
@@ -552,7 +458,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="m" />
 
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onSplitedCustomLabelChange(e)}>
+        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
           <EuiFieldText name="first" fullWidth />
         </EuiFormRow>
 
@@ -563,7 +469,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           arrowDisplay="left"
           isCollapsible={true}
           initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
+          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')} >
             <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
               <dt style={{ display: "inline" }}>JSON input</dt>
             </dl>
@@ -579,7 +485,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             <EuiTextArea
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onAdvanceChange(e)}
+              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -601,95 +507,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 description=""
               >
                 <EuiAccordion id="accordion1" buttonContent={`X-Axis ${this.props.stateParams.field}`}>
-                  <EuiPanel style={{ maxWidth: '100%' }}>
-
-                    <EuiFormRow label="Aggregation" fullWidth>
-                      <EuiSelect
-                        options={[
-                          { value: 'histogram', text: 'Histogram' },
-                        ]}
-                        onChange={(e) => this.onAggregationChange(e)}
-                        fullWidth
-                      />
-                    </EuiFormRow>
-
-                    <EuiFormRow label="Field" fullWidth>
-                      <EuiSelect
-                        options={
-                          this.state.numberFieldArr
-                        }
-                        value={this.props.stateParams.field}
-                        fullWidth
-                        onChange={(e: any) => this.onFieldChange(e)
-                        }
-                      />
-                    </EuiFormRow>
-
-                    <EuiSpacer size="s" />
-
-                    <EuiFlexItem grow={false} style={{ width: '100%' }}>
-                      <EuiFormRow label="Minimum interval">
-                        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onMinIntervalChange(e)} />
-                      </EuiFormRow>
-                    </EuiFlexItem>
-
-                    <EuiSpacer size="s" />
-
-                    <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
-                      <EuiSwitch
-                        label="Show empty buckets"
-                        name="switch"
-                        checked={this.props.stateParams.isEmptyBucket}
-                        onChange={this.onShowBucketChange}
-                      />
-                    </EuiFormRow>
-
-                    <EuiSpacer size="s" />
-
-                    <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
-                      <EuiSwitch
-                        label="Extend bounds"
-                        name="switch"
-                        checked={this.props.stateParams.isExtendBounds}
-                        onChange={this.onShowBoundsChange}
-                      />
-                    </EuiFormRow>
-
-                    <EuiSpacer size="s" />
-
-                    <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onCustomLabelChange(e)}>
-                      <EuiFieldText name="first" fullWidth />
-                    </EuiFormRow>
-
-                    <EuiCollapsibleNavGroup
-                      data-test-subj="ADVANCED"
-                      background="light"
-                      title="Advanced"
-                      arrowDisplay="left"
-                      isCollapsible={true}
-                      initialIsOpen={false}>
-                      <EuiText style={{ display: "inline" }} onChange={(e) => this.onJsonChange(e)} >
-                        <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-                          <dt style={{ display: "inline" }}>JSON input</dt>
-                        </dl>
-                      </EuiText>
-                      <EuiIconTip
-                        aria-label="Warning"
-                        size="m"
-                        type="alert"
-                        color="black"
-                        content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-                      />
-                      <EuiText size="s" color="subdued">
-                        <EuiTextArea
-                          aria-label="Use aria labels when no actual label is in use"
-                          value={this.props.stateParams.advancedValue}
-                          onChange={(e) => this.onAdvanceChange(e)}
-                        />
-                      </EuiText>
-                    </EuiCollapsibleNavGroup>
-
-                  </EuiPanel>
+                  <AxisBucket
+                    onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                    onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
+                    field={this.props.stateParams.field}
+                    isEmptyBucket={this.props.stateParams.isEmptyBucket}
+                    isExtendBounds={this.props.stateParams.isExtendBounds}
+                    advancedValue={this.props.stateParams.advancedValue}
+                    aggregationArr={this.state.splitedAggregationArr}
+                  ></AxisBucket>
                 </EuiAccordion>
 
                 <EuiSpacer size="m" />
@@ -707,7 +533,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                           { value: 'histogram', text: 'Histogram' },
                           { value: 'terms', text: 'Terms' },
                         ]}
-                        onChange={(e) => this.onSplitedAggregationChange(e)}
+                        onChange={(e) => this.onGeneralValChange(e, 'splitedAggregation')}
                         fullWidth
                       />
                     </EuiFormRow>
@@ -731,20 +557,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         name: 'Metrix & Axis',
         content: (
           <Fragment>
-            <EuiFlexGroup gutterSize="l">
-              <EuiFlexItem>
-                <EuiCard
-                  textAlign="left"
-                  title="X-Axis"
-                  description={
-                    <span>
-                      <EuiSwitch label="Set Axis Extents" onChange={() => { this.onSetAxis() }} checked={this.props.stateParams.isAxisExtents} />
-                    </span>
-                  }>
-                  {this.showAxisExtent(this.props.stateParams.isAxisExtents)}
-                </EuiCard>
-              </EuiFlexItem>
-            </EuiFlexGroup>
+
+            <MetrixAndAxes
+              onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+              onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
+              isAxisExtents={this.props.stateParams.isAxisExtents}
+              xMin={this.props.stateParams.xMin}
+              xMax={this.props.stateParams.xMax}
+            ></MetrixAndAxes>
+
           </Fragment>
         ),
       },
@@ -766,7 +587,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                           id={htmlIdGenerator()()}
                           label="X-Axis Lines"
                           checked={this.props.stateParams.isVerticalGrid}
-                          onChange={(e) => this.onXAxisGridChange()}
+                          onChange={(e) => this.onGeneralBoolValChange('isVerticalGrid')}
                           compressed
                         />
 
@@ -776,7 +597,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                           id={htmlIdGenerator()()}
                           label="Y-Axis Lines"
                           checked={this.props.stateParams.isHorizontalGrid}
-                          onChange={(e) => this.onYAxisGridChange()}
+                          onChange={(e) => this.onGeneralBoolValChange('isHorizontalGrid')}
                           compressed
                         />
                       </EuiAccordion>
