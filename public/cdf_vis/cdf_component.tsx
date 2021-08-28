@@ -34,14 +34,14 @@ export function CdfComponent(props: CdfComponentProps) {
     customLabel,
     advancedValue,
     jsonInput,
-    //////////
+
     // Metrix & Axes
     isAxisExtents,
     xMin,
     xMax,
-    ////////////////
+
     isSplitAccordionClicked,
-   
+
     splitedAggregation,
     splitedField,
     isVerticalGrid,
@@ -52,8 +52,6 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-   
-    
   } = props.visParams
 
   useEffect(() => {
@@ -158,12 +156,12 @@ export function CdfComponent(props: CdfComponentProps) {
     customLabel,
     advancedValue,
     jsonInput,
-    //////////
+
     // Metrix & Axes
     isAxisExtents,
     xMin,
     xMax,
-    ////////////////
+
     isSplitAccordionClicked,
     splitedAggregation,
     splitedField,
@@ -173,7 +171,7 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    ]);
+  ]);
 
   return (
     <Fragment>
@@ -213,9 +211,7 @@ export function CdfComponent(props: CdfComponentProps) {
   );
 }
 
-
 function filterbyXAxis(data: any, xMin: number, xMax: number) {
-
   let filteredObj: any = {}
   Object.keys(data).forEach((graphName, index) => {
     filteredObj[graphName] = {}
@@ -230,9 +226,9 @@ function filterbyXAxis(data: any, xMin: number, xMax: number) {
       }
     });
   });
-
   return filteredObj
 }
+
 function parseSingleResponseData(data: any): any {
   const totalScores = data.aggregations.cdfAgg.buckets.reduce(
     (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
@@ -250,7 +246,6 @@ function parseSingleResponseData(data: any): any {
         return
       }
     });
-
     linePoint = [item.key, (tempCounter / totalScores) * 100]
     return linePoint
   })
@@ -267,7 +262,6 @@ function parseMultiResponseData(data: any): any {
         graphResponse[innerBucket.key]['points'] = []
       }
       graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
-
     })
   });
 
@@ -291,10 +285,8 @@ function parseMultiResponseData(data: any): any {
       let newElement: any[] = [];
       newElement[0] = el.x;
       newElement[1] = (tempCounter / totalHits) * 100;
-
       return newElement
     });
   });
-
   return graphResponse;
 }
