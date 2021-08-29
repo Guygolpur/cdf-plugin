@@ -6,6 +6,7 @@ import {
     EuiFormControlLayoutDelimited,
     EuiFormLabel,
     EuiPanel,
+    EuiButtonEmpty,
 } from '@elastic/eui';
 
 interface DatePickerComponentProps {
@@ -63,49 +64,52 @@ export function DatePicker(props: DatePickerComponentProps) {
     const renderTimeRange = () => {
         return (
             <Fragment>
-                <EuiPanel paddingSize="m">
-                    <EuiSpacer />
-                    <EuiFormControlLayoutDelimited
-                        prepend={<EuiFormLabel>Range</EuiFormLabel>}
-                        startControl={
-                            <input
-                                onChange={onStartInputChange}
-                                type="text"
-                                value={props.start}
-                                placeholder="start"
-                                className="euiFieldText"
-                            />
-                        }
-                        endControl={
-                            <input
-                                onChange={onEndInputChange}
-                                type="text"
-                                placeholder="end"
-                                value={props.end}
-                                className="euiFieldText"
-                            />
-                        }
-                    />
-                </EuiPanel>
+                <EuiButtonEmpty flush="right" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.12/common-options.html#date-math" target="_blank" size="xs">
+                    Acceptable date formats
+                </EuiButtonEmpty>
+                <EuiSpacer size="xs" />
+                <EuiFormControlLayoutDelimited
+                    prepend={<EuiFormLabel>Range</EuiFormLabel>}
+                    startControl={
+                        <input
+                            onChange={onStartInputChange}
+                            type="text"
+                            value={props.start}
+                            placeholder="start"
+                            className="euiFieldText"
+                        />
+                    }
+                    endControl={
+                        <input
+                            onChange={onEndInputChange}
+                            type="text"
+                            placeholder="end"
+                            value={props.end}
+                            className="euiFieldText"
+                        />
+                    }
+                />
             </Fragment>
         );
     };
 
     return (
         <>
-            <EuiSuperDatePicker
-                isLoading={isLoading}
-                start={props.start}
-                end={props.end}
-                onTimeChange={onTimeChange}
-                isPaused={isPaused}
-                refreshInterval={refreshInterval}
-                onRefreshChange={onRefreshChange}
-                recentlyUsedRanges={recentlyUsedRanges}
-                showUpdateButton={false}
-            />
-            <EuiSpacer />
-            {renderTimeRange()}
+            <EuiPanel>
+                <EuiSuperDatePicker
+                    isLoading={isLoading}
+                    start={props.start}
+                    end={props.end}
+                    onTimeChange={onTimeChange}
+                    isPaused={isPaused}
+                    refreshInterval={refreshInterval}
+                    onRefreshChange={onRefreshChange}
+                    recentlyUsedRanges={recentlyUsedRanges}
+                    showUpdateButton={false}
+                />
+                <EuiSpacer />
+                {renderTimeRange()}
+            </EuiPanel>
         </>
     );
 };
