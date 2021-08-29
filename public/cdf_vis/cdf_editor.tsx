@@ -224,7 +224,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
+        <EuiFormRow fullWidth hasChildLabel={false}>
           <EuiSwitch
             label="Group other values in seperate bucket"
             name="switch"
@@ -235,7 +235,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
+        <EuiFormRow fullWidth hasChildLabel={false}>
           <EuiSwitch
             label="Show missing values"
             name="switch"
@@ -295,15 +295,33 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="m" />
 
-        <EuiFlexItem grow={false} style={{ width: '100%' }}>
-          <EuiFormRow label="Minimum interval">
-            <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} />
-          </EuiFormRow>
-        </EuiFlexItem>
+        <EuiText size="xs">
+          <p>
+            <b>Minimum interval</b>
+            <EuiIconTip
+              type="iInCircle"
+              color="subdued"
+              content={
+                <span>
+                  Interval will be automatically scaled in the event that the provided value creates more buckets than specified by Advanced Setting's histogram:maxBars
+                </span>
+              }
+              iconProps={{
+                className: 'eui-alignTop',
+              }}
+            />
+          </p>
+        </EuiText>
+
+        <EuiSpacer size="xs" />
+
+        <EuiFormRow fullWidth>
+          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} />
+        </EuiFormRow>
 
         <EuiSpacer size="m" />
 
-        <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
+        <EuiFormRow fullWidth hasChildLabel={false}>
           <EuiSwitch
             label="Show empty bucket"
             name="switch"
@@ -314,7 +332,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="s" />
 
-        <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
+        <EuiFormRow fullWidth hasChildLabel={false}>
           <EuiSwitch
             label="Extend bounds"
             name="switch"
@@ -344,7 +362,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           <EuiIconTip
             aria-label="Warning"
             size="m"
-            type="alert"
+            type="iInCircle"
             color="black"
             content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
           />
@@ -392,7 +410,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
         <EuiSpacer size="m" />
 
-        <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
+        <EuiFormRow fullWidth hasChildLabel={false}>
           <EuiSwitch
             label="Drop partial buckets"
             name="switch"

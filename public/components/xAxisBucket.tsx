@@ -11,7 +11,9 @@ import {
   EuiFieldText,
   EuiCollapsibleNavGroup,
   EuiIconTip,
-  EuiTextArea
+  EuiTextArea,
+  EuiFlexGroup,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 
 export const AxisBucket = ({
@@ -21,8 +23,21 @@ export const AxisBucket = ({
 ) => {
   return (
     <EuiPanel id="panel" style={{ maxWidth: '100%' }}>
-
-      <EuiFormRow label="Aggregation" fullWidth>
+      <EuiText size="xs">
+        <p>
+          <EuiFlexGroup responsive={false}>
+            <EuiFlexItem>
+              <b>Aggregation</b>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty flush="right" href="https://www.elastic.co/guide/en/elasticsearch/reference/7.12/search-aggregations-bucket-histogram-aggregation.html" target="_blank" size="xs">
+                Histogram help
+              </EuiButtonEmpty>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </p>
+      </EuiText>
+      <EuiFormRow fullWidth>
         <EuiSelect
           options={[
             { value: 'histogram', text: 'Histogram' },
@@ -31,6 +46,8 @@ export const AxisBucket = ({
           fullWidth
         />
       </EuiFormRow>
+
+      <EuiSpacer size="m" />
 
       <EuiFormRow label="Field" fullWidth>
         <EuiSelect
@@ -44,15 +61,33 @@ export const AxisBucket = ({
         />
       </EuiFormRow>
 
-      <EuiSpacer size="s" />
+      <EuiSpacer size="m" />
 
-      <EuiFlexItem grow={false} style={{ width: '100%' }}>
-        <EuiFormRow label="Minimum interval">
-          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} />
-        </EuiFormRow>
-      </EuiFlexItem>
+      <EuiText size="xs">
+        <p>
+          <b>Minimum interval</b>
+          <EuiIconTip
+            type="iInCircle"
+            color="subdued"
+            content={
+              <span>
+                Interval will be automatically scaled in the event that the provided value creates more buckets than specified by Advanced Setting's histogram:maxBars
+              </span>
+            }
+            iconProps={{
+              className: 'eui-alignTop',
+            }}
+          />
+        </p>
+      </EuiText>
 
-      <EuiSpacer size="s" />
+      <EuiSpacer size="xs" />
+
+      <EuiFormRow fullWidth>
+        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth/>
+      </EuiFormRow>
+
+      <EuiSpacer size="m" />
 
       <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
         <EuiSwitch
@@ -63,7 +98,7 @@ export const AxisBucket = ({
         />
       </EuiFormRow>
 
-      <EuiSpacer size="s" />
+      <EuiSpacer size="m" />
 
       <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
         <EuiSwitch
@@ -74,7 +109,7 @@ export const AxisBucket = ({
         />
       </EuiFormRow>
 
-      <EuiSpacer size="s" />
+      <EuiSpacer size="m" />
 
       <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'customLabel')}>
         <EuiFieldText name="first" fullWidth />
@@ -96,7 +131,7 @@ export const AxisBucket = ({
         <EuiIconTip
           aria-label="Warning"
           size="m"
-          type="alert"
+          type="iInCircle"
           color="black"
           content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
         />
