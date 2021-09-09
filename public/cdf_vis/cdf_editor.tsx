@@ -26,6 +26,8 @@ import { AddSubBucket } from '../components/addSubBucket';
 import { DatePicker } from '../components/form/datePicker';
 import { AxisBucket } from '../components/xAxisBucket';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
+import { CoreStart } from 'kibana/public';
+
 
 interface CounterParams {
   // X-axis
@@ -91,10 +93,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndicesMapping()
       .then(response => {
-        const mappingRes = response.data['arc-samples-20210623'].mappings.properties
+        console.log('res: ', response)
+        const mappingRes = response.data.map(function (number: string) {
+          return number
+        });
+        // const mappingRes = response.data['arc-samples-20210623'].mappings.properties
+        console.log('mappingRes: ', mappingRes)
         let objNodeSub: any, numberFieldOptionTmp: any[] = [], dateFieldOptionTmp: any[] = [], booleanDateNumberStringFieldOptionTmp: any[] = [], allFieldsOptionTmp: any[] = []
         Object.entries(mappingRes).forEach(([key, value]: any) => {
-          objNodeSub = { 'value': key, 'text': key };
+          objNodeSub = { 'value': value, 'text': value };
           allFieldsOptionTmp.push(objNodeSub)
           if (value.type === 'integer' || value.type === 'double' || value.type === 'long' || value.type === 'float') {
             numberFieldOptionTmp.push(objNodeSub);
@@ -128,10 +135,18 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   getIndicesMapping = () => {
     return axios({
-      url: 'http://localhost:9200/arc-*/_mapping',
+      url: '/api/mappings',
       method: 'GET',
+      headers: { "kbn-xsrf": "true" }
     })
   }
+
+  // getIndicesMapping = () => {
+  //   return axios({
+  //     url: 'http://localhost:9200/arc-*/_mapping',
+  //     method: 'GET',
+  //   })
+  // }
 
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
