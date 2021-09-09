@@ -36,7 +36,6 @@ export function defineRoutes(router: IRouter) {
     },
     async (context, request, response) => {
       try {
-        debugger
         const {
           body: indexMappings,
         } = await context.core.elasticsearch.client.asCurrentUser.indices.getFieldMapping<FieldMappingResponse>(
@@ -47,24 +46,24 @@ export function defineRoutes(router: IRouter) {
             include_defaults: true,
           }
         );
-
-        const fields = Array.from(
-          new Set(
-            Object.values(indexMappings).flatMap((indexMapping) => {
-              let objNodeSub: any;
-              return Object.keys(indexMapping.mappings).map((fieldName) => {
-                const mappingValue = Object.values(indexMapping.mappings[fieldName].mapping);
-                objNodeSub = {
-                  'value': fieldName, 'type': mappingValue[0]?.type
-                };
-                return objNodeSub;
-              })
-            })
-          )
-        );
+          
+        // const fields = Array.from(
+        //   new Set(
+        //     Object.values(indexMappings).flatMap((indexMapping) => {
+        //       let objNodeSub: any;
+        //       return Object.keys(indexMapping.mappings).map((fieldName) => {
+        //         const mappingValue = Object.values(indexMapping.mappings[fieldName].mapping);
+        //         objNodeSub = {
+        //           'value': fieldName, 'type': mappingValue[0]?.type
+        //         };
+        //         return objNodeSub;
+        //       })
+        //     })
+        //   )
+        // );
 
         return response.ok({
-          body: fields,
+          body: indexMappings,
         });
       } catch (error) {
         return response.customError(wrapIntoCustomErrorResponse(error));

@@ -93,22 +93,28 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndicesMapping()
       .then(response => {
-        const mappingRes = response.data
+        const indexRes = Object.keys(response.data)[0]
+        const mappingRes = response.data[indexRes].mappings
         let objNodeSub: any, numberFieldOptionTmp: any[] = [], dateFieldOptionTmp: any[] = [], booleanDateNumberStringFieldOptionTmp: any[] = [], allFieldsOptionTmp: any[] = []
-        Object.entries(mappingRes).forEach(([key, value]: any) => {
-          objNodeSub = { 'value': value.type, 'text': value.value };
-          allFieldsOptionTmp.push(objNodeSub)
-          if (value.type === 'integer' || value.type === 'double' || value.type === 'long' || value.type === 'float') {
-            numberFieldOptionTmp.push(objNodeSub);
-            booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+
+        for (const key in mappingRes) {
+          let value = mappingRes[key];
+          if (value != undefined && value.mapping[key]) {
+            objNodeSub = { 'value': key, 'text': key };
+            allFieldsOptionTmp.push(objNodeSub)
+            if (value.mapping[key].type === 'integer' || value.mapping[key].type === 'double' || value.mapping[key].type === 'long' || value.mapping[key].type === 'float') {
+              numberFieldOptionTmp.push(objNodeSub);
+              booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+            }
+            else if (value.mapping[key].type === 'date') {
+              dateFieldOptionTmp.push(objNodeSub);
+            }
+            else if (value.mapping[key].type === 'boolean' || value.mapping[key].type == 'string' || value.mapping[key].type == 'date') {
+              booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+            }
           }
-          else if (value.type === 'date') {
-            dateFieldOptionTmp.push(objNodeSub);
-          }
-          else if (value.type === 'boolean' || value.type == 'string' || value.type == 'date') {
-            booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
-          }
-        })
+        }
+
         this.setState({
           numberFieldArr: numberFieldOptionTmp,
           dateFieldArr: dateFieldOptionTmp,
