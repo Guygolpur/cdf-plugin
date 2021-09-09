@@ -93,15 +93,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndicesMapping()
       .then(response => {
-        console.log('res: ', response)
-        const mappingRes = response.data.map(function (number: string) {
-          return number
-        });
-        // const mappingRes = response.data['arc-samples-20210623'].mappings.properties
-        console.log('mappingRes: ', mappingRes)
+        const mappingRes = response.data
         let objNodeSub: any, numberFieldOptionTmp: any[] = [], dateFieldOptionTmp: any[] = [], booleanDateNumberStringFieldOptionTmp: any[] = [], allFieldsOptionTmp: any[] = []
         Object.entries(mappingRes).forEach(([key, value]: any) => {
-          objNodeSub = { 'value': value, 'text': value };
+          objNodeSub = { 'value': value.type, 'text': value.value };
           allFieldsOptionTmp.push(objNodeSub)
           if (value.type === 'integer' || value.type === 'double' || value.type === 'long' || value.type === 'float') {
             numberFieldOptionTmp.push(objNodeSub);
@@ -547,7 +542,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     isEmptyBucket={this.props.stateParams.isEmptyBucket}
                     isExtendBounds={this.props.stateParams.isExtendBounds}
                     advancedValue={this.props.stateParams.advancedValue}
-                    aggregationArr={this.state.splitedAggregationArr}
+                    aggregationArr={this.state.numberFieldArr}
                   ></AxisBucket>
                 </EuiAccordion>
 
