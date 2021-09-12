@@ -1,6 +1,5 @@
 import { IRouter } from 'src/core/server';
 import { schema } from '@kbn/config-schema';
-
 import { wrapIntoCustomErrorResponse } from '../errors';
 
 interface FieldMappingResponse {
@@ -18,20 +17,9 @@ interface FieldMappingResponse {
 }
 
 export function defineRoutes(router: IRouter) {
-  router.get(
-    {
-      path: '/api/test/example',
-      validate: false,
-    },
-    async (context, request, response) => {
-      return response.ok({
-        body: {
-          time: new Date().toISOString(),
-        },
-      });
-    }
-  );
-
+  
+  //  referance at:
+  //  \kibana\x-pack\plugins\security\server\routes\indices\get_fields.ts
   router.get(
     {
       path: '/api/mappings',
@@ -58,30 +46,42 @@ export function defineRoutes(router: IRouter) {
     }
   );
 
+  //  referance at:
+  //  \kibana\src\plugins\index_pattern_management\server\routes\preview_scripted_field.ts
+  //  \kibana\examples\search_examples\server\routes\server_search_route.ts
   router.post(
     {
       path: '/api/search',
-      validate: false
+      validate: {
+        body: schema.object({
+          data: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+        }),
+      },
     },
-    async (context, request, response) => {
-
+    async (context, request, res) => {
       const client = context.core.elasticsearch.client.asCurrentUser;
 
-      const { body: result } = await client.search({
-        // index: request.body.selectedIndex,
-        // _source_includes: request.body.selectedFields,
-        index: 'arc-*',
-        // _source_includes: request.body.selectedFields,
-        version: true
-      });
+      const tmp = request.body.data
+      const index = 'arc-*'
+      try {
+        const response = await client.search({
+          index,
+          body: tmp
+        });
 
-      const reply = result.hits.hits;
+        return res.ok({ body: response.body });
 
-      return response.ok({
-        body: {
-          reply,
-        },
-      });
+      } catch (err) {
+        return res.customError({
+          statusCode: err.statusCode || 500,
+          body: {
+            message: err.message,
+            attributes: {
+              error: err.body?.error || err.message,
+            },
+          },
+        });
+      }
     }
-  );
+  )
 }

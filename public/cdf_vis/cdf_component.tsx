@@ -121,57 +121,26 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
 
-
-    // const reqObj: any = {
-    //   url: 'http://localhost:9200/arc-*/_search',
-    //   method: 'post',
-    //   timeout: 0,
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   data: JSON.stringify(data)
-    // }
-    // axios(reqObj).then(function (response) {
-    //   let aggLineDataObj: any = {};
-
-    //   if (!isSplitAccordionClicked) {
-    //     aggLineDataObj[field] = {
-    //       points: parseSingleResponseData(response.data)
-    //     }
-    //   } else {
-    //     aggLineDataObj = parseMultiResponseData(response.data)
-    //   }
-    //   if (isAxisExtents) {
-    //     aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
-    //   }
-    //   setAggLineData(aggLineDataObj);
-    // }).catch(function (error) {
-    //   console.log('error', error);
-    // })
-
-
     axios({
       method: "POST",
       url: "/api/search",
-      data: JSON.stringify(data),
-      headers: { "Content-Type": "application/json", "kbn-xsrf": "true" },
+      data: { data: JSON.stringify(data) },
+      headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {
-        console.log('response: ', response.data.reply)
         let aggLineDataObj: any = {};
 
         if (!isSplitAccordionClicked) {
           aggLineDataObj[field] = {
-            points: parseSingleResponseData(response.data.reply)
+            points: parseSingleResponseData(response.data)
           }
         } else {
-          aggLineDataObj = parseMultiResponseData(response.data.reply)
+          aggLineDataObj = parseMultiResponseData(response.data)
         }
         if (isAxisExtents) {
           aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
         }
         setAggLineData(aggLineDataObj);
-        // tableDataSet(response.data.reply);
       }).catch(function (error) {
         console.log('error', error);
       });
