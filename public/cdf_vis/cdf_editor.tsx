@@ -142,13 +142,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     })
   }
 
-  // getIndicesMapping = () => {
-  //   return axios({
-  //     url: 'http://localhost:9200/arc-*/_mapping',
-  //     method: 'GET',
-  //   })
-  // }
-
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval

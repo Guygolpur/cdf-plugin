@@ -1,4 +1,6 @@
 import { IRouter } from 'src/core/server';
+import { schema } from '@kbn/config-schema';
+
 import { wrapIntoCustomErrorResponse } from '../errors';
 
 interface FieldMappingResponse {
@@ -29,6 +31,7 @@ export function defineRoutes(router: IRouter) {
       });
     }
   );
+
   router.get(
     {
       path: '/api/mappings',
@@ -46,28 +49,39 @@ export function defineRoutes(router: IRouter) {
             include_defaults: true,
           }
         );
-          
-        // const fields = Array.from(
-        //   new Set(
-        //     Object.values(indexMappings).flatMap((indexMapping) => {
-        //       let objNodeSub: any;
-        //       return Object.keys(indexMapping.mappings).map((fieldName) => {
-        //         const mappingValue = Object.values(indexMapping.mappings[fieldName].mapping);
-        //         objNodeSub = {
-        //           'value': fieldName, 'type': mappingValue[0]?.type
-        //         };
-        //         return objNodeSub;
-        //       })
-        //     })
-        //   )
-        // );
-
         return response.ok({
           body: indexMappings,
         });
       } catch (error) {
         return response.customError(wrapIntoCustomErrorResponse(error));
       }
+    }
+  );
+
+  router.post(
+    {
+      path: '/api/search',
+      validate: false
+    },
+    async (context, request, response) => {
+
+      const client = context.core.elasticsearch.client.asCurrentUser;
+
+      const { body: result } = await client.search({
+        // index: request.body.selectedIndex,
+        // _source_includes: request.body.selectedFields,
+        index: 'arc-*',
+        // _source_includes: request.body.selectedFields,
+        version: true
+      });
+
+      const reply = result.hits.hits;
+
+      return response.ok({
+        body: {
+          reply,
+        },
+      });
     }
   );
 }
