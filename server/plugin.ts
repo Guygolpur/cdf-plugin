@@ -4,7 +4,7 @@ import {
   CoreStart,
   Plugin,
   Logger,
-} from '......srccoreserver';
+} from 'src/core/server';
 
 import { TestPluginSetup, TestPluginStart } from './types';
 import { defineRoutes } from './routes';
@@ -31,5 +31,5 @@ export class TestPlugin implements Plugin<TestPluginSetup, TestPluginStart> {
     return {};
   }
 
-  public stop() {}
+  public stop() { }
 }
