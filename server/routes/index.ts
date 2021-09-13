@@ -1,6 +1,41 @@
 import { IRouter } from 'src/core/server';
 import { schema } from '@kbn/config-schema';
 import { wrapIntoCustomErrorResponse } from '../errors';
+import { CoreUsageDataSetup } from 'src/core/server/core_usage_data';
+import { object } from 'joi';
+
+
+interface RouteDependencies {
+  coreUsageData: CoreUsageDataSetup;
+}
+
+export const registerFindRoute = (router: IRouter, { coreUsageData }: RouteDependencies) => {
+
+  // referance at:
+  // \kibana\src\core\server\saved_objects\routes\find.ts
+  router.get(
+    {
+      path: '/_find',
+      validate: false,
+    },
+    async (context, request, response) => {
+      try {
+        const indexMappings = await context.core.savedObjects.client.find(
+          {
+            type: 'index-pattern',
+            perPage: 10000
+          }
+        );
+        return response.ok({
+          body: indexMappings,
+        });
+      } catch (error) {
+        return response.customError(wrapIntoCustomErrorResponse(error));
+      }
+    }
+  );
+}
+
 
 interface FieldMappingResponse {
   [indexName: string]: {
@@ -17,7 +52,7 @@ interface FieldMappingResponse {
 }
 
 export function defineRoutes(router: IRouter) {
-  
+
   //  referance at:
   //  \kibana\x-pack\plugins\security\server\routes\indices\get_fields.ts
   router.get(

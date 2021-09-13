@@ -7,7 +7,9 @@ import {
 } from 'src/core/server';
 
 import { TestPluginSetup, TestPluginStart } from './types';
-import { defineRoutes } from './routes';
+import { defineRoutes, registerFindRoute } from './routes';
+import { CoreUsageDataSetup } from 'src/core/server/core_usage_data';
+
 
 export class TestPlugin implements Plugin<TestPluginSetup, TestPluginStart> {
   private readonly logger: Logger;
@@ -16,12 +18,13 @@ export class TestPlugin implements Plugin<TestPluginSetup, TestPluginStart> {
     this.logger = initializerContext.logger.get();
   }
 
-  public setup(core: CoreSetup) {
+  public setup(core: CoreSetup, coreUsageData: CoreUsageDataSetup) {
     this.logger.debug('Test: Setup');
     const router = core.http.createRouter();
 
     // Register server side APIs
     defineRoutes(router);
+    registerFindRoute(router, { coreUsageData });
 
     return {};
   }

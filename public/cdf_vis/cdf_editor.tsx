@@ -87,8 +87,22 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     };
   }
 
+  visit = (obj: any, fn: any) => {
+    const values = Object.values(obj)
+
+    values.forEach(val =>
+      val && typeof val === "object" ? this.visit(val, fn) : fn(val))
+  }
+
   componentDidMount() {
     this.props.setValue('isSplitAccordionClicked', false)
+    this.getIndices().then(indices => {
+      // Object.entries(indices.data.saved_objects).forEach(([key, value]) => {
+      //   console.log(`value: ${JSON.stringify(value)}`);
+      // })
+      this.visit(indices.data.saved_objects, console.log)
+      console.log('indices: ', Object.entries(indices.data.saved_objects))
+    })
     this.getIndicesMapping()
       .then(response => {
         const indexRes = Object.keys(response.data)[0]
@@ -130,6 +144,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     if (prevProps.timeRange.to !== this.props.timeRange.to) {
       this.props.setValue('dateFilterTo', this.props.timeRange.to);
     }
+  }
+
+  getIndices = () => {
+    return axios({
+      url: '/_find',
+      method: 'GET',
+      headers: { "kbn-xsrf": "true" }
+    })
   }
 
   getIndicesMapping = () => {
