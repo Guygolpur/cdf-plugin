@@ -48,9 +48,7 @@ interface CounterParams {
   handleNoResults: boolean;
   splitedAggregation: string;
   splitedField: string;
-  splitedOrderBy: string;
   splitedOrder: string;
-  splitedSize: number;
   isSplitedSeperateBucket: boolean;
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
@@ -143,7 +141,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
-  // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
+  // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
     this.props.setValue(valName, e.target.value);
@@ -195,20 +193,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           />
         </EuiFormRow>
 
-        <EuiSpacer size="s" />
-
-        <EuiFormRow label="Order by" fullWidth>
-          <EuiSelect
-            options={[
-              { value: 'Metric: Count', text: 'Metric: Count' },
-              { value: 'Custom metric', text: 'Custom metric' },
-              { value: 'Alphabetical', text: 'Alphabetical' },
-            ]}
-            onChange={(e) => this.onGeneralValChange(e, 'splitedOrderBy')}
-            fullWidth
-          />
-        </EuiFormRow>
-
         <EuiSpacer size="m" />
 
         <EuiFlexGroup style={{ maxWidth: 800 }}>
@@ -224,11 +208,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             </EuiFormRow>
           </EuiFlexItem>
 
-          <EuiFlexItem grow={false} >
-            <EuiFormRow label="Size">
-              <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedSize')} />
-            </EuiFormRow>
-          </EuiFlexItem>
         </EuiFlexGroup>
 
         <EuiSpacer size="s" />
