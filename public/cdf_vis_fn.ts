@@ -20,9 +20,7 @@ export interface CDFVisParams {
 
   splitedAggregation: string;
   splitedField: string;
-  splitedOrderBy: string;
   splitedOrder: string;
-  splitedSize: number;
   isSplitedSeperateBucket: boolean;
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
@@ -57,9 +55,7 @@ export interface CDFVisRenderValue {
     handleNoResults: boolean;
     splitedAggregation: string;
     splitedField: string;
-    splitedOrderBy: string;
     splitedOrder: string;
-    splitedSize: number;
     isSplitedSeperateBucket: boolean;
     isSplitedShowMissingValues: boolean;
     splitedCustomLabel: string;
@@ -165,20 +161,10 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '',
       help: 'Visualization only argument with type string',
     },
-    splitedOrderBy: {
-      types: ['string'],
-      default: '',
-      help: 'Visualization only argument with type string',
-    },
     splitedOrder: {
       types: ['string'],
       default: '',
       help: 'Visualization only argument with type string',
-    },
-    splitedSize: {
-      types: ['number'],
-      default: 1,
-      help: 'Visualization only argument with type number',
     },
     isSplitedSeperateBucket: {
       types: ['boolean'],
@@ -277,9 +263,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           handleNoResults: args.handleNoResults,
           splitedAggregation: args.splitedAggregation,
           splitedField: args.splitedField,
-          splitedOrderBy: args.splitedOrderBy,
           splitedOrder: args.splitedOrder,
-          splitedSize: args.splitedSize,
           isSplitedSeperateBucket: args.isSplitedSeperateBucket,
           isSplitedShowMissingValues: args.isSplitedShowMissingValues,
           splitedCustomLabel: args.splitedCustomLabel,

@@ -120,32 +120,32 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
     }
-    const reqObj: any = {
-      url: 'http://localhost:9200/arc-*/_search',
-      method: 'post',
-      timeout: 0,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: JSON.stringify(data)
-    }
-    axios(reqObj).then(function (response) {
-      let aggLineDataObj: any = {};
 
-      if (!isSplitAccordionClicked) {
-        aggLineDataObj[field] = {
-          points: parseSingleResponseData(response.data)
-        }
-      } else {
-        aggLineDataObj = parseMultiResponseData(response.data)
-      }
-      if (isAxisExtents) {
-        aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
-      }
-      setAggLineData(aggLineDataObj);
-    }).catch(function (error) {
-      console.log('error', error);
+    axios({
+      method: "POST",
+      url: "/api/search",
+      data: { data: JSON.stringify(data) },
+      headers: { "kbn-xsrf": "true" },
     })
+      .then(function (response) {
+        let aggLineDataObj: any = {};
+
+        if (!isSplitAccordionClicked) {
+          aggLineDataObj[field] = {
+            points: parseSingleResponseData(response.data)
+          }
+        } else {
+          aggLineDataObj = parseMultiResponseData(response.data)
+        }
+        if (isAxisExtents) {
+          aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
+        }
+        setAggLineData(aggLineDataObj);
+      }).catch(function (error) {
+        console.log('error', error);
+      });
+
+
   }, [
     // X-axis
     aggregation,

@@ -53,7 +53,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
 
           splitedAggregation: 'date_histogram',
           splitedField: 'Projects',
-          splitedOrderBy: 'Metric: Count',
           splitedOrder: 'Descending',
           splitedCustomLabel: '',
           dateFilterFrom: 'now-15m',
@@ -63,7 +62,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           splitedDateHistogramMinInterval: 'auto',
           numberOfTickTexts: 10,
 
-          splitedSize: 1,
           splitedHistogramMinInterval: 1,
 
           grid: {

@@ -26,6 +26,8 @@ import { AddSubBucket } from '../components/addSubBucket';
 import { DatePicker } from '../components/form/datePicker';
 import { AxisBucket } from '../components/xAxisBucket';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
+import { CoreStart } from 'kibana/public';
+
 
 interface CounterParams {
   // X-axis
@@ -46,9 +48,7 @@ interface CounterParams {
   handleNoResults: boolean;
   splitedAggregation: string;
   splitedField: string;
-  splitedOrderBy: string;
   splitedOrder: string;
-  splitedSize: number;
   isSplitedSeperateBucket: boolean;
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
@@ -91,22 +91,28 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndicesMapping()
       .then(response => {
-        const mappingRes = response.data['arc-samples-20210623'].mappings.properties
+        const indexRes = Object.keys(response.data)[0]
+        const mappingRes = response.data[indexRes].mappings
         let objNodeSub: any, numberFieldOptionTmp: any[] = [], dateFieldOptionTmp: any[] = [], booleanDateNumberStringFieldOptionTmp: any[] = [], allFieldsOptionTmp: any[] = []
-        Object.entries(mappingRes).forEach(([key, value]: any) => {
-          objNodeSub = { 'value': key, 'text': key };
-          allFieldsOptionTmp.push(objNodeSub)
-          if (value.type === 'integer' || value.type === 'double' || value.type === 'long' || value.type === 'float') {
-            numberFieldOptionTmp.push(objNodeSub);
-            booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+
+        for (const key in mappingRes) {
+          let value = mappingRes[key];
+          if (value != undefined && value.mapping[key]) {
+            objNodeSub = { 'value': key, 'text': key };
+            allFieldsOptionTmp.push(objNodeSub)
+            if (value.mapping[key].type === 'integer' || value.mapping[key].type === 'double' || value.mapping[key].type === 'long' || value.mapping[key].type === 'float') {
+              numberFieldOptionTmp.push(objNodeSub);
+              booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+            }
+            else if (value.mapping[key].type === 'date') {
+              dateFieldOptionTmp.push(objNodeSub);
+            }
+            else if (value.mapping[key].type === 'boolean' || value.mapping[key].type == 'string' || value.mapping[key].type == 'date') {
+              booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
+            }
           }
-          else if (value.type === 'date') {
-            dateFieldOptionTmp.push(objNodeSub);
-          }
-          else if (value.type === 'boolean' || value.type == 'string' || value.type == 'date') {
-            booleanDateNumberStringFieldOptionTmp.push(objNodeSub);
-          }
-        })
+        }
+
         this.setState({
           numberFieldArr: numberFieldOptionTmp,
           dateFieldArr: dateFieldOptionTmp,
@@ -128,13 +134,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   getIndicesMapping = () => {
     return axios({
-      url: 'http://localhost:9200/arc-*/_mapping',
+      url: '/api/mappings',
       method: 'GET',
+      headers: { "kbn-xsrf": "true" }
     })
   }
 
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
-  // splitedAggregation, splitedField, splitedOrderBy, splitedOrder, splitedSize, splitedCustomLabel
+  // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
     this.props.setValue(valName, e.target.value);
@@ -186,20 +193,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           />
         </EuiFormRow>
 
-        <EuiSpacer size="s" />
-
-        <EuiFormRow label="Order by" fullWidth>
-          <EuiSelect
-            options={[
-              { value: 'Metric: Count', text: 'Metric: Count' },
-              { value: 'Custom metric', text: 'Custom metric' },
-              { value: 'Alphabetical', text: 'Alphabetical' },
-            ]}
-            onChange={(e) => this.onGeneralValChange(e, 'splitedOrderBy')}
-            fullWidth
-          />
-        </EuiFormRow>
-
         <EuiSpacer size="m" />
 
         <EuiFlexGroup style={{ maxWidth: 800 }}>
@@ -215,11 +208,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             </EuiFormRow>
           </EuiFlexItem>
 
-          <EuiFlexItem grow={false} >
-            <EuiFormRow label="Size">
-              <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedSize')} />
-            </EuiFormRow>
-          </EuiFlexItem>
         </EuiFlexGroup>
 
         <EuiSpacer size="s" />
@@ -532,7 +520,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     isEmptyBucket={this.props.stateParams.isEmptyBucket}
                     isExtendBounds={this.props.stateParams.isExtendBounds}
                     advancedValue={this.props.stateParams.advancedValue}
-                    aggregationArr={this.state.splitedAggregationArr}
+                    aggregationArr={this.state.numberFieldArr}
                   ></AxisBucket>
                 </EuiAccordion>
 
