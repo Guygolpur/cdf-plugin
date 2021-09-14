@@ -10,6 +10,7 @@ import {
 } from '@elastic/eui';
 
 interface DatePickerComponentProps {
+    disabled: boolean;
     start: any;
     end: any;
     setStart(start: any): any;
@@ -106,6 +107,7 @@ export function DatePicker(props: DatePickerComponentProps) {
                     onRefreshChange={onRefreshChange}
                     recentlyUsedRanges={recentlyUsedRanges}
                     showUpdateButton={false}
+                    isDisabled={props.disabled}
                 />
                 <EuiSpacer />
                 {renderTimeRange()}
