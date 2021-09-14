@@ -19,7 +19,7 @@ import {
 export const AxisBucket = ({
   onGeneralValChange, onGeneralBoolValChange,
   field, isExtendBounds, isEmptyBucket, advancedValue,
-  aggregationArr }: any
+  aggregationArr, isIndexSelected }: any
 ) => {
   return (
     <EuiPanel id="panel" style={{ maxWidth: '100%' }}>
@@ -44,6 +44,7 @@ export const AxisBucket = ({
           ]}
           onChange={(e) => onGeneralValChange(e, 'aggregation')}
           fullWidth
+          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
@@ -56,8 +57,8 @@ export const AxisBucket = ({
           }
           value={field}
           fullWidth
-          onChange={(e: any) => onGeneralValChange(e, 'field')
-          }
+          onChange={(e: any) => onGeneralValChange(e, 'field')}
+          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
@@ -84,7 +85,7 @@ export const AxisBucket = ({
       <EuiSpacer size="xs" />
 
       <EuiFormRow fullWidth>
-        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth/>
+        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth disabled={!isIndexSelected}/>
       </EuiFormRow>
 
       <EuiSpacer size="m" />
@@ -95,6 +96,7 @@ export const AxisBucket = ({
           name="switch"
           checked={isEmptyBucket}
           onChange={() => onGeneralBoolValChange('isEmptyBucket')}
+          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
@@ -106,13 +108,14 @@ export const AxisBucket = ({
           name="switch"
           checked={isExtendBounds}
           onChange={() => onGeneralBoolValChange('isExtendBounds')}
+          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
       <EuiSpacer size="m" />
 
       <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'customLabel')}>
-        <EuiFieldText name="first" fullWidth />
+        <EuiFieldText name="first" fullWidth disabled={!isIndexSelected}/>
       </EuiFormRow>
 
       <EuiCollapsibleNavGroup
@@ -140,6 +143,7 @@ export const AxisBucket = ({
             aria-label="Use aria labels when no actual label is in use"
             value={advancedValue}
             onChange={(e) => onGeneralValChange(e, 'advancedValue')}
+            disabled={!isIndexSelected}
           />
         </EuiText>
       </EuiCollapsibleNavGroup>

@@ -67,6 +67,8 @@ interface CounterParams {
 interface CDFEditorComponentState {
   indicesList: any[];
   selectedIndexPattern: any[];
+  isIndexSelected: boolean;
+  isXAxisOpened: boolean;
   comboBoxSelectionOptions: any[];
   numberFieldArr: any[];
   dateFieldArr: any[];
@@ -82,6 +84,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.state = {
       indicesList: [],
       selectedIndexPattern: [],
+      isIndexSelected: false,
+      isXAxisOpened: false,
       comboBoxSelectionOptions: [],
       numberFieldArr: [],
       dateFieldArr: [],
@@ -180,7 +184,19 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedIndexHandler = (selectedOptions: any) => {
-    this.setState({ selectedIndexPattern: selectedOptions })
+    if (selectedOptions.length > 0) {
+      this.setState({
+        selectedIndexPattern: selectedOptions,
+        isIndexSelected: true
+      })
+    }
+    else {
+      this.setState({
+        selectedIndexPattern: selectedOptions,
+        isIndexSelected: false
+      })
+    }
+
     this.onMappingValChange(selectedOptions[0].value, 'indexPattern').then(this.indicesMappingHandler).catch(e => console.log('error: ', e))
   }
 
@@ -240,6 +256,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             fullWidth
             onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
             }
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -254,6 +271,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   { value: 'Ascending', text: 'Ascending' },
                 ]}
                 onChange={(e) => this.onGeneralValChange(e, 'splitedOrder')}
+                disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
               />
             </EuiFormRow>
           </EuiFlexItem>
@@ -268,6 +286,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -279,13 +298,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedShowMissingValues}
             onChange={this.onSplitedShowMissingValuesChange}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -312,6 +332,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -326,8 +347,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
-            }
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -354,7 +375,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <EuiSpacer size="xs" />
 
         <EuiFormRow fullWidth>
-          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} />
+          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
         </EuiFormRow>
 
         <EuiSpacer size="m" />
@@ -365,6 +386,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -376,13 +398,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedShowMissingValues}
             onChange={this.onSplitedShowMissingValuesChange}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -409,6 +432,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -423,8 +447,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
-            }
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -441,8 +465,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               { value: '1y', text: 'Yearly' },
             ]}
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedDateHistogramMinInterval')
-            }
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedDateHistogramMinInterval')}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -454,6 +478,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -462,7 +487,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -489,6 +514,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -503,19 +529,19 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             }
             value={this.props.stateParams.splitedField}
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
-            }
+            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="m" />
 
-        < DatePicker start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
+        < DatePicker disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
 
         <EuiSpacer size="m" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -542,6 +568,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -562,7 +589,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 title={'Buckets'}
                 description=""
               >
-                <EuiAccordion id="accordion1" buttonContent={`X-Axis ${this.props.stateParams.field}`}>
+                <EuiAccordion id="accordion1" buttonContent={`X-Axis`} onToggle={(isOpen => this.setState({ isXAxisOpened: isOpen }))}>
                   <AxisBucket
                     onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
                     onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
@@ -571,6 +598,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     isExtendBounds={this.props.stateParams.isExtendBounds}
                     advancedValue={this.props.stateParams.advancedValue}
                     aggregationArr={this.state.numberFieldArr}
+                    isIndexSelected={this.state.isIndexSelected}
                   ></AxisBucket>
                 </EuiAccordion>
 
@@ -591,6 +619,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                         ]}
                         onChange={(e) => this.onGeneralValChange(e, 'splitedAggregation')}
                         fullWidth
+                        disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
                       />
                     </EuiFormRow>
 
@@ -665,18 +694,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         ),
       },
     ];
-//ready index pattern
+    //ready index pattern
     return (
       <Fragment>
         <EuiSpacer size="xl" />
-        {/* <EuiSelect
-          id="selectDocExample"
-          options={this.state.indicesList[0]}
-          value={this.props.stateParams.indexPattern}
-          onChange={(e: any) => this.onMappingValChange(e, 'indexPattern').then(this.indicesMappingHandler)}
-          fullWidth
-          aria-label="Use aria labels when no actual label is in use"
-        /> */}
         <EuiFormRow label="Index-pattern" fullWidth>
           <EuiComboBox
             singleSelection={{ asPlainText: true }}
