@@ -30,11 +30,11 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       visConfig: {
         defaults: {
           // High level
-          indexPattern: '',
+          indexPattern: null,
           
           // X-axis
           aggregation: 'histogram',
-          field: '',
+          field: null,
           min_interval: 1,
           isEmptyBucket: false,
           isExtendBounds: false,
@@ -54,8 +54,8 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isSplitedShowMissingValues: false,
           isSplitAccordionClicked: false,
 
-          splitedAggregation: 'date_histogram',
-          splitedField: 'Projects',
+          splitedAggregation: 'terms',
+          splitedField: '',
           splitedOrder: 'Descending',
           splitedCustomLabel: '',
           dateFilterFrom: 'now-15m',

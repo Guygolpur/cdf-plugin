@@ -19,6 +19,7 @@ import {
   EuiCollapsibleNavGroup,
   EuiTextArea,
   EuiIconTip,
+  EuiComboBox,
 } from '@elastic/eui';
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
 import { htmlIdGenerator } from '@elastic/eui/lib/services';
@@ -65,6 +66,7 @@ interface CounterParams {
 
 interface CDFEditorComponentState {
   indicesList: any[];
+  selectedIndexPattern: any[];
   comboBoxSelectionOptions: any[];
   numberFieldArr: any[];
   dateFieldArr: any[];
@@ -79,6 +81,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     super(props);
     this.state = {
       indicesList: [],
+      selectedIndexPattern: [],
       comboBoxSelectionOptions: [],
       numberFieldArr: [],
       dateFieldArr: [],
@@ -99,10 +102,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   componentDidMount() {
     this.props.setValue('dateFilterFrom', this.props.timeRange.from);
     this.props.setValue('dateFilterTo', this.props.timeRange.to);
-    
+
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndices().then(indices => {
-      const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, text: element.attributes.title } })
+      const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, label: element.attributes.title } })
       this.state.indicesList.push(indicesList)
       this.props.setValue('indexPattern', indicesList[0].text);
     }).then(res => {
@@ -160,6 +163,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           }
         }
 
+        // sort array of objects
+        numberFieldOptionTmp.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
+        dateFieldOptionTmp.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
+        booleanDateNumberStringFieldOptionTmp.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
+        allFieldsOptionTmp.sort((a, b) => (a.value > b.value) ? 1 : ((b.value > a.value) ? -1 : 0))
+
         this.setState({
           numberFieldArr: numberFieldOptionTmp,
           dateFieldArr: dateFieldOptionTmp,
@@ -170,6 +179,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       .catch(error => { console.log('err: ', error) })
   }
 
+  selectedIndexHandler = (selectedOptions: any) => {
+    this.setState({ selectedIndexPattern: selectedOptions })
+    this.onMappingValChange(selectedOptions[0].value, 'indexPattern').then(this.indicesMappingHandler).catch(e => console.log('error: ', e))
+  }
+
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
@@ -178,7 +192,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   onMappingValChange = async (e: any, valName: (keyof CounterParams)) => {
-    this.props.setValue(valName, e.target.value)
+    this.props.setValue(valName, e)
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
@@ -570,10 +584,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     <EuiFormRow label="Sub aggregation" fullWidth>
                       <EuiSelect
                         options={[
+                          { value: 'terms', text: 'Terms' },
                           { value: 'date_histogram', text: 'Date Histogram' },
                           { value: 'date_range', text: 'Date Range' },
                           { value: 'histogram', text: 'Histogram' },
-                          { value: 'terms', text: 'Terms' },
                         ]}
                         onChange={(e) => this.onGeneralValChange(e, 'splitedAggregation')}
                         fullWidth
@@ -651,18 +665,30 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         ),
       },
     ];
-
+//ready index pattern
     return (
       <Fragment>
         <EuiSpacer size="xl" />
-        <EuiSelect
+        {/* <EuiSelect
           id="selectDocExample"
           options={this.state.indicesList[0]}
           value={this.props.stateParams.indexPattern}
           onChange={(e: any) => this.onMappingValChange(e, 'indexPattern').then(this.indicesMappingHandler)}
           fullWidth
           aria-label="Use aria labels when no actual label is in use"
-        />
+        /> */}
+        <EuiFormRow label="Index-pattern" fullWidth>
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            placeholder="Search"
+            options={this.state.indicesList[0]}
+            selectedOptions={this.state.selectedIndexPattern}
+            onChange={this.selectedIndexHandler}
+            isClearable={true}
+            data-test-subj="indexPattern"
+            fullWidth
+          />
+        </EuiFormRow>
         <EuiTabbedContent
           tabs={tabs}
           initialSelectedTab={tabs[0]}
