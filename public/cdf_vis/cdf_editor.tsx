@@ -102,9 +102,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, text: element.attributes.title } })
       this.state.indicesList.push(indicesList)
       this.props.setValue('indexPattern', indicesList[0].text);
-      console.log('this.state.indicesList[0][0].value: ', this.state.indicesList[0][0].value)
+    }).then(res => {
+      this.indicesMappingHandler()
     })
-    this.indicesMappingHandler()
   }
 
   componentDidUpdate(prevProps: any) {
@@ -174,9 +174,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue(valName, e.target.value);
   }
 
-  onMappingValChange = async(e: any, valName: (keyof CounterParams)) => {
+  onMappingValChange = async (e: any, valName: (keyof CounterParams)) => {
     this.props.setValue(valName, e.target.value)
-    // this.indicesMappingHandler()
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
