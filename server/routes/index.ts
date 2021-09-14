@@ -57,8 +57,12 @@ export function defineRoutes(router: IRouter) {
   //  \kibana\x-pack\plugins\security\server\routes\indices\get_fields.ts
   router.get(
     {
-      path: '/api/mappings',
-      validate: false,
+      path: '/api/mappings/{indexPattern}',
+      validate: {
+        params: schema.object({
+          indexPattern: schema.string(),
+        }),
+      },
     },
     async (context, request, response) => {
       try {
@@ -66,7 +70,7 @@ export function defineRoutes(router: IRouter) {
           body: indexMappings,
         } = await context.core.elasticsearch.client.asCurrentUser.indices.getFieldMapping<FieldMappingResponse>(
           {
-            index: 'arc-*',
+            index: request.params.indexPattern,
             fields: '*',
             allow_no_indices: false,
             include_defaults: true,
@@ -90,6 +94,7 @@ export function defineRoutes(router: IRouter) {
       validate: {
         body: schema.object({
           data: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+          indexPattern: schema.string()
         }),
       },
     },
@@ -97,7 +102,7 @@ export function defineRoutes(router: IRouter) {
       const client = context.core.elasticsearch.client.asCurrentUser;
 
       const tmp = request.body.data
-      const index = 'arc-*'
+      const index = request.body.indexPattern
       try {
         const response = await client.search({
           index,

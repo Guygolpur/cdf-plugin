@@ -2,6 +2,9 @@ import { ExpressionFunctionDefinition, Render } from 'src/plugins/expressions/pu
 import { KibanaContext } from 'src/plugins/data/public';
 
 export interface CDFVisParams {
+  // High level
+  indexPattern: string;
+
   // X-axix
   field: string;
   min_interval: number;
@@ -37,6 +40,9 @@ export interface CDFVisParams {
 
 export interface CDFVisRenderValue {
   visParams: {
+    // High level
+    indexPattern: string;
+
     // X-axis
     aggregation: string;
     field: string;
@@ -87,6 +93,13 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
   help:
     'The expression function definition should be registered for a custom visualization to be rendered',
   args: {
+    // High level
+    indexPattern: {
+      types: ['string'],
+      default: '',
+      help: 'Visualization only argument with type string',
+    },
+
     // X-axis
     aggregation: {
       types: ['string'],
@@ -245,6 +258,9 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       as: 'cdf_vis',
       value: {
         visParams: {
+          //High level
+          indexPattern: args.indexPattern,
+
           // X-axis
           aggregation: args.aggregation,
           field: args.field,

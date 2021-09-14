@@ -22,14 +22,14 @@ import {
 } from '@elastic/eui';
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
 import { htmlIdGenerator } from '@elastic/eui/lib/services';
-import { AddSubBucket } from '../components/addSubBucket';
 import { DatePicker } from '../components/form/datePicker';
 import { AxisBucket } from '../components/xAxisBucket';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
-import { CoreStart } from 'kibana/public';
-
 
 interface CounterParams {
+  // High level
+  indexPattern: string;
+
   // X-axis
   aggregation: string;
   field: string;
@@ -64,6 +64,7 @@ interface CounterParams {
 }
 
 interface CDFEditorComponentState {
+  indicesList: any[];
   comboBoxSelectionOptions: any[];
   numberFieldArr: any[];
   dateFieldArr: any[];
@@ -77,6 +78,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   constructor(props: any) {
     super(props);
     this.state = {
+      indicesList: [],
       comboBoxSelectionOptions: [],
       numberFieldArr: [],
       dateFieldArr: [],
@@ -97,12 +99,40 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   componentDidMount() {
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndices().then(indices => {
-      // Object.entries(indices.data.saved_objects).forEach(([key, value]) => {
-      //   console.log(`value: ${JSON.stringify(value)}`);
-      // })
-      this.visit(indices.data.saved_objects, console.log)
-      console.log('indices: ', Object.entries(indices.data.saved_objects))
+      const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, text: element.attributes.title } })
+      this.state.indicesList.push(indicesList)
+      this.props.setValue('indexPattern', indicesList[0].text);
+      console.log('this.state.indicesList[0][0].value: ', this.state.indicesList[0][0].value)
     })
+    this.indicesMappingHandler()
+  }
+
+  componentDidUpdate(prevProps: any) {
+    if (prevProps.timeRange.from !== this.props.timeRange.from) {
+      this.props.setValue('dateFilterFrom', this.props.timeRange.from);
+    }
+    if (prevProps.timeRange.to !== this.props.timeRange.to) {
+      this.props.setValue('dateFilterTo', this.props.timeRange.to);
+    }
+  }
+
+  getIndices = () => {
+    return axios({
+      url: '/_find',
+      method: 'GET',
+      headers: { "kbn-xsrf": "true" }
+    })
+  }
+
+  getIndicesMapping = () => {
+    return axios({
+      url: `/api/mappings/${this.props.stateParams.indexPattern}`,
+      method: 'GET',
+      headers: { "kbn-xsrf": "true" }
+    })
+  }
+
+  indicesMappingHandler = () => {
     this.getIndicesMapping()
       .then(response => {
         const indexRes = Object.keys(response.data)[0]
@@ -137,36 +167,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       .catch(error => { console.log('err: ', error) })
   }
 
-  componentDidUpdate(prevProps: any) {
-    if (prevProps.timeRange.from !== this.props.timeRange.from) {
-      this.props.setValue('dateFilterFrom', this.props.timeRange.from);
-    }
-    if (prevProps.timeRange.to !== this.props.timeRange.to) {
-      this.props.setValue('dateFilterTo', this.props.timeRange.to);
-    }
-  }
-
-  getIndices = () => {
-    return axios({
-      url: '/_find',
-      method: 'GET',
-      headers: { "kbn-xsrf": "true" }
-    })
-  }
-
-  getIndicesMapping = () => {
-    return axios({
-      url: '/api/mappings',
-      method: 'GET',
-      headers: { "kbn-xsrf": "true" }
-    })
-  }
-
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
     this.props.setValue(valName, e.target.value);
+  }
+
+  onMappingValChange = async(e: any, valName: (keyof CounterParams)) => {
+    this.props.setValue(valName, e.target.value)
+    // this.indicesMappingHandler()
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
@@ -178,9 +188,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   onSplitedSeperateBucketChange = () => {
     this.props.setValue('isSplitedSeperateBucket', !this.props.stateParams.isSplitedSeperateBucket);
   };
+
   onSplitedShowMissingValuesChange = () => {
     this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
   };
+
   splitAccordionClicked = () => {
     this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
   }
@@ -640,6 +652,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
     return (
       <Fragment>
+        <EuiSpacer size="xl" />
+        <EuiSelect
+          id="selectDocExample"
+          options={this.state.indicesList[0]}
+          value={this.props.stateParams.indexPattern}
+          onChange={(e: any) => this.onMappingValChange(e, 'indexPattern').then(this.indicesMappingHandler)}
+          fullWidth
+          aria-label="Use aria labels when no actual label is in use"
+        />
         <EuiTabbedContent
           tabs={tabs}
           initialSelectedTab={tabs[0]}

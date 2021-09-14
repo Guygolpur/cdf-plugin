@@ -25,6 +25,9 @@ export function CdfComponent(props: CdfComponentProps) {
   })
 
   const {
+    // High level
+    indexPattern,
+
     // X-axis
     aggregation,
     field,
@@ -124,7 +127,7 @@ export function CdfComponent(props: CdfComponentProps) {
     axios({
       method: "POST",
       url: "/api/search",
-      data: { data: JSON.stringify(data) },
+      data: { data: JSON.stringify(data), indexPattern: indexPattern },
       headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {

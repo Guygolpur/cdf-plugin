@@ -10,6 +10,9 @@ import {
 
 export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
   const {
+    // High level
+    indexPattern,
+
     // X-axis
     aggregation,
     field,
@@ -46,6 +49,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
     'cdf_vis',
     {
+      // High level
+      indexPattern,
+
       // X-axis
       aggregation,
       field,
