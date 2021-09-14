@@ -97,6 +97,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   componentDidMount() {
+    this.props.setValue('dateFilterFrom', this.props.timeRange.from);
+    this.props.setValue('dateFilterTo', this.props.timeRange.to);
+    
     this.props.setValue('isSplitAccordionClicked', false)
     this.getIndices().then(indices => {
       const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, text: element.attributes.title } })
