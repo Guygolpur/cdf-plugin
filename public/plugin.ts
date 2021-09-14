@@ -29,6 +29,9 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       description: 'The CDF (cumulative distribution function) uses a line chart to represent symbolic distribution.',
       visConfig: {
         defaults: {
+          // High level
+          indexPattern: '',
+          
           // X-axis
           aggregation: 'histogram',
           field: '',

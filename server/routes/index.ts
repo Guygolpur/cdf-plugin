@@ -1,6 +1,41 @@
 import { IRouter } from 'src/core/server';
 import { schema } from '@kbn/config-schema';
 import { wrapIntoCustomErrorResponse } from '../errors';
+import { CoreUsageDataSetup } from 'src/core/server/core_usage_data';
+import { object } from 'joi';
+
+
+interface RouteDependencies {
+  coreUsageData: CoreUsageDataSetup;
+}
+
+export const registerFindRoute = (router: IRouter, { coreUsageData }: RouteDependencies) => {
+
+  // referance at:
+  // \kibana\src\core\server\saved_objects\routes\find.ts
+  router.get(
+    {
+      path: '/_find',
+      validate: false,
+    },
+    async (context, request, response) => {
+      try {
+        const indexMappings = await context.core.savedObjects.client.find(
+          {
+            type: 'index-pattern',
+            perPage: 10000
+          }
+        );
+        return response.ok({
+          body: indexMappings,
+        });
+      } catch (error) {
+        return response.customError(wrapIntoCustomErrorResponse(error));
+      }
+    }
+  );
+}
+
 
 interface FieldMappingResponse {
   [indexName: string]: {
@@ -17,13 +52,17 @@ interface FieldMappingResponse {
 }
 
 export function defineRoutes(router: IRouter) {
-  
+
   //  referance at:
   //  \kibana\x-pack\plugins\security\server\routes\indices\get_fields.ts
   router.get(
     {
-      path: '/api/mappings',
-      validate: false,
+      path: '/api/mappings/{indexPattern}',
+      validate: {
+        params: schema.object({
+          indexPattern: schema.string(),
+        }),
+      },
     },
     async (context, request, response) => {
       try {
@@ -31,7 +70,7 @@ export function defineRoutes(router: IRouter) {
           body: indexMappings,
         } = await context.core.elasticsearch.client.asCurrentUser.indices.getFieldMapping<FieldMappingResponse>(
           {
-            index: 'arc-*',
+            index: request.params.indexPattern,
             fields: '*',
             allow_no_indices: false,
             include_defaults: true,
@@ -55,6 +94,7 @@ export function defineRoutes(router: IRouter) {
       validate: {
         body: schema.object({
           data: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+          indexPattern: schema.string()
         }),
       },
     },
@@ -62,7 +102,7 @@ export function defineRoutes(router: IRouter) {
       const client = context.core.elasticsearch.client.asCurrentUser;
 
       const tmp = request.body.data
-      const index = 'arc-*'
+      const index = request.body.indexPattern
       try {
         const response = await client.search({
           index,
