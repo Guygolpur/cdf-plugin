@@ -5,6 +5,7 @@ import {
   EuiSpacer,
   EuiText,
   EuiFormRow,
+  EuiComboBox,
   EuiSelect,
   EuiFieldNumber,
   EuiSwitch,
@@ -17,8 +18,8 @@ import {
 } from '@elastic/eui';
 
 export const AxisBucket = ({
-  onGeneralValChange, onGeneralBoolValChange,
-  field, isExtendBounds, isEmptyBucket, advancedValue,
+  onGeneralValChange, onGeneralBoolValChange, selectedHistogramFieldHandler,
+  selectedHistogramField, field, isExtendBounds, isEmptyBucket, advancedValue,
   aggregationArr, isIndexSelected }: any
 ) => {
   return (
@@ -51,14 +52,16 @@ export const AxisBucket = ({
       <EuiSpacer size="m" />
 
       <EuiFormRow label="Field" fullWidth>
-        <EuiSelect
-          options={
-            aggregationArr
-          }
-          value={field}
+        <EuiComboBox
+          singleSelection={{ asPlainText: true }}
+          placeholder="Search"
+          options={aggregationArr}
+          selectedOptions={selectedHistogramField}
+          onChange={selectedHistogramFieldHandler}
+          isClearable={true}
+          data-test-subj="histogramField"
           fullWidth
-          onChange={(e: any) => onGeneralValChange(e, 'field')}
-          disabled={!isIndexSelected}
+          isDisabled={!isIndexSelected}
         />
       </EuiFormRow>
 
@@ -85,7 +88,7 @@ export const AxisBucket = ({
       <EuiSpacer size="xs" />
 
       <EuiFormRow fullWidth>
-        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth disabled={!isIndexSelected}/>
+        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth disabled={!isIndexSelected} />
       </EuiFormRow>
 
       <EuiSpacer size="m" />
@@ -115,7 +118,7 @@ export const AxisBucket = ({
       <EuiSpacer size="m" />
 
       <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'customLabel')}>
-        <EuiFieldText name="first" fullWidth disabled={!isIndexSelected}/>
+        <EuiFieldText name="first" fullWidth disabled={!isIndexSelected} />
       </EuiFormRow>
 
       <EuiCollapsibleNavGroup

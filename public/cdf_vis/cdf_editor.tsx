@@ -69,6 +69,11 @@ interface CDFEditorComponentState {
   selectedIndexPattern: any[];
   isIndexSelected: boolean;
   isXAxisOpened: boolean;
+  selectedHistogramField: any[];
+  selectedSplitLinesTermsField: any[];
+  selectedSplitLinesDateHistogramField: any[];
+  selectedSplitLinesDateRangeField: any[];
+  selectedSplitLinesHistogramField: any[];
   comboBoxSelectionOptions: any[];
   numberFieldArr: any[];
   dateFieldArr: any[];
@@ -86,6 +91,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       selectedIndexPattern: [],
       isIndexSelected: false,
       isXAxisOpened: false,
+      selectedHistogramField: [],
+      selectedSplitLinesTermsField: [],
+      selectedSplitLinesDateHistogramField: [],
+      selectedSplitLinesDateRangeField: [],
+      selectedSplitLinesHistogramField: [],
       comboBoxSelectionOptions: [],
       numberFieldArr: [],
       dateFieldArr: [],
@@ -152,7 +162,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         for (const key in mappingRes) {
           let value = mappingRes[key];
           if (value != undefined && value.mapping[key]) {
-            objNodeSub = { 'value': key, 'text': key };
+            objNodeSub = { 'value': key, 'label': key };
             allFieldsOptionTmp.push(objNodeSub)
             if (value.mapping[key].type === 'integer' || value.mapping[key].type === 'double' || value.mapping[key].type === 'long' || value.mapping[key].type === 'float') {
               numberFieldOptionTmp.push(objNodeSub);
@@ -198,6 +208,41 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }
 
     this.onMappingValChange(selectedOptions[0].value, 'indexPattern').then(this.indicesMappingHandler).catch(e => console.log('error: ', e))
+  }
+
+  selectedSplitLinesTermsFieldHandler = (selectedField: any) => {
+    this.props.setValue('splitedField', selectedField[0].value);
+    this.setState({
+      selectedSplitLinesTermsField: selectedField
+    })
+  }
+
+  selectedHistogramFieldHandler = (selectedField: any) => {
+    this.props.setValue('field', selectedField[0].value);
+    this.setState({
+      selectedHistogramField: selectedField
+    })
+  }
+
+  selectedSplitLinesDateHistogramFieldHandler = (selectedField: any) => {
+    this.props.setValue('splitedField', selectedField[0].value);
+    this.setState({
+      selectedSplitLinesDateHistogramField: selectedField
+    })
+  }
+
+  selectedSplitLinesDateRangeFieldHandler = (selectedField: any) => {
+    this.props.setValue('splitedField', selectedField[0].value);
+    this.setState({
+      selectedSplitLinesDateRangeField: selectedField
+    })
+  }
+
+  selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
+    this.props.setValue('splitedField', selectedField[0].value);
+    this.setState({
+      selectedSplitLinesHistogramField: selectedField
+    })
   }
 
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
@@ -248,15 +293,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     if (this.props.stateParams.splitedAggregation == 'terms') {
       splitedSubAggregationContent = <>
         <EuiFormRow label="Field" fullWidth>
-          <EuiSelect
-            options={
-              this.state.splitedAggregationArr
-            }
-            value={this.props.stateParams.splitedField}
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            placeholder="Search"
+            options={this.state.splitedAggregationArr}
+            selectedOptions={this.state.selectedSplitLinesTermsField}
+            onChange={this.selectedSplitLinesTermsFieldHandler}
+            isClearable={false}
+            data-test-subj="splitLinesTermsField"
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')
-            }
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -341,14 +387,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     else if (this.props.stateParams.splitedAggregation == 'histogram') {
       splitedSubAggregationContent = <>
         <EuiFormRow label="Field" fullWidth>
-          <EuiSelect
-            options={
-              this.state.numberFieldArr
-            }
-            value={this.props.stateParams.splitedField}
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            placeholder="Search"
+            options={this.state.numberFieldArr}
+            selectedOptions={this.state.selectedSplitLinesHistogramField}
+            onChange={this.selectedSplitLinesHistogramFieldHandler}
+            isClearable={false}
+            data-test-subj="selectedSplitLinesHistogramField"
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -441,14 +489,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     else if (this.props.stateParams.splitedAggregation == 'date_histogram') {
       splitedSubAggregationContent = <>
         <EuiFormRow label="Field" fullWidth>
-          <EuiSelect
-            options={
-              this.state.dateFieldArr
-            }
-            value={this.props.stateParams.splitedField}
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            placeholder="Search"
+            options={this.state.dateFieldArr}
+            selectedOptions={this.state.selectedSplitLinesDateHistogramField}
+            onChange={this.selectedSplitLinesDateHistogramFieldHandler}
+            isClearable={false}
+            data-test-subj="splitLinesDateHistogramField"
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -523,14 +573,16 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     else if (this.props.stateParams.splitedAggregation == 'date_range') {
       splitedSubAggregationContent = <>
         <EuiFormRow label="Field" fullWidth>
-          <EuiSelect
-            options={
-              this.state.dateFieldArr
-            }
-            value={this.props.stateParams.splitedField}
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            placeholder="Search"
+            options={this.state.dateFieldArr}
+            selectedOptions={this.state.selectedSplitLinesDateRangeField}
+            onChange={this.selectedSplitLinesDateRangeFieldHandler}
+            isClearable={false}
+            data-test-subj="splitLinesDateRangeField"
             fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedField')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
           />
         </EuiFormRow>
 
@@ -593,6 +645,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   <AxisBucket
                     onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
                     onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
+                    selectedHistogramFieldHandler={this.selectedHistogramFieldHandler}
+                    selectedHistogramField={this.state.selectedHistogramField}
                     field={this.props.stateParams.field}
                     isEmptyBucket={this.props.stateParams.isEmptyBucket}
                     isExtendBounds={this.props.stateParams.isExtendBounds}
@@ -694,7 +748,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         ),
       },
     ];
-    //ready index pattern
+
     return (
       <Fragment>
         <EuiSpacer size="xl" />
@@ -705,7 +759,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             options={this.state.indicesList[0]}
             selectedOptions={this.state.selectedIndexPattern}
             onChange={this.selectedIndexHandler}
-            isClearable={true}
+            isClearable={false}
             data-test-subj="indexPattern"
             fullWidth
           />
