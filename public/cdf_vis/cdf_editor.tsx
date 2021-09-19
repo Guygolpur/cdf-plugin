@@ -1,30 +1,25 @@
 
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import axios from 'axios';
 import {
   EuiCheckbox,
   EuiFormRow,
-  EuiSelect,
-  EuiSwitch,
-  EuiPanel,
   EuiTabbedContent,
   EuiSpacer,
   EuiCard,
   EuiFlexGroup,
   EuiFlexItem,
   EuiAccordion,
-  EuiFieldNumber,
-  EuiText,
-  EuiFieldText,
-  EuiCollapsibleNavGroup,
-  EuiTextArea,
-  EuiIconTip,
   EuiComboBox,
+  EuiPanel,
+  EuiText,
+  EuiScreenReaderOnly,
+  EuiButton
 } from '@elastic/eui';
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
 import { htmlIdGenerator } from '@elastic/eui/lib/services';
-import { DatePicker } from '../components/form/datePicker';
 import { AxisBucket } from '../components/xAxisBucket';
+import { AddSubBucket } from '../components/addSubBucket';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 
 interface CounterParams {
@@ -349,360 +344,73 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   render() {
-    let splitedSubAggregationContent;
-    if (this.props.stateParams.splitedAggregation == 'terms') {
-      splitedSubAggregationContent = <>
-        <EuiFormRow label="Field" fullWidth>
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            placeholder="Search"
-            options={this.state.splitedAggregationArr}
-            selectedOptions={this.state.selectedSplitLinesTermsField}
-            onChange={this.selectedSplitLinesTermsFieldHandler}
-            isClearable={true}
-            data-test-subj="splitLinesTermsField"
-            fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            isInvalid={!(this.state.selectedSplitLinesTermsField.length > 0)}
+    const Rows = () => {
+      const [counter, setCounter] = useState(1);
+      const rows = [];
+      for (let i = 1; i <= counter; i++) {
+        rows.push(
+          <AddSubBucket
+            stateParams={this.props.stateParams}
+            splitedAggregationArr={this.state.splitedAggregationArr}
+            selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
+            isIndexSelected={this.state.isIndexSelected}
+            isXAxisFieldSelected={this.state.isXAxisFieldSelected}
+            selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
+            onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+            onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
+            onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
+            numberFieldArr={this.state.numberFieldArr}
+            selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
+            selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
+            dateFieldArr={this.state.dateFieldArr}
+            selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
+            selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
+            selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
+            selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
+            setDateRangeStart={this.setDateRangeStart}
+            setDateRangeEnd={this.setDateRangeEnd}
+            cleanFieldSplitLines={(e: any) => this.cleanFieldSplitLines(e)}
           />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        <EuiFlexGroup style={{ maxWidth: 800 }}>
-          <EuiFlexItem>
-            <EuiFormRow label="Order" >
-              <EuiSelect
-                options={[
-                  { value: 'Descending', text: 'Descending' },
-                  { value: 'Ascending', text: 'Ascending' },
-                ]}
-                onChange={(e) => this.onGeneralValChange(e, 'splitedOrder')}
-                disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-              />
-            </EuiFormRow>
-          </EuiFlexItem>
-
-        </EuiFlexGroup>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow fullWidth hasChildLabel={false}>
-          <EuiSwitch
-            label="Group other values in seperate bucket"
-            name="switch"
-            checked={this.props.stateParams.isSplitedSeperateBucket}
-            onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow fullWidth hasChildLabel={false}>
-          <EuiSwitch
-            label="Show missing values"
-            name="switch"
-            checked={this.props.stateParams.isSplitedShowMissingValues}
-            onChange={this.onSplitedShowMissingValuesChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText
-            name="first"
-            fullWidth
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiCollapsibleNavGroup
-          data-test-subj="ADVANCED"
-          background="light"
-          title="Advanced"
-          arrowDisplay="left"
-          isCollapsible={true}
-          initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')} >
-            <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-              <dt style={{ display: "inline" }}>JSON input</dt>
-            </dl>
-          </EuiText>
-          <EuiIconTip
-            aria-label="Warning"
-            size="m"
-            type="alert"
-            color="black"
-            content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-          />
-          <EuiText size="s" color="subdued">
-            <EuiTextArea
-              aria-label="Use aria labels when no actual label is in use"
-              value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            />
-          </EuiText>
-        </EuiCollapsibleNavGroup>
-      </>
-    }
-    else if (this.props.stateParams.splitedAggregation == 'histogram') {
-      splitedSubAggregationContent = <>
-        <EuiFormRow label="Field" fullWidth>
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            placeholder="Search"
-            options={this.state.numberFieldArr}
-            selectedOptions={this.state.selectedSplitLinesHistogramField}
-            onChange={this.selectedSplitLinesHistogramFieldHandler}
-            isClearable={true}
-            data-test-subj="selectedSplitLinesHistogramField"
-            fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            isInvalid={!(this.state.selectedSplitLinesHistogramField.length > 0)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        <EuiText size="xs">
+        );
+      }
+      const growingAccordianDescriptionId = htmlIdGenerator()();
+      const listId = htmlIdGenerator()();
+      return (
+        <EuiText size="s">
+          <EuiScreenReaderOnly>
+            <p id={growingAccordianDescriptionId}>
+              Currently height is set to {counter} items
+            </p>
+          </EuiScreenReaderOnly>
+          <EuiSpacer size="s" />
+          <ul id={listId}>{rows}</ul>
           <p>
-            <b>Minimum interval</b>
-            <EuiIconTip
-              type="iInCircle"
-              color="subdued"
-              content={
-                <span>
-                  Interval will be automatically scaled in the event that the provided value creates more buckets than specified by Advanced Setting's histogram:maxBars
-                </span>
-              }
-              iconProps={{
-                className: 'eui-alignTop',
-              }}
-            />
+            <EuiButton
+              size="s"
+              iconType="plusInCircleFilled"
+              onClick={() => setCounter(counter + 1)}
+              aria-controls={listId}
+              aria-describedby={growingAccordianDescriptionId}
+              fullWidth
+            >
+              Add Split lines
+            </EuiButton>{' '}
+            <EuiSpacer size="s" />
+            <EuiButton
+              size="s"
+              iconType="minusInCircleFilled"
+              aria-controls={listId}
+              aria-describedby={growingAccordianDescriptionId}
+              onClick={() => setCounter(Math.max(0, counter - 1))}
+              isDisabled={counter === 1}
+              fullWidth
+            >
+              Remove last Split lines Bucket
+            </EuiButton>
           </p>
         </EuiText>
-
-        <EuiSpacer size="xs" />
-
-        <EuiFormRow fullWidth>
-          <EuiFieldNumber
-            placeholder={'1'}
-            min={1}
-            onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        <EuiFormRow fullWidth hasChildLabel={false}>
-          <EuiSwitch
-            label="Show empty bucket"
-            name="switch"
-            checked={this.props.stateParams.isSplitedSeperateBucket}
-            onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow fullWidth hasChildLabel={false}>
-          <EuiSwitch
-            label="Extend bounds"
-            name="switch"
-            checked={this.props.stateParams.isSplitedShowMissingValues}
-            onChange={this.onSplitedShowMissingValuesChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText
-            name="first"
-            fullWidth
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiCollapsibleNavGroup
-          data-test-subj="ADVANCED"
-          background="light"
-          title="Advanced"
-          arrowDisplay="left"
-          isCollapsible={true}
-          initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')}  >
-            <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-              <dt style={{ display: "inline" }}>JSON input</dt>
-            </dl>
-          </EuiText>
-          <EuiIconTip
-            aria-label="Warning"
-            size="m"
-            type="iInCircle"
-            color="black"
-            content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-          />
-          <EuiText size="s" color="subdued">
-            <EuiTextArea
-              aria-label="Use aria labels when no actual label is in use"
-              value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            />
-          </EuiText>
-        </EuiCollapsibleNavGroup>
-      </>
-    }
-    else if (this.props.stateParams.splitedAggregation == 'date_histogram') {
-      splitedSubAggregationContent = <>
-        <EuiFormRow label="Field" fullWidth>
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            placeholder="Search"
-            options={this.state.dateFieldArr}
-            selectedOptions={this.state.selectedSplitLinesDateHistogramField}
-            onChange={this.selectedSplitLinesDateHistogramFieldHandler}
-            isClearable={true}
-            data-test-subj="splitLinesDateHistogramField"
-            fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            isInvalid={!(this.state.selectedSplitLinesDateHistogramField.length > 0)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        <EuiFormRow label="Minimum interval" fullWidth>
-          <EuiSelect
-            options={[
-              { value: 'minute', text: 'Minute' },
-              { value: '1h', text: 'Hourly' },
-              { value: '1d', text: 'Daily' },
-              { value: '1w', text: 'Weekly' },
-              { value: 'month', text: 'Monthly' },
-              { value: '1y', text: 'Yearly' },
-            ]}
-            fullWidth
-            onChange={(e: any) => this.onGeneralValChange(e, 'splitedDateHistogramMinInterval')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        <EuiFormRow fullWidth hasChildLabel={false}>
-          <EuiSwitch
-            label="Drop partial buckets"
-            name="switch"
-            checked={this.props.stateParams.isSplitedSeperateBucket}
-            onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="s" />
-
-        <EuiSpacer size="s" />
-
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} />
-        </EuiFormRow>
-
-        <EuiCollapsibleNavGroup
-          data-test-subj="ADVANCED"
-          background="light"
-          title="Advanced"
-          arrowDisplay="left"
-          isCollapsible={true}
-          initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')}  >
-            <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-              <dt style={{ display: "inline" }}>JSON input</dt>
-            </dl>
-          </EuiText>
-          <EuiIconTip
-            aria-label="Warning"
-            size="m"
-            type="alert"
-            color="black"
-            content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-          />
-          <EuiText size="s" color="subdued">
-            <EuiTextArea
-              aria-label="Use aria labels when no actual label is in use"
-              value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            />
-          </EuiText>
-        </EuiCollapsibleNavGroup>
-      </>
-    }
-    else if (this.props.stateParams.splitedAggregation == 'date_range') {
-      splitedSubAggregationContent = <>
-        <EuiFormRow label="Field" fullWidth>
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            placeholder="Search"
-            options={this.state.dateFieldArr}
-            selectedOptions={this.state.selectedSplitLinesDateRangeField}
-            onChange={this.selectedSplitLinesDateRangeFieldHandler}
-            isClearable={true}
-            data-test-subj="splitLinesDateRangeField"
-            fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            isInvalid={!(this.state.selectedSplitLinesDateRangeField.length > 0)}
-          />
-        </EuiFormRow>
-
-        <EuiSpacer size="m" />
-
-        < DatePicker disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
-
-        <EuiSpacer size="m" />
-
-        <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} />
-        </EuiFormRow>
-
-        <EuiCollapsibleNavGroup
-          data-test-subj="ADVANCED"
-          background="light"
-          title="Advanced"
-          arrowDisplay="left"
-          isCollapsible={true}
-          initialIsOpen={false}>
-          <EuiText style={{ display: "inline" }} onChange={(e) => this.onGeneralValChange(e, 'jsonInput')} >
-            <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-              <dt style={{ display: "inline" }}>JSON input</dt>
-            </dl>
-          </EuiText>
-          <EuiIconTip
-            aria-label="Warning"
-            size="m"
-            type="alert"
-            color="black"
-            content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-          />
-          <EuiText size="s" color="subdued">
-            <EuiTextArea
-              aria-label="Use aria labels when no actual label is in use"
-              value={this.props.stateParams.advancedValue}
-              onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-            />
-          </EuiText>
-        </EuiCollapsibleNavGroup>
-      </>
-    }
+      );
+    };
 
     let tabs = [
       {
@@ -718,6 +426,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 title={'Buckets'}
                 description=""
               >
+                {/* X-Axis */}
+
                 <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
                   <AxisBucket
                     onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
@@ -736,32 +446,37 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 <EuiSpacer size="m" />
 
                 {/* Splited */}
-
                 <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}>
                   <EuiPanel style={{ maxWidth: '100%' }}>
+                    <Rows />
 
-                    <EuiFormRow label="Sub aggregation" fullWidth>
-                      <EuiSelect
-                        options={[
-                          { value: 'terms', text: 'Terms' },
-                          { value: 'date_histogram', text: 'Date Histogram' },
-                          { value: 'date_range', text: 'Date Range' },
-                          { value: 'histogram', text: 'Histogram' },
-                        ]}
-                        onChange={(e) => this.cleanFieldSplitLines(e)}
-                        fullWidth
-                        disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
-                      />
-                    </EuiFormRow>
-
-                    {splitedSubAggregationContent}
-
+                    {/* <AddSubBucket
+                      stateParams={this.props.stateParams}
+                      splitedAggregationArr={this.state.splitedAggregationArr}
+                      selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
+                      isIndexSelected={this.state.isIndexSelected}
+                      isXAxisFieldSelected={this.state.isXAxisFieldSelected}
+                      selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
+                      onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                      onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
+                      onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
+                      numberFieldArr={this.state.numberFieldArr}
+                      selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
+                      selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
+                      dateFieldArr={this.state.dateFieldArr}
+                      selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
+                      selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
+                      selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
+                      selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
+                      setDateRangeStart={this.setDateRangeStart}
+                      setDateRangeEnd={this.setDateRangeEnd}
+                      cleanFieldSplitLines={(e: any) => this.cleanFieldSplitLines(e)}
+                    /> */}
                   </EuiPanel>
+
                 </EuiAccordion>
 
                 <EuiSpacer size="m" />
-
-                {/* <AddSubBucket /> */}
 
               </EuiCard>
             </EuiFlexItem>
