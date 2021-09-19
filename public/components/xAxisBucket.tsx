@@ -62,6 +62,7 @@ export const AxisBucket = ({
           data-test-subj="histogramField"
           fullWidth
           isDisabled={!isIndexSelected}
+          isInvalid={!(selectedHistogramField.length > 0)}
         />
       </EuiFormRow>
 

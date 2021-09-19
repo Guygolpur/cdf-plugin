@@ -43,7 +43,7 @@ export function CdfComponent(props: CdfComponentProps) {
     xMin,
     xMax,
 
-    isSplitAccordionClicked,
+    isSplitAccordionSearch,
 
     splitedAggregation,
     splitedField,
@@ -77,7 +77,7 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
     }
-    if (isSplitAccordionClicked) {
+    if (isSplitAccordionSearch) {
       if (splitedAggregation == 'terms') {
         data.aggs.cdfAgg['aggs'] = {
           innerAgg: {
@@ -133,7 +133,7 @@ export function CdfComponent(props: CdfComponentProps) {
       .then(function (response) {
         let aggLineDataObj: any = {};
 
-        if (!isSplitAccordionClicked) {
+        if (!isSplitAccordionSearch) {
           aggLineDataObj[field] = {
             points: parseSingleResponseData(response.data)
           }
@@ -165,7 +165,7 @@ export function CdfComponent(props: CdfComponentProps) {
     xMin,
     xMax,
 
-    isSplitAccordionClicked,
+    isSplitAccordionSearch,
     splitedAggregation,
     splitedField,
     isVerticalGrid,

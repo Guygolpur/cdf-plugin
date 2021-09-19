@@ -53,7 +53,7 @@ interface CounterParams {
   isSplitedSeperateBucket: boolean;
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
-  isSplitAccordionClicked: boolean;
+  isSplitAccordionSearch: boolean;
   isVerticalGrid: boolean;
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
@@ -68,7 +68,7 @@ interface CDFEditorComponentState {
   indicesList: any[];
   selectedIndexPattern: any[];
   isIndexSelected: boolean;
-  isXAxisOpened: boolean;
+  isXAxisFieldSelected: boolean;
   selectedHistogramField: any[];
   selectedSplitLinesTermsField: any[];
   selectedSplitLinesDateHistogramField: any[];
@@ -90,7 +90,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       indicesList: [],
       selectedIndexPattern: [],
       isIndexSelected: false,
-      isXAxisOpened: false,
+      isXAxisFieldSelected: false,
       selectedHistogramField: [],
       selectedSplitLinesTermsField: [],
       selectedSplitLinesDateHistogramField: [],
@@ -116,8 +116,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   componentDidMount() {
     this.props.setValue('dateFilterFrom', this.props.timeRange.from);
     this.props.setValue('dateFilterTo', this.props.timeRange.to);
+    this.props.setValue('field', '');
+    this.props.setValue('isSplitAccordionSearch', false)
+    this.props.setValue('splitedAggregation', 'terms')
 
-    this.props.setValue('isSplitAccordionClicked', false)
     this.getIndices().then(indices => {
       const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, label: element.attributes.title } })
       this.state.indicesList.push(indicesList)
@@ -210,32 +212,36 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.onMappingValChange(selectedOptions[0].value, 'indexPattern').then(this.indicesMappingHandler).catch(e => console.log('error: ', e))
   }
 
+  selectedHistogramFieldHandler = (selectedField: any) => {
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('field', selectedField[0].value);
+      this.setState({
+        selectedHistogramField: selectedField,
+        isXAxisFieldSelected: true
+      })
+    }
+    else {
+      this.props.setValue('field', selectedField);
+      this.setState({
+        selectedHistogramField: selectedField,
+        isXAxisFieldSelected: false
+      })
+    }
+  }
+
   selectedSplitLinesTermsFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
+      this.props.setValue('isSplitAccordionSearch', true);
       this.setState({
         selectedSplitLinesTermsField: selectedField
       })
     }
     else {
       this.props.setValue('splitedField', selectedField);
+      this.props.setValue('isSplitAccordionSearch', false);
       this.setState({
         selectedSplitLinesTermsField: selectedField
-      })
-    }
-  }
-
-  selectedHistogramFieldHandler = (selectedField: any) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('field', selectedField[0].value);
-      this.setState({
-        selectedHistogramField: selectedField
-      })
-    }
-    else {
-      this.props.setValue('field', selectedField);
-      this.setState({
-        selectedHistogramField: selectedField
       })
     }
   }
@@ -243,12 +249,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   selectedSplitLinesDateHistogramFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
+      this.props.setValue('isSplitAccordionSearch', true);
       this.setState({
         selectedSplitLinesDateHistogramField: selectedField
       })
     }
     else {
       this.props.setValue('splitedField', selectedField);
+      this.props.setValue('isSplitAccordionSearch', false);
       this.setState({
         selectedSplitLinesDateHistogramField: selectedField
       })
@@ -258,12 +266,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   selectedSplitLinesDateRangeFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
+      this.props.setValue('isSplitAccordionSearch', true);
       this.setState({
         selectedSplitLinesDateRangeField: selectedField
       })
     }
     else {
       this.props.setValue('splitedField', selectedField);
+      this.props.setValue('isSplitAccordionSearch', false);
       this.setState({
         selectedSplitLinesDateRangeField: selectedField
       })
@@ -273,12 +283,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
+      this.props.setValue('isSplitAccordionSearch', true);
       this.setState({
         selectedSplitLinesHistogramField: selectedField
       })
     }
     else {
       this.props.setValue('splitedField', selectedField);
+      this.props.setValue('isSplitAccordionSearch', false);
       this.setState({
         selectedSplitLinesHistogramField: selectedField
       })
@@ -297,7 +309,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
-  // isSplitedSeperateBucket, isSplitedShowMissingValues, isSplitAccordionClicked
+  // isSplitedSeperateBucket, isSplitedShowMissingValues, isSplitAccordionSearch
   onGeneralBoolValChange = (valName: (keyof CounterParams)) => {
     this.props.setValue(valName, !this.props.stateParams[valName]);
   }
@@ -309,10 +321,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   onSplitedShowMissingValuesChange = () => {
     this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
   };
-
-  splitAccordionClicked = () => {
-    this.props.setValue('isSplitAccordionClicked', !this.props.stateParams.isSplitAccordionClicked);
-  }
 
   closeAddPopover = () => {
     this.setState({ isAddPopoverOpen: false })
@@ -326,6 +334,18 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   setDateRangeEnd = (end: any) => {
     this.props.setValue('dateRangeEnd', end);
+  }
+
+  cleanFieldSplitLines = (e: any) => {
+    this.onGeneralValChange(e, 'splitedAggregation')
+    this.props.setValue('isSplitAccordionSearch', false);
+    this.props.setValue('splitedField', '');
+    this.setState({
+      selectedSplitLinesTermsField: [],
+      selectedSplitLinesDateHistogramField: [],
+      selectedSplitLinesDateRangeField: [],
+      selectedSplitLinesHistogramField: []
+    })
   }
 
   render() {
@@ -342,7 +362,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             isClearable={true}
             data-test-subj="splitLinesTermsField"
             fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+            isInvalid={!(this.state.selectedSplitLinesTermsField.length > 0)}
           />
         </EuiFormRow>
 
@@ -357,7 +378,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                   { value: 'Ascending', text: 'Ascending' },
                 ]}
                 onChange={(e) => this.onGeneralValChange(e, 'splitedOrder')}
-                disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+                disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
               />
             </EuiFormRow>
           </EuiFlexItem>
@@ -372,7 +393,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
@@ -384,14 +405,18 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedShowMissingValues}
             onChange={this.onSplitedShowMissingValuesChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
+          <EuiFieldText
+            name="first"
+            fullWidth
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+          />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -418,7 +443,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -436,7 +461,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             isClearable={true}
             data-test-subj="selectedSplitLinesHistogramField"
             fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+            isInvalid={!(this.state.selectedSplitLinesHistogramField.length > 0)}
           />
         </EuiFormRow>
 
@@ -463,7 +489,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <EuiSpacer size="xs" />
 
         <EuiFormRow fullWidth>
-          <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')} disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
+          <EuiFieldNumber
+            placeholder={'1'}
+            min={1}
+            onChange={(e) => this.onGeneralValChange(e, 'splitedHistogramMinInterval')}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+          />
         </EuiFormRow>
 
         <EuiSpacer size="m" />
@@ -474,7 +505,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
@@ -486,14 +517,18 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedShowMissingValues}
             onChange={this.onSplitedShowMissingValuesChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
+          <EuiFieldText
+            name="first"
+            fullWidth
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+          />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -520,7 +555,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -538,7 +573,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             isClearable={true}
             data-test-subj="splitLinesDateHistogramField"
             fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+            isInvalid={!(this.state.selectedSplitLinesDateHistogramField.length > 0)}
           />
         </EuiFormRow>
 
@@ -556,7 +592,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             ]}
             fullWidth
             onChange={(e: any) => this.onGeneralValChange(e, 'splitedDateHistogramMinInterval')}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
@@ -568,7 +604,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             name="switch"
             checked={this.props.stateParams.isSplitedSeperateBucket}
             onChange={this.onSplitedSeperateBucketChange}
-            disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
           />
         </EuiFormRow>
 
@@ -577,7 +613,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <EuiSpacer size="s" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -604,7 +640,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -622,18 +658,19 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             isClearable={true}
             data-test-subj="splitLinesDateRangeField"
             fullWidth
-            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+            isDisabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
+            isInvalid={!(this.state.selectedSplitLinesDateRangeField.length > 0)}
           />
         </EuiFormRow>
 
         <EuiSpacer size="m" />
 
-        < DatePicker disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
+        < DatePicker disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} start={this.props.stateParams.dateRangeStart} end={this.props.stateParams.dateRangeEnd} setStart={this.setDateRangeStart} setEnd={this.setDateRangeEnd} />
 
         <EuiSpacer size="m" />
 
         <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => this.onGeneralValChange(e, 'splitedCustomLabel')}>
-          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)} />
+          <EuiFieldText name="first" fullWidth disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)} />
         </EuiFormRow>
 
         <EuiCollapsibleNavGroup
@@ -660,7 +697,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               aria-label="Use aria labels when no actual label is in use"
               value={this.props.stateParams.advancedValue}
               onChange={(e) => this.onGeneralValChange(e, 'advancedValue')}
-              disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+              disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
             />
           </EuiText>
         </EuiCollapsibleNavGroup>
@@ -681,7 +718,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 title={'Buckets'}
                 description=""
               >
-                <EuiAccordion id="accordion1" buttonContent={`X-Axis`} onToggle={(isOpen => this.setState({ isXAxisOpened: isOpen }))}>
+                <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
                   <AxisBucket
                     onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
                     onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
@@ -700,7 +737,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                 {/* Splited */}
 
-                <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} onToggle={this.splitAccordionClicked}>
+                <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}>
                   <EuiPanel style={{ maxWidth: '100%' }}>
 
                     <EuiFormRow label="Sub aggregation" fullWidth>
@@ -711,9 +748,9 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                           { value: 'date_range', text: 'Date Range' },
                           { value: 'histogram', text: 'Histogram' },
                         ]}
-                        onChange={(e) => this.onGeneralValChange(e, 'splitedAggregation')}
+                        onChange={(e) => this.cleanFieldSplitLines(e)}
                         fullWidth
-                        disabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
+                        disabled={!(this.state.isIndexSelected && this.state.isXAxisFieldSelected)}
                       />
                     </EuiFormRow>
 
