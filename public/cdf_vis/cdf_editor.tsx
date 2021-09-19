@@ -211,38 +211,78 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any) => {
-    this.props.setValue('splitedField', selectedField[0].value);
-    this.setState({
-      selectedSplitLinesTermsField: selectedField
-    })
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('splitedField', selectedField[0].value);
+      this.setState({
+        selectedSplitLinesTermsField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('splitedField', selectedField);
+      this.setState({
+        selectedSplitLinesTermsField: selectedField
+      })
+    }
   }
 
   selectedHistogramFieldHandler = (selectedField: any) => {
-    this.props.setValue('field', selectedField[0].value);
-    this.setState({
-      selectedHistogramField: selectedField
-    })
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('field', selectedField[0].value);
+      this.setState({
+        selectedHistogramField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('field', selectedField);
+      this.setState({
+        selectedHistogramField: selectedField
+      })
+    }
   }
 
   selectedSplitLinesDateHistogramFieldHandler = (selectedField: any) => {
-    this.props.setValue('splitedField', selectedField[0].value);
-    this.setState({
-      selectedSplitLinesDateHistogramField: selectedField
-    })
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('splitedField', selectedField[0].value);
+      this.setState({
+        selectedSplitLinesDateHistogramField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('splitedField', selectedField);
+      this.setState({
+        selectedSplitLinesDateHistogramField: selectedField
+      })
+    }
   }
 
   selectedSplitLinesDateRangeFieldHandler = (selectedField: any) => {
-    this.props.setValue('splitedField', selectedField[0].value);
-    this.setState({
-      selectedSplitLinesDateRangeField: selectedField
-    })
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('splitedField', selectedField[0].value);
+      this.setState({
+        selectedSplitLinesDateRangeField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('splitedField', selectedField);
+      this.setState({
+        selectedSplitLinesDateRangeField: selectedField
+      })
+    }
   }
 
   selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
-    this.props.setValue('splitedField', selectedField[0].value);
-    this.setState({
-      selectedSplitLinesHistogramField: selectedField
-    })
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('splitedField', selectedField[0].value);
+      this.setState({
+        selectedSplitLinesHistogramField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('splitedField', selectedField);
+      this.setState({
+        selectedSplitLinesHistogramField: selectedField
+      })
+    }
   }
 
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
@@ -299,7 +339,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             options={this.state.splitedAggregationArr}
             selectedOptions={this.state.selectedSplitLinesTermsField}
             onChange={this.selectedSplitLinesTermsFieldHandler}
-            isClearable={false}
+            isClearable={true}
             data-test-subj="splitLinesTermsField"
             fullWidth
             isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
@@ -393,7 +433,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             options={this.state.numberFieldArr}
             selectedOptions={this.state.selectedSplitLinesHistogramField}
             onChange={this.selectedSplitLinesHistogramFieldHandler}
-            isClearable={false}
+            isClearable={true}
             data-test-subj="selectedSplitLinesHistogramField"
             fullWidth
             isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
@@ -495,7 +535,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             options={this.state.dateFieldArr}
             selectedOptions={this.state.selectedSplitLinesDateHistogramField}
             onChange={this.selectedSplitLinesDateHistogramFieldHandler}
-            isClearable={false}
+            isClearable={true}
             data-test-subj="splitLinesDateHistogramField"
             fullWidth
             isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
@@ -579,7 +619,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             options={this.state.dateFieldArr}
             selectedOptions={this.state.selectedSplitLinesDateRangeField}
             onChange={this.selectedSplitLinesDateRangeFieldHandler}
-            isClearable={false}
+            isClearable={true}
             data-test-subj="splitLinesDateRangeField"
             fullWidth
             isDisabled={!(this.state.isIndexSelected && this.state.isXAxisOpened)}
