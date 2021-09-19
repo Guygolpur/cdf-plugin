@@ -52,7 +52,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isHorizontalGrid: false,
           isSplitedSeperateBucket: false,
           isSplitedShowMissingValues: false,
-          isSplitAccordionClicked: false,
+          isSplitAccordionSearch: false,
 
           splitedAggregation: 'terms',
           splitedField: '',

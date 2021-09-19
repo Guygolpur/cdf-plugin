@@ -27,7 +27,7 @@ export interface CDFVisParams {
   isSplitedSeperateBucket: boolean;
   isSplitedShowMissingValues: boolean;
   splitedCustomLabel: string;
-  isSplitAccordionClicked: boolean;
+  isSplitAccordionSearch: boolean;
   isVerticalGrid: boolean;
   isHorizontalGrid: boolean;
   dateFilterFrom: string;
@@ -65,7 +65,7 @@ export interface CDFVisRenderValue {
     isSplitedSeperateBucket: boolean;
     isSplitedShowMissingValues: boolean;
     splitedCustomLabel: string;
-    isSplitAccordionClicked: boolean;
+    isSplitAccordionSearch: boolean;
     isVerticalGrid: boolean;
     isHorizontalGrid: boolean;
     dateFilterFrom: string;
@@ -194,7 +194,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '',
       help: 'Visualization only argument with type string',
     },
-    isSplitAccordionClicked: {
+    isSplitAccordionSearch: {
       types: ['boolean'],
       default: false,
       help: 'Visualization only argument with type boolean',
@@ -283,7 +283,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isSplitedSeperateBucket: args.isSplitedSeperateBucket,
           isSplitedShowMissingValues: args.isSplitedShowMissingValues,
           splitedCustomLabel: args.splitedCustomLabel,
-          isSplitAccordionClicked: args.isSplitAccordionClicked,
+          isSplitAccordionSearch: args.isSplitAccordionSearch,
           isVerticalGrid: args.isVerticalGrid,
           isHorizontalGrid: args.isHorizontalGrid,
           dateFilterFrom: args.dateFilterFrom,
