@@ -20,15 +20,16 @@ import {
 import { DatePicker } from './form/datePicker';
 
 export const AddSubBucket = ({
-    stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
+    counter, stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
     isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     numberFieldArr, selectedSplitLinesHistogramField, selectedSplitLinesHistogramFieldHandler,
     dateFieldArr, selectedSplitLinesDateHistogramField, selectedSplitLinesDateHistogramFieldHandler,
     selectedSplitLinesDateRangeField, selectedSplitLinesDateRangeFieldHandler, setDateRangeStart,
-    setDateRangeEnd, cleanFieldSplitLines
+    setDateRangeEnd, selectSplitLinesField
 }: any) => {
     let splitedSubAggregationContent;
+    const currentCounter = counter - 1;
     if (stateParams.splitedAggregation == 'terms') {
         splitedSubAggregationContent = <>
             <EuiFormRow label="Field" fullWidth>
@@ -37,7 +38,7 @@ export const AddSubBucket = ({
                     placeholder="Search"
                     options={splitedAggregationArr}
                     selectedOptions={selectedSplitLinesTermsField}
-                    onChange={selectedSplitLinesTermsFieldHandler}
+                    onChange={(e: any) => selectedSplitLinesTermsFieldHandler(e, currentCounter)}
                     isClearable={true}
                     data-test-subj="splitLinesTermsField"
                     fullWidth
@@ -385,9 +386,6 @@ export const AddSubBucket = ({
 
     return (
         <Fragment>
-            {/* <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}> */}
-            {/* <EuiPanel style={{ maxWidth: '100%' }}> */}
-
             <EuiFormRow label="Sub aggregation" fullWidth>
                 <EuiSelect
                     options={[
@@ -396,16 +394,14 @@ export const AddSubBucket = ({
                         { value: 'date_range', text: 'Date Range' },
                         { value: 'histogram', text: 'Histogram' },
                     ]}
-                    onChange={(e) => cleanFieldSplitLines(e)}
+                    onChange={(e: any) => selectSplitLinesField(e, currentCounter)}
+                    value={stateParams.subBucketArray[counter] == undefined ? null : stateParams.subBucketArray[counter].arg}
                     fullWidth
                     disabled={!(isIndexSelected && isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
             {splitedSubAggregationContent}
-
-            {/* </EuiPanel> */}
-            {/* </EuiAccordion> */}
         </Fragment>
     );
 };

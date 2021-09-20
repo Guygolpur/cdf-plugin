@@ -17,7 +17,7 @@ import {
   EuiButton
 } from '@elastic/eui';
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
-import { htmlIdGenerator } from '@elastic/eui/lib/services';
+import { htmlIdGenerator } from '@elastic/eui';
 import { AxisBucket } from '../components/xAxisBucket';
 import { AddSubBucket } from '../components/addSubBucket';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
@@ -57,6 +57,7 @@ interface CounterParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
+  subBucketArray: any[];
 }
 
 interface CDFEditorComponentState {
@@ -122,6 +123,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }).then(res => {
       this.indicesMappingHandler()
     })
+
+    // let demoArr = {'first':'1', 'second': '2'}
+    // this.props.stateParams['subBucketArray'].push(demoArr)
+    // console.log('push: ', this.props.stateParams['subBucketArray'])
   }
 
   componentDidUpdate(prevProps: any) {
@@ -224,13 +229,19 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }
   }
 
-  selectedSplitLinesTermsFieldHandler = (selectedField: any) => {
+  selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
       this.props.setValue('isSplitAccordionSearch', true);
       this.setState({
         selectedSplitLinesTermsField: selectedField
       })
+
+      // console.log('counter: ', counter)
+      // let splitLinesFieldArr = {'field'}
+      // let demoArr = {'first':'1', 'second': '2'}
+      // this.props.stateParams['subBucketArray'].push(demoArr)
+      // console.log('push: ', this.props.stateParams['subBucketArray'])
     }
     else {
       this.props.setValue('splitedField', selectedField);
@@ -331,45 +342,59 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('dateRangeEnd', end);
   }
 
-  cleanFieldSplitLines = (e: any) => {
-    this.onGeneralValChange(e, 'splitedAggregation')
-    this.props.setValue('isSplitAccordionSearch', false);
-    this.props.setValue('splitedField', '');
-    this.setState({
-      selectedSplitLinesTermsField: [],
-      selectedSplitLinesDateHistogramField: [],
-      selectedSplitLinesDateRangeField: [],
-      selectedSplitLinesHistogramField: []
-    })
+  selectSplitLinesField = (e: any, counter: number) => {
+    // this.onGeneralValChange(e, 'splitedAggregation')
+    // this.props.setValue('isSplitAccordionSearch', false);
+    // this.props.setValue('splitedField', '');
+    // this.setState({
+    //   selectedSplitLinesTermsField: [],
+    //   selectedSplitLinesDateHistogramField: [],
+    //   selectedSplitLinesDateRangeField: [],
+    //   selectedSplitLinesHistogramField: []
+    // })
+
+
+    let splitLinesAggArr = { 'agg': e.target.value }
+    if (this.props.stateParams['subBucketArray'][counter] == undefined) {
+      this.props.stateParams['subBucketArray'].push(splitLinesAggArr);
+    }
+    else if (this.props.stateParams['subBucketArray'][counter].agg != e.target.value) {
+      this.props.stateParams['subBucketArray'][counter].agg = e.target.value;
+
+    }
   }
 
   render() {
     const Rows = () => {
-      const [counter, setCounter] = useState(1);
+      const [globalCounter, setGlobalCounter] = useState(1);
       const rows = [];
-      for (let i = 1; i <= counter; i++) {
+      for (let i = 1; i <= globalCounter; i++) {
         rows.push(
           <AddSubBucket
+            counter={i}
             stateParams={this.props.stateParams}
             splitedAggregationArr={this.state.splitedAggregationArr}
             selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
             isIndexSelected={this.state.isIndexSelected}
             isXAxisFieldSelected={this.state.isXAxisFieldSelected}
+            numberFieldArr={this.state.numberFieldArr}
+            dateFieldArr={this.state.dateFieldArr}
+            selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
+            selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
+            selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
+
+            selectSplitLinesField={this.selectSplitLinesField}
             selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
-            onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+
             onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
             onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
-            numberFieldArr={this.state.numberFieldArr}
-            selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
             selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
-            dateFieldArr={this.state.dateFieldArr}
-            selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
             selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
-            selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
             selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
             setDateRangeStart={this.setDateRangeStart}
             setDateRangeEnd={this.setDateRangeEnd}
-            cleanFieldSplitLines={(e: any) => this.cleanFieldSplitLines(e)}
+
+            onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
           />
         );
       }
@@ -379,7 +404,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         <EuiText size="s">
           <EuiScreenReaderOnly>
             <p id={growingAccordianDescriptionId}>
-              Currently height is set to {counter} items
+              Currently height is set to {globalCounter} items
             </p>
           </EuiScreenReaderOnly>
           <EuiSpacer size="s" />
@@ -388,7 +413,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             <EuiButton
               size="s"
               iconType="plusInCircleFilled"
-              onClick={() => setCounter(counter + 1)}
+              onClick={() => setGlobalCounter(globalCounter + 1)}
               aria-controls={listId}
               aria-describedby={growingAccordianDescriptionId}
               fullWidth
@@ -401,8 +426,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               iconType="minusInCircleFilled"
               aria-controls={listId}
               aria-describedby={growingAccordianDescriptionId}
-              onClick={() => setCounter(Math.max(0, counter - 1))}
-              isDisabled={counter === 1}
+              onClick={() => setGlobalCounter(Math.max(0, globalCounter - 1))}
+              isDisabled={globalCounter === 1}
               fullWidth
             >
               Remove last Split lines Bucket
@@ -449,31 +474,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}>
                   <EuiPanel style={{ maxWidth: '100%' }}>
                     <Rows />
-
-                    {/* <AddSubBucket
-                      stateParams={this.props.stateParams}
-                      splitedAggregationArr={this.state.splitedAggregationArr}
-                      selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
-                      isIndexSelected={this.state.isIndexSelected}
-                      isXAxisFieldSelected={this.state.isXAxisFieldSelected}
-                      selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
-                      onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
-                      onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
-                      onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
-                      numberFieldArr={this.state.numberFieldArr}
-                      selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
-                      selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
-                      dateFieldArr={this.state.dateFieldArr}
-                      selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
-                      selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
-                      selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
-                      selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
-                      setDateRangeStart={this.setDateRangeStart}
-                      setDateRangeEnd={this.setDateRangeEnd}
-                      cleanFieldSplitLines={(e: any) => this.cleanFieldSplitLines(e)}
-                    /> */}
                   </EuiPanel>
-
                 </EuiAccordion>
 
                 <EuiSpacer size="m" />

@@ -64,6 +64,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           dateRangeEnd: 'now',
           splitedDateHistogramMinInterval: 'auto',
           numberOfTickTexts: 10,
+          subBucketArray: [],
 
           splitedHistogramMinInterval: 1,
 

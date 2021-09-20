@@ -55,6 +55,8 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
+
+    subBucketArray,
   } = props.visParams
 
   useEffect(() => {
