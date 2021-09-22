@@ -124,9 +124,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       this.indicesMappingHandler()
     })
 
-    // let demoArr = {'first':'1', 'second': '2'}
-    // this.props.stateParams['subBucketArray'].push(demoArr)
-    // console.log('push: ', this.props.stateParams['subBucketArray'])
+    let initialArr = { 'agg': 'terms', 'field': [] }
+    this.props.stateParams['subBucketArray'].push(initialArr)
   }
 
   componentDidUpdate(prevProps: any) {
@@ -229,29 +228,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }
   }
 
-  selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('splitedField', selectedField[0].value);
-      this.props.setValue('isSplitAccordionSearch', true);
-      this.setState({
-        selectedSplitLinesTermsField: selectedField
-      })
-
-      // console.log('counter: ', counter)
-      // let splitLinesFieldArr = {'field'}
-      // let demoArr = {'first':'1', 'second': '2'}
-      // this.props.stateParams['subBucketArray'].push(demoArr)
-      // console.log('push: ', this.props.stateParams['subBucketArray'])
-    }
-    else {
-      this.props.setValue('splitedField', selectedField);
-      this.props.setValue('isSplitAccordionSearch', false);
-      this.setState({
-        selectedSplitLinesTermsField: selectedField
-      })
-    }
-  }
-
   selectedSplitLinesDateHistogramFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('splitedField', selectedField[0].value);
@@ -282,23 +258,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       this.props.setValue('isSplitAccordionSearch', false);
       this.setState({
         selectedSplitLinesDateRangeField: selectedField
-      })
-    }
-  }
-
-  selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('splitedField', selectedField[0].value);
-      this.props.setValue('isSplitAccordionSearch', true);
-      this.setState({
-        selectedSplitLinesHistogramField: selectedField
-      })
-    }
-    else {
-      this.props.setValue('splitedField', selectedField);
-      this.props.setValue('isSplitAccordionSearch', false);
-      this.setState({
-        selectedSplitLinesHistogramField: selectedField
       })
     }
   }
@@ -342,7 +301,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('dateRangeEnd', end);
   }
 
-  selectSplitLinesField = (e: any, counter: number) => {
+  selectSplitLinesAggregation = (e: any, counter: number) => {
     // this.onGeneralValChange(e, 'splitedAggregation')
     // this.props.setValue('isSplitAccordionSearch', false);
     // this.props.setValue('splitedField', '');
@@ -352,15 +311,139 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     //   selectedSplitLinesDateRangeField: [],
     //   selectedSplitLinesHistogramField: []
     // })
-
-
-    let splitLinesAggArr = { 'agg': e.target.value }
     if (this.props.stateParams['subBucketArray'][counter] == undefined) {
+      let splitLinesAggArr;
+      switch (e.target.value) {
+        case 'terms':
+          splitLinesAggArr = { 'agg': e.target.value, field: [] };
+          break;
+        case 'date_histogram':
+          splitLinesAggArr = { 'agg': e.target.value, field: [], 'min_interval': '1m' };
+          break;
+        case 'histogram':
+          splitLinesAggArr = { 'agg': e.target.value, field: [], 'min_interval': 1 };
+          break;
+        case 'date_range':
+          splitLinesAggArr = { 'agg': e.target.value, field: [], date_range: { 'start': 'now-30m', 'end': 'now' } };
+          break;
+        default:
+          splitLinesAggArr = { 'agg': e.target.value, field: [] };
+      }
+      console.log('i am in selectSplitLinesAggregation')
+      console.log("splitLinesAggArr: ", splitLinesAggArr)
+      console.log("e.target.value: ", e.target.value)
+
       this.props.stateParams['subBucketArray'].push(splitLinesAggArr);
     }
-    else if (this.props.stateParams['subBucketArray'][counter].agg != e.target.value) {
-      this.props.stateParams['subBucketArray'][counter].agg = e.target.value;
 
+    else {
+      console.log('i am in selectSplitLinesAggregation else')
+
+      //handle default- plus terms only properties
+      this.props.stateParams['subBucketArray'][counter].agg = e.target.value;
+      this.props.stateParams['subBucketArray'][counter].field = [];
+
+      //handle date_range
+      if (e.target.value != 'date_range' && this.props.stateParams['subBucketArray'][counter].hasOwnProperty('date_range')) {
+        console.log('deleted date_range')
+        delete this.props.stateParams['subBucketArray'][counter].date_range;
+      }
+      if (e.target.value == 'date_range') {
+        console.log('e.target.value: ', e.target.value)
+        let date_range = { 'start': 'now-30m', 'end': 'now' }
+        this.props.stateParams['subBucketArray'][counter].date_range = date_range
+      }
+
+      //handle min_interval on date_histogram && histogram- plus remove min_interval
+      if (e.target.value == 'date_histogram' || e.target.value == 'histogram') {
+        console.log('e.target.value: ', e.target.value)
+        let min_interval;
+        e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
+
+        this.props.stateParams['subBucketArray'][counter].min_interval = min_interval
+
+      }
+      else if ('min_interval' in this.props.stateParams['subBucketArray'][counter]) {
+        console.log('deleted min_interval')
+        delete this.props.stateParams['subBucketArray'][counter].min_interval;
+      }
+
+
+    }
+    console.log("sub agg: ", this.props.stateParams['subBucketArray'])
+
+  }
+
+  selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
+    if (this.props.stateParams['subBucketArray'][counter] == undefined) {
+      console.log('i am in selectedSplitLinesTermsFieldHandler')
+      let splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField };
+      this.props.stateParams['subBucketArray'].push(splitLinesFieldArr);
+    }
+    else {
+      this.props.stateParams['subBucketArray'][counter].field = selectedField;
+    }
+    // console.log("[0]?.field: ", this.props.stateParams['subBucketArray'][0]?.field)
+    console.log("field: ", this.props.stateParams['subBucketArray'])
+    // console.log("selectedField: ", selectedField)
+
+
+    // if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+    //   this.props.setValue('splitedField', selectedField[0].value);
+    //   this.props.setValue('isSplitAccordionSearch', true);
+    //   this.setState({
+    //     selectedSplitLinesTermsField: selectedField
+    //   })
+
+    //   // console.log('counter: ', counter)
+    //   // let splitLinesFieldArr = {'field'}
+    //   // let demoArr = {'first':'1', 'second': '2'}
+    //   // this.props.stateParams['subBucketArray'].push(demoArr)
+    //   // console.log('push: ', this.props.stateParams['subBucketArray'])
+    // }
+    // else {
+    //   this.props.setValue('splitedField', selectedField);
+    //   this.props.setValue('isSplitAccordionSearch', false);
+    //   this.setState({
+    //     selectedSplitLinesTermsField: selectedField
+    //   })
+    // }
+  }
+
+  selectSplitLinesMinimumInterval = (selectedField: any, counter: number) => {
+
+    console.log('i am in selectSplitLinesMinimumInterval')
+
+    this.props.stateParams['subBucketArray'][counter].min_interval = selectedField.target.value;
+
+    console.log("this.props.stateParams['subBucketArray']: ", this.props.stateParams['subBucketArray'])
+
+  }
+
+  selectedDateRangeHandler = ({ start, end }: any, counter: any) => {
+    console.log('i am in selectedDateRangeHandler')
+
+    this.props.stateParams['subBucketArray'][counter].date_range['start'] = start;
+    this.props.stateParams['subBucketArray'][counter].date_range['end'] = end;
+
+    console.log("this.props.stateParams['subBucketArray']: ", this.props.stateParams['subBucketArray'])
+
+  }
+
+  selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
+    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+      this.props.setValue('splitedField', selectedField[0].value);
+      this.props.setValue('isSplitAccordionSearch', true);
+      this.setState({
+        selectedSplitLinesHistogramField: selectedField
+      })
+    }
+    else {
+      this.props.setValue('splitedField', selectedField);
+      this.props.setValue('isSplitAccordionSearch', false);
+      this.setState({
+        selectedSplitLinesHistogramField: selectedField
+      })
     }
   }
 
@@ -383,8 +466,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
             selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
 
-            selectSplitLinesField={this.selectSplitLinesField}
+            selectSplitLinesAggregation={this.selectSplitLinesAggregation}
             selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
+            selectSplitLinesMinimumInterval={this.selectSplitLinesMinimumInterval}
+            selectedDateRangeHandler={this.selectedDateRangeHandler}
 
             onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
             onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}

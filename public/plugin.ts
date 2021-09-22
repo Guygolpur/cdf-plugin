@@ -60,6 +60,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           splitedCustomLabel: '',
           dateFilterFrom: 'now-15m',
           dateFilterTo: 'now',
+          
           dateRangeStart: 'now-15m',
           dateRangeEnd: 'now',
           splitedDateHistogramMinInterval: 'auto',
