@@ -329,15 +329,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         default:
           splitLinesAggArr = { 'agg': e.target.value, field: [] };
       }
-      console.log('i am in selectSplitLinesAggregation')
-      console.log("splitLinesAggArr: ", splitLinesAggArr)
-      console.log("e.target.value: ", e.target.value)
-
       this.props.stateParams['subBucketArray'].push(splitLinesAggArr);
     }
 
     else {
-      console.log('i am in selectSplitLinesAggregation else')
 
       //handle default- plus terms only properties
       this.props.stateParams['subBucketArray'][counter].agg = e.target.value;
@@ -345,48 +340,33 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
       //handle date_range
       if (e.target.value != 'date_range' && this.props.stateParams['subBucketArray'][counter].hasOwnProperty('date_range')) {
-        console.log('deleted date_range')
         delete this.props.stateParams['subBucketArray'][counter].date_range;
       }
       if (e.target.value == 'date_range') {
-        console.log('e.target.value: ', e.target.value)
         let date_range = { 'start': 'now-30m', 'end': 'now' }
         this.props.stateParams['subBucketArray'][counter].date_range = date_range
       }
 
       //handle min_interval on date_histogram && histogram- plus remove min_interval
       if (e.target.value == 'date_histogram' || e.target.value == 'histogram') {
-        console.log('e.target.value: ', e.target.value)
         let min_interval;
         e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
-
         this.props.stateParams['subBucketArray'][counter].min_interval = min_interval
-
       }
       else if ('min_interval' in this.props.stateParams['subBucketArray'][counter]) {
-        console.log('deleted min_interval')
         delete this.props.stateParams['subBucketArray'][counter].min_interval;
       }
-
-
     }
-    console.log("sub agg: ", this.props.stateParams['subBucketArray'])
-
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
     if (this.props.stateParams['subBucketArray'][counter] == undefined) {
-      console.log('i am in selectedSplitLinesTermsFieldHandler')
       let splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField };
       this.props.stateParams['subBucketArray'].push(splitLinesFieldArr);
     }
     else {
       this.props.stateParams['subBucketArray'][counter].field = selectedField;
     }
-    // console.log("[0]?.field: ", this.props.stateParams['subBucketArray'][0]?.field)
-    console.log("field: ", this.props.stateParams['subBucketArray'])
-    // console.log("selectedField: ", selectedField)
-
 
     // if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
     //   this.props.setValue('splitedField', selectedField[0].value);
@@ -411,23 +391,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectSplitLinesMinimumInterval = (selectedField: any, counter: number) => {
-
-    console.log('i am in selectSplitLinesMinimumInterval')
-
     this.props.stateParams['subBucketArray'][counter].min_interval = selectedField.target.value;
-
-    console.log("this.props.stateParams['subBucketArray']: ", this.props.stateParams['subBucketArray'])
-
   }
 
   selectedDateRangeHandler = ({ start, end }: any, counter: any) => {
-    console.log('i am in selectedDateRangeHandler')
-
     this.props.stateParams['subBucketArray'][counter].date_range['start'] = start;
     this.props.stateParams['subBucketArray'][counter].date_range['end'] = end;
-
-    console.log("this.props.stateParams['subBucketArray']: ", this.props.stateParams['subBucketArray'])
-
   }
 
   selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
