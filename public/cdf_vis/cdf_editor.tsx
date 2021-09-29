@@ -369,14 +369,15 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
     console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
     this.props.setValue('subBucketArray', subBucketArrayToString)
-    console.log("this.props.stateParams['subBucketArray']: ", this.props.stateParams['subBucketArray'])
+    console.log("selectSplitLinesAggregation[subBucketArray]: ", this.props.stateParams['subBucketArray'])
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
-    console.log('subBucketArrayTojson: ', subBucketArrayTojson)
+
     if (subBucketArrayTojson[counter] == undefined) {
-      let splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField };
+      let splitLinesFieldArr;
+      splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField };
       subBucketArrayTojson.push(splitLinesFieldArr);
 
       //cant push to object, need to use Object assign to 'push' to OBJ: ( but when doing it, the component re render)
@@ -397,9 +398,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     else {
       subBucketArrayTojson[counter].isValid = false
     }
-    console.log("this.props.stateParams['subBucketArray']: ", subBucketArrayTojson)
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
     this.props.setValue('subBucketArray', subBucketArrayToString)
+
+    console.log("selectedSplitLinesTermsFieldHandler['subBucketArray']: ", this.props.stateParams['subBucketArray'])
+
   }
 
   selectSplitLinesMinimumInterval = (selectedField: any, counter: number) => {

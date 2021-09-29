@@ -25,7 +25,7 @@ export const AxisBucket = ({
   return (
     <EuiPanel id="panel" style={{ maxWidth: '100%' }}>
       <EuiText size="xs">
-        <p>
+        <div>
           <EuiFlexGroup responsive={false}>
             <EuiFlexItem>
               <b>Aggregation</b>
@@ -36,7 +36,7 @@ export const AxisBucket = ({
               </EuiButtonEmpty>
             </EuiFlexItem>
           </EuiFlexGroup>
-        </p>
+        </div>
       </EuiText>
       <EuiFormRow fullWidth>
         <EuiSelect
@@ -69,7 +69,7 @@ export const AxisBucket = ({
       <EuiSpacer size="m" />
 
       <EuiText size="xs">
-        <p>
+        <div>
           <b>Minimum interval</b>
           <EuiIconTip
             type="iInCircle"
@@ -83,7 +83,7 @@ export const AxisBucket = ({
               className: 'eui-alignTop',
             }}
           />
-        </p>
+        </div>
       </EuiText>
 
       <EuiSpacer size="xs" />
