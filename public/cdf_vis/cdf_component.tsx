@@ -23,8 +23,8 @@ export function CdfComponent(props: CdfComponentProps) {
   useEffect(() => {
     props.renderComplete();
     const json = props.visParams.subBucketArray;
-    console.log('json reg: ', json)
-    console.log('json parse: ', JSON.parse(json))
+    // console.log('json reg: ', json)
+    // console.log('json parse: ', JSON.parse(json))
   })
 
   const {
@@ -196,7 +196,7 @@ export function CdfComponent(props: CdfComponentProps) {
         <Axis
           id="left"
           title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title}
-          position={Position.Left}
+          // position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
           showGridLines={isHorizontalGrid}
         />

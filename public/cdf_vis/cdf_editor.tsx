@@ -377,7 +377,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
     if (subBucketArrayTojson[counter] == undefined) {
       let splitLinesFieldArr;
-      splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField };
+      splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField, isValid: false };
       subBucketArrayTojson.push(splitLinesFieldArr);
 
       //cant push to object, need to use Object assign to 'push' to OBJ: ( but when doing it, the component re render)
@@ -472,13 +472,13 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       return (
         <EuiText size="s">
           <EuiScreenReaderOnly>
-            <p id={growingAccordianDescriptionId}>
+            <div id={growingAccordianDescriptionId}>
               Currently height is set to {globalCounter} items
-            </p>
+            </div>
           </EuiScreenReaderOnly>
           <EuiSpacer size="s" />
           <ul id={listId}>{rows}</ul>
-          <p>
+          <div>
             <EuiButton
               size="s"
               iconType="plusInCircleFilled"
@@ -501,7 +501,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             >
               Remove last Split lines Bucket
             </EuiButton>
-          </p>
+          </div>
         </EuiText>
       );
     };

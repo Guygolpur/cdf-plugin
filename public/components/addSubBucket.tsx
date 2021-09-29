@@ -265,7 +265,7 @@ export const AddSubBucket = ({
             <EuiSpacer size="m" />
 
             <EuiText size="xs">
-                <p>
+                <div>
                     <b>Minimum interval</b>
                     <EuiIconTip
                         type="iInCircle"
@@ -279,7 +279,7 @@ export const AddSubBucket = ({
                             className: 'eui-alignTop',
                         }}
                     />
-                </p>
+                </div>
             </EuiText>
 
             <EuiSpacer size="xs" />
