@@ -36,7 +36,7 @@ export interface CDFVisParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-  // subBucketArray: any[];
+  subBucketArray: string | null;
 }
 
 export interface CDFVisRenderValue {
@@ -75,7 +75,7 @@ export interface CDFVisRenderValue {
     dateRangeEnd: string;
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
-    // subBucketArray: any[];
+    subBucketArray: string | null;
   };
 }
 
@@ -83,7 +83,7 @@ type Output = Promise<Render<CDFVisRenderValue>>;
 
 export type CDFVisExpressionFunctionDefinition = ExpressionFunctionDefinition<
   'cdf_vis',
-  KibanaContext,
+  KibanaContext | null,
   CDFVisParams,
   Output
 >;
@@ -91,7 +91,7 @@ export type CDFVisExpressionFunctionDefinition = ExpressionFunctionDefinition<
 export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
   name: 'cdf_vis',
   type: 'render',
-  inputTypes: ['kibana_context'],
+  inputTypes: ['kibana_context', 'null'],
   help:
     'The expression function definition should be registered for a custom visualization to be rendered',
   args: {
@@ -241,11 +241,11 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: 'auto',
       help: 'Visualization only argument with type string',
     },
-    // subBucketArray: {
-    //   types: ['any'],
-    //   default: 'auto',
-    //   help: 'Visualization only argument with type object',
-    // },
+    subBucketArray: {
+      types: ['string', 'null'],
+      default: '{}',
+      help: 'Visualization only argument with type object',
+    },
 
   },
   async fn(input, args) {
@@ -299,7 +299,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
-          // subBucketArray: args.subBucketArray
+          subBucketArray: args.subBucketArray
         },
       },
     };

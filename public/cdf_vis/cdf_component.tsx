@@ -22,6 +22,9 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     props.renderComplete();
+    const json = props.visParams.subBucketArray;
+    console.log('json reg: ', json)
+    console.log('json parse: ', JSON.parse(json))
   })
 
   const {
@@ -56,7 +59,7 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
 
-    // subBucketArray,
+    subBucketArray,
   } = props.visParams
 
   useEffect(() => {
@@ -79,52 +82,52 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
     }
-    if (isSplitAccordionSearch) {
-      if (splitedAggregation == 'terms') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField
-            }
-          }
-        }
-      }
-      else if (splitedAggregation == 'histogram') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              interval: splitedHistogramMinInterval,
-              min_doc_count: 1
-            }
-          }
-        }
-      }
-      else if (splitedAggregation == 'date_histogram') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              calendar_interval: splitedDateHistogramMinInterval
-            }
-          }
-        }
-      }
-      else if (splitedAggregation == 'date_range') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              format: "MM-yyy",
-              ranges: [
-                { to: dateRangeEnd },
-                { from: dateRangeStart }
-              ]
-            }
-          }
-        }
-      }
-    }
+    // if (isSplitAccordionSearch) {
+    //   if (splitedAggregation == 'terms') {
+    //     data.aggs.cdfAgg['aggs'] = {
+    //       innerAgg: {
+    //         [splitedAggregation]: {
+    //           field: splitedField
+    //         }
+    //       }
+    //     }
+    //   }
+    //   else if (splitedAggregation == 'histogram') {
+    //     data.aggs.cdfAgg['aggs'] = {
+    //       innerAgg: {
+    //         [splitedAggregation]: {
+    //           field: splitedField,
+    //           interval: splitedHistogramMinInterval,
+    //           min_doc_count: 1
+    //         }
+    //       }
+    //     }
+    //   }
+    //   else if (splitedAggregation == 'date_histogram') {
+    //     data.aggs.cdfAgg['aggs'] = {
+    //       innerAgg: {
+    //         [splitedAggregation]: {
+    //           field: splitedField,
+    //           calendar_interval: splitedDateHistogramMinInterval
+    //         }
+    //       }
+    //     }
+    //   }
+    //   else if (splitedAggregation == 'date_range') {
+    //     data.aggs.cdfAgg['aggs'] = {
+    //       innerAgg: {
+    //         [splitedAggregation]: {
+    //           field: splitedField,
+    //           format: "MM-yyy",
+    //           ranges: [
+    //             { to: dateRangeEnd },
+    //             { from: dateRangeStart }
+    //           ]
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
 
     axios({
       method: "POST",
