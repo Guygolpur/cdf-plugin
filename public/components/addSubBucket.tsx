@@ -25,7 +25,7 @@ export const AddSubBucket = ({
     dateFieldArr, selectSplitLinesAggregation,
 }: any) => {
     let splitedSubAggregationContent;
-    const currentCounter = counter - 1;
+    console.log('counter: ', counter)
 
     const aggregationOptions = [
         { value: 'terms', text: 'Terms' },
@@ -51,19 +51,19 @@ export const AddSubBucket = ({
         setAggregationSelected(selected.target.value);
         setFieldSelected([]);
         setMinimumIntervalSelected(min_interval[0].value)
-        selectSplitLinesAggregation(selected, currentCounter);
+        selectSplitLinesAggregation(selected, counter);
     };
     const onFieldChange = (selected: any) => {
         setFieldSelected(selected);
-        selectedSplitLinesTermsFieldHandler(selected, currentCounter, selectedAggregationOptions);
+        selectedSplitLinesTermsFieldHandler(selected, counter, selectedAggregationOptions);
     };
     const onGeneralMinimumIntervalChange = (selected: any) => {
         setMinimumIntervalSelected(selected.target.value);
-        selectSplitLinesMinimumInterval(selected, currentCounter);
+        selectSplitLinesMinimumInterval(selected, counter);
     };
 
     const selectedDateRangeHandlerMiddleware = ({ start, end }: any) => {
-        selectedDateRangeHandler({start, end}, currentCounter)
+        selectedDateRangeHandler({start, end}, counter)
     }
 
     if (selectedAggregationOptions == 'terms') {
