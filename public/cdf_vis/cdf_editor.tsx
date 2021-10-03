@@ -1,5 +1,5 @@
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment } from 'react';
 import axios from 'axios';
 import {
   EuiCheckbox,
@@ -120,16 +120,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }).then(res => {
       this.indicesMappingHandler()
     })
-
-    // let initialArr = { 'agg': 'terms', 'field': [], 'isValid': false }
-    // this.props.stateParams['subBucketArray'].push(initialArr)
-    let subBucketArrayTmp = JSON.parse(this.props.stateParams['subBucketArray']);
-
-    let subBucketObjToArr = JSON.stringify(Object.entries(subBucketArrayTmp));
-
-    this.props.setValue('subBucketArray', subBucketObjToArr)
-    console.log('subBucketArray: ', this.props.stateParams['subBucketArray'])
-
   }
 
   componentDidUpdate(prevProps: any) {
@@ -232,40 +222,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }
   }
 
-  selectedSplitLinesDateHistogramFieldHandler = (selectedField: any) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('splitedField', selectedField[0].value);
-      this.props.setValue('isSplitAccordionSearch', true);
-      this.setState({
-        selectedSplitLinesDateHistogramField: selectedField
-      })
-    }
-    else {
-      this.props.setValue('splitedField', selectedField);
-      this.props.setValue('isSplitAccordionSearch', false);
-      this.setState({
-        selectedSplitLinesDateHistogramField: selectedField
-      })
-    }
-  }
-
-  selectedSplitLinesDateRangeFieldHandler = (selectedField: any) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('splitedField', selectedField[0].value);
-      this.props.setValue('isSplitAccordionSearch', true);
-      this.setState({
-        selectedSplitLinesDateRangeField: selectedField
-      })
-    }
-    else {
-      this.props.setValue('splitedField', selectedField);
-      this.props.setValue('isSplitAccordionSearch', false);
-      this.setState({
-        selectedSplitLinesDateRangeField: selectedField
-      })
-    }
-  }
-
   // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
   // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
@@ -291,10 +247,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('isSplitedShowMissingValues', !this.props.stateParams.isSplitedShowMissingValues);
   };
 
-  closeAddPopover = () => {
-    this.setState({ isAddPopoverOpen: false })
-  }
-
   /*Splited Lines*/
 
   setDateRangeStart = (start: any) => {
@@ -308,9 +260,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   selectSplitLinesAggregation = async (e: any, counter: number) => {
     // debugger
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
-    console.log('subBucketArrayTojson: ', subBucketArrayTojson)
     if (subBucketArrayTojson[counter - 1] == undefined) {
-      console.log('stage 1')
+      console.log('1')
       let splitLinesAggArr;
       switch (e.target.value) {
         case 'terms':
@@ -328,20 +279,20 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         default:
           splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false };
       }
-      subBucketArrayTojson.push(splitLinesAggArr);
+      subBucketArrayTojson[counter - 1] = splitLinesAggArr;
     }
     else {
       console.log('2')
+      console.log('subBucketArrayTojson: ', subBucketArrayTojson)
       //handle default- plus terms only properties
       subBucketArrayTojson[counter - 1].agg = e.target.value;
-      console.log('subBucketArrayTojson.agg: ', subBucketArrayTojson.agg)
       subBucketArrayTojson[counter - 1].field = [];
       subBucketArrayTojson[counter - 1].isValid = false
 
       //handle date_range
       if (e.target.value != 'date_range' && subBucketArrayTojson[counter - 1].hasOwnProperty('date_range')) {
-        delete subBucketArrayTojson[counter - 1].date_range;
         console.log('3')
+        delete subBucketArrayTojson[counter - 1].date_range;
       }
       if (e.target.value == 'date_range') {
         console.log('4')
@@ -354,6 +305,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         console.log('5')
         let min_interval;
         e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
+        console.log('counter: ', counter)
         subBucketArrayTojson[counter - 1].min_interval = min_interval
       }
       else if ('min_interval' in subBucketArrayTojson[counter - 1]) {
@@ -373,26 +325,21 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
 
     if (subBucketArrayTojson[counter - 1] == undefined) {
-      console.log('1')
       let splitLinesFieldArr;
       splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField, isValid: false };
-      subBucketArrayTojson.push(splitLinesFieldArr);
+      subBucketArrayTojson[counter - 1] = splitLinesFieldArr;
     }
     else {
-      console.log('2')
       subBucketArrayTojson[counter - 1].field = selectedField;
     }
     if (selectedAggregationOptions == 'terms') {
-      console.log('3')
       subBucketArrayTojson[counter - 1].isValid = true;
     }
 
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      console.log('4')
       subBucketArrayTojson[counter - 1].isValid = true;
     }
     else {
-      console.log('5')
       subBucketArrayTojson[counter - 1].isValid = false
     }
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
@@ -421,23 +368,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
 
     this.props.setValue('subBucketArray', subBucketArrayToString)
-  }
-
-  selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
-    if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      this.props.setValue('splitedField', selectedField[0].value);
-      this.props.setValue('isSplitAccordionSearch', true);
-      this.setState({
-        selectedSplitLinesHistogramField: selectedField
-      })
-    }
-    else {
-      this.props.setValue('splitedField', selectedField);
-      this.props.setValue('isSplitAccordionSearch', false);
-      this.setState({
-        selectedSplitLinesHistogramField: selectedField
-      })
-    }
   }
 
   render() {
@@ -496,13 +426,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                       onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
                       onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
-                      // selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
-                      selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
-                      selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
                       setDateRangeStart={this.setDateRangeStart}
                       setDateRangeEnd={this.setDateRangeEnd}
 
                       onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                      cleanSubBucketArrayBuffer={this.cleanSubBucketArrayBuffer}
                     />
                   </EuiPanel>
                 </EuiAccordion>
@@ -591,9 +519,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
           tabs={tabs}
           initialSelectedTab={tabs[0]}
           autoFocus="selected"
-          onTabClick={(tab) => {
-            console.log('clicked tab', tab);
-          }}
         />
       </Fragment>
     );

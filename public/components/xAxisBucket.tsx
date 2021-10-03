@@ -19,7 +19,7 @@ import {
 
 export const AxisBucket = ({
   onGeneralValChange, onGeneralBoolValChange, selectedHistogramFieldHandler,
-  selectedHistogramField, field, isExtendBounds, isEmptyBucket, advancedValue,
+  selectedHistogramField, isExtendBounds, isEmptyBucket, advancedValue,
   aggregationArr, isIndexSelected }: any
 ) => {
   return (

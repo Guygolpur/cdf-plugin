@@ -25,7 +25,6 @@ export const AddSubBucket = ({
     dateFieldArr, selectSplitLinesAggregation,
 }: any) => {
     let splitedSubAggregationContent;
-    console.log('counter: ', counter)
 
     const aggregationOptions = [
         { value: 'terms', text: 'Terms' },

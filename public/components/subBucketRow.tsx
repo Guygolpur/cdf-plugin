@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { useState } from 'react';
 import { htmlIdGenerator } from '@elastic/eui';
 
 import {
@@ -16,8 +16,8 @@ export const SubBucketRow = ({
     onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
-    selectedSplitLinesDateRangeField, selectedSplitLinesHistogramFieldHandler, selectedSplitLinesDateHistogramFieldHandler,
-    selectedSplitLinesDateRangeFieldHandler, setDateRangeStart, setDateRangeEnd
+    selectedSplitLinesDateRangeField,
+    setDateRangeStart, setDateRangeEnd
 }: any) => {
 
     const [globalCounter, setGlobalCounter] = useState(1);
@@ -44,9 +44,6 @@ export const SubBucketRow = ({
 
                 onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                 onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
-                // selectedSplitLinesHistogramFieldHandler={selectedSplitLinesHistogramFieldHandler}
-                selectedSplitLinesDateHistogramFieldHandler={selectedSplitLinesDateHistogramFieldHandler}
-                selectedSplitLinesDateRangeFieldHandler={selectedSplitLinesDateRangeFieldHandler}
                 setDateRangeStart={setDateRangeStart}
                 setDateRangeEnd={setDateRangeEnd}
 
@@ -83,7 +80,7 @@ export const SubBucketRow = ({
                     iconType="minusInCircleFilled"
                     aria-controls={listId}
                     aria-describedby={growingAccordianDescriptionId}
-                    onClick={() => setGlobalCounter(Math.max(0, globalCounter - 1))}
+                    onClick={() => setGlobalCounter(Math.max(0, globalCounter))}
                     isDisabled={globalCounter === 1}
                     fullWidth
                 >

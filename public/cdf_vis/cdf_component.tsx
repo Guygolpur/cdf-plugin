@@ -23,8 +23,8 @@ export function CdfComponent(props: CdfComponentProps) {
   useEffect(() => {
     props.renderComplete();
     const json = props.visParams.subBucketArray;
-    // console.log('json reg: ', json)
-    // console.log('json parse: ', JSON.parse(json))
+    console.log('json reg: ', json)
+    console.log('json parse: ', JSON.parse(json))
   })
 
   const {
