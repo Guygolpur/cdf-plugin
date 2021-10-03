@@ -306,10 +306,11 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectSplitLinesAggregation = async (e: any, counter: number) => {
+    // debugger
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
     console.log('subBucketArrayTojson: ', subBucketArrayTojson)
-    if (subBucketArrayTojson[counter] == undefined) {
-      console.log('1')
+    if (subBucketArrayTojson[counter - 1] == undefined) {
+      console.log('stage 1')
       let splitLinesAggArr;
       switch (e.target.value) {
         case 'terms':
@@ -332,20 +333,20 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     else {
       console.log('2')
       //handle default- plus terms only properties
-      subBucketArrayTojson[counter].agg = e.target.value;
+      subBucketArrayTojson[counter - 1].agg = e.target.value;
       console.log('subBucketArrayTojson.agg: ', subBucketArrayTojson.agg)
-      subBucketArrayTojson[counter].field = [];
-      subBucketArrayTojson[counter].isValid = false
+      subBucketArrayTojson[counter - 1].field = [];
+      subBucketArrayTojson[counter - 1].isValid = false
 
       //handle date_range
-      if (e.target.value != 'date_range' && subBucketArrayTojson[counter].hasOwnProperty('date_range')) {
-        delete subBucketArrayTojson[counter].date_range;
+      if (e.target.value != 'date_range' && subBucketArrayTojson[counter - 1].hasOwnProperty('date_range')) {
+        delete subBucketArrayTojson[counter - 1].date_range;
         console.log('3')
       }
       if (e.target.value == 'date_range') {
         console.log('4')
         let date_range = { 'start': 'now-30m', 'end': 'now' }
-        subBucketArrayTojson[counter].date_range = date_range
+        subBucketArrayTojson[counter - 1].date_range = date_range
       }
 
       //handle min_interval on date_histogram && histogram- plus remove min_interval
@@ -353,14 +354,13 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
         console.log('5')
         let min_interval;
         e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
-        subBucketArrayTojson[counter].min_interval = min_interval
+        subBucketArrayTojson[counter - 1].min_interval = min_interval
       }
-      else if ('min_interval' in subBucketArrayTojson[counter]) {
+      else if ('min_interval' in subBucketArrayTojson[counter - 1]) {
         console.log('6')
-        delete subBucketArrayTojson[counter].min_interval;
+        delete subBucketArrayTojson[counter - 1].min_interval;
       }
     }
-    console.log('subBucketArrayTojson[counter]: ', subBucketArrayTojson[counter])
 
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
 
@@ -372,25 +372,32 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
 
-    if (subBucketArrayTojson[counter] == undefined) {
+    if (subBucketArrayTojson[counter - 1] == undefined) {
+      console.log('1')
       let splitLinesFieldArr;
       splitLinesFieldArr = { 'agg': selectedAggregationOptions, 'field': selectedField, isValid: false };
       subBucketArrayTojson.push(splitLinesFieldArr);
     }
     else {
-      subBucketArrayTojson[counter].field = selectedField;
+      console.log('2')
+      subBucketArrayTojson[counter - 1].field = selectedField;
     }
     if (selectedAggregationOptions == 'terms') {
-      subBucketArrayTojson[counter].isValid = true;
+      console.log('3')
+      subBucketArrayTojson[counter - 1].isValid = true;
     }
 
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-      subBucketArrayTojson[counter].isValid = true;
+      console.log('4')
+      subBucketArrayTojson[counter - 1].isValid = true;
     }
     else {
-      subBucketArrayTojson[counter].isValid = false
+      console.log('5')
+      subBucketArrayTojson[counter - 1].isValid = false
     }
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
+
     this.props.setValue('subBucketArray', subBucketArrayToString)
 
     console.log("selectedSplitLinesTermsFieldHandler['subBucketArray']: ", this.props.stateParams['subBucketArray'])
@@ -398,12 +405,22 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectSplitLinesMinimumInterval = (selectedField: any, counter: number) => {
-    this.props.stateParams['subBucketArray'][counter].min_interval = selectedField.target.value;
+    let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
+    subBucketArrayTojson[counter - 1].min_interval = selectedField.target.value;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
+
+    this.props.setValue('subBucketArray', subBucketArrayToString)
   }
 
   selectedDateRangeHandler = ({ start, end }: any, counter: any) => {
-    this.props.stateParams['subBucketArray'][counter].date_range['start'] = start;
-    this.props.stateParams['subBucketArray'][counter].date_range['end'] = end;
+    let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
+    subBucketArrayTojson[counter - 1].date_range['start'] = start;
+    subBucketArrayTojson[counter - 1].date_range['end'] = end;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
+
+    this.props.setValue('subBucketArray', subBucketArrayToString)
   }
 
   selectedSplitLinesHistogramFieldHandler = (selectedField: any) => {
@@ -479,7 +496,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                       onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
                       onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
-                      selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
+                      // selectedSplitLinesHistogramFieldHandler={this.selectedSplitLinesHistogramFieldHandler}
                       selectedSplitLinesDateHistogramFieldHandler={this.selectedSplitLinesDateHistogramFieldHandler}
                       selectedSplitLinesDateRangeFieldHandler={this.selectedSplitLinesDateRangeFieldHandler}
                       setDateRangeStart={this.setDateRangeStart}

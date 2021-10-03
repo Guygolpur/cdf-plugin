@@ -44,7 +44,7 @@ export const SubBucketRow = ({
 
                 onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                 onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
-                selectedSplitLinesHistogramFieldHandler={selectedSplitLinesHistogramFieldHandler}
+                // selectedSplitLinesHistogramFieldHandler={selectedSplitLinesHistogramFieldHandler}
                 selectedSplitLinesDateHistogramFieldHandler={selectedSplitLinesDateHistogramFieldHandler}
                 selectedSplitLinesDateRangeFieldHandler={selectedSplitLinesDateRangeFieldHandler}
                 setDateRangeStart={setDateRangeStart}
