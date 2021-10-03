@@ -179,6 +179,7 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
+    subBucketArray
   ]);
 
   return (
