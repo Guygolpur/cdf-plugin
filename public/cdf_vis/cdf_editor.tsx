@@ -120,6 +120,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     }).then(res => {
       this.indicesMappingHandler()
     })
+
+    if (window.performance) {
+      if (performance.navigation.type == 1) {
+        this.props.setValue('subBucketArray', '{}')
+      }
+    }
   }
 
   componentDidUpdate(prevProps: any) {

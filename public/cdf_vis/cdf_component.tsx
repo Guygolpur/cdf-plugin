@@ -22,9 +22,12 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     props.renderComplete();
-    const json = props.visParams.subBucketArray;
-    console.log('json reg: ', json)
-    console.log('json parse: ', JSON.parse(json))
+    if (window.performance) {
+      if (performance.navigation.type == 1) {
+        props.visParams.subBucketArray = '{}'
+      }
+    }
+
   })
 
   const {
@@ -82,6 +85,98 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
     }
+
+
+    //     GET _search
+    // {
+    //   "query": {
+    //     "range": {
+    //       "time": {
+    //         "gte": "2019-10-01T07:50:06.459Z",
+    //         "lt": "now"
+    //       }
+    //     }
+    //   },
+    //   "size": 0,
+    //   "aggs": {
+    //     "cdfAgg": {
+    //       "histogram": {
+    //         "field": "Delta_TX",
+    //         "interval": 100
+    //       },
+    //       "aggs": {
+    //         "2": {
+    //           "terms": {
+    //             "field": "Projects"
+    //           },
+    //           "aggs": {
+    //             "3": {
+    //               "terms": {
+    //                 "field": "MSISDN"
+    //               }
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+
+    console.log('props.visParams.subBucketArray: ', props.visParams.subBucketArray)
+    let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
+      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
+        console.log('Object.values(key): ', Object.values(key), 'Object.values(value): ', Object.values(value))
+        console.log('key: ', key, "value: ", value['agg'])
+        if (value['agg'] == 'terms') {
+          data.aggs.cdfAgg['aggs'] = {
+            [key]: {
+              [value['agg']]: {
+                field: 'Delta_TX'
+              }
+            }
+          }
+        }
+        else if (value['agg'] == 'histogram') {
+          data.aggs.cdfAgg['aggs'] = {
+            [key]: {
+              [value['agg']]: {
+                field: "splitedField",
+                interval: "splitedHistogramMinInterval",
+                min_doc_count: 1
+              }
+            }
+          }
+        }
+        else if (value['agg'] == 'date_histogram') {
+          data.aggs.cdfAgg['aggs'] = {
+            [key]: {
+              [value['agg']]: {
+                field: "splitedField",
+                calendar_interval: "splitedDateHistogramMinInterval"
+              }
+            }
+          }
+        }
+        else if (value['agg'] == 'date_range') {
+          data.aggs.cdfAgg['aggs'] = {
+            [key]: {
+              [value['agg']]: {
+                field: 'splitedField',
+                format: "MM-yyy",
+                ranges: [
+                  { to: 'dateRangeEnd' },
+                  { from: 'dateRangeStart' }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+
+    console.log('data: ', data)
+
     // if (isSplitAccordionSearch) {
     //   if (splitedAggregation == 'terms') {
     //     data.aggs.cdfAgg['aggs'] = {
