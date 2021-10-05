@@ -121,27 +121,42 @@ export function CdfComponent(props: CdfComponentProps) {
     //     }
     //   }
     // }
+    //here
 
     console.log('props.visParams.subBucketArray: ', props.visParams.subBucketArray)
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    console.log('parsedSubBucketArray: ', parsedSubBucketArray)
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
+      let toInsertObj: any = {
+        aggs: {
+          cdfAgg: {
+            histogram: {
+              field: field,
+              interval: min_interval
+            }
+          }
+        }
+      }
       for (const [key, value] of Object.entries(parsedSubBucketArray)) {
-        console.log('Object.values(key): ', Object.values(key), 'Object.values(value): ', Object.values(value))
-        console.log('key: ', key, "value: ", value['agg'])
+        console.log('Object.keys(value)" ', Object.values(value['field']))
+        let field = Object.values(value['field'][0])
+        let fieldValue = Object.values(field)
+        let aggs = {}
         if (value['agg'] == 'terms') {
-          data.aggs.cdfAgg['aggs'] = {
+          aggs = {
             [key]: {
               [value['agg']]: {
-                field: 'Delta_TX'
+                field: field
               }
             }
           }
+
         }
         else if (value['agg'] == 'histogram') {
           data.aggs.cdfAgg['aggs'] = {
             [key]: {
               [value['agg']]: {
-                field: "splitedField",
+                field: fieldValue[0],
                 interval: "splitedHistogramMinInterval",
                 min_doc_count: 1
               }
@@ -152,7 +167,7 @@ export function CdfComponent(props: CdfComponentProps) {
           data.aggs.cdfAgg['aggs'] = {
             [key]: {
               [value['agg']]: {
-                field: "splitedField",
+                field: fieldValue[0],
                 calendar_interval: "splitedDateHistogramMinInterval"
               }
             }
@@ -162,7 +177,7 @@ export function CdfComponent(props: CdfComponentProps) {
           data.aggs.cdfAgg['aggs'] = {
             [key]: {
               [value['agg']]: {
-                field: 'splitedField',
+                field: fieldValue[0],
                 format: "MM-yyy",
                 ranges: [
                   { to: 'dateRangeEnd' },
@@ -172,6 +187,15 @@ export function CdfComponent(props: CdfComponentProps) {
             }
           }
         }
+        console.log('toInsertObj before: ', toInsertObj)
+        // toInsertObj = Object.assign(toInsertObj.aggs, { 'aggs': aggs })
+        let attribute = Object.keys(toInsertObj.aggs)
+        // console.log('toInsertObj.aggs[attribute[0]]: ',toInsertObj.aggs[attribute[0]])
+        // toInsertObj = toInsertObj.aggs[attribute[0]], { 'aggs': aggs }
+
+        // toInsertObj = Object.assign(toInsertObj, { 'aggs': aggs })
+        console.log('toInsertObj: ', toInsertObj.aggs[attribute[0]])
+        console.log('attribute: ', attribute[0])
       }
     }
 
