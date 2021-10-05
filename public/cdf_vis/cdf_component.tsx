@@ -121,39 +121,33 @@ export function CdfComponent(props: CdfComponentProps) {
     //     }
     //   }
     // }
-    //here
+    //here works works with aggregation!!!
 
     console.log('props.visParams.subBucketArray: ', props.visParams.subBucketArray)
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
     console.log('parsedSubBucketArray: ', parsedSubBucketArray)
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {
-        aggs: {
-          cdfAgg: {
-            histogram: {
-              field: field,
-              interval: min_interval
-            }
-          }
-        }
+        // aggs: {}
       }
       for (const [key, value] of Object.entries(parsedSubBucketArray)) {
+        // debugger
         console.log('Object.keys(value)" ', Object.values(value['field']))
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
-        let aggs = {}
+        let aggs: any = {}
         if (value['agg'] == 'terms') {
           aggs = {
             [key]: {
               [value['agg']]: {
-                field: field
+                field: fieldValue[0]
               }
             }
           }
 
         }
         else if (value['agg'] == 'histogram') {
-          data.aggs.cdfAgg['aggs'] = {
+          aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
@@ -164,7 +158,7 @@ export function CdfComponent(props: CdfComponentProps) {
           }
         }
         else if (value['agg'] == 'date_histogram') {
-          data.aggs.cdfAgg['aggs'] = {
+          aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
@@ -174,7 +168,7 @@ export function CdfComponent(props: CdfComponentProps) {
           }
         }
         else if (value['agg'] == 'date_range') {
-          data.aggs.cdfAgg['aggs'] = {
+          aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
@@ -187,19 +181,16 @@ export function CdfComponent(props: CdfComponentProps) {
             }
           }
         }
-        console.log('toInsertObj before: ', toInsertObj)
-        // toInsertObj = Object.assign(toInsertObj.aggs, { 'aggs': aggs })
-        let attribute = Object.keys(toInsertObj.aggs)
-        // console.log('toInsertObj.aggs[attribute[0]]: ',toInsertObj.aggs[attribute[0]])
-        // toInsertObj = toInsertObj.aggs[attribute[0]], { 'aggs': aggs }
-
-        // toInsertObj = Object.assign(toInsertObj, { 'aggs': aggs })
-        console.log('toInsertObj: ', toInsertObj.aggs[attribute[0]])
-        console.log('attribute: ', attribute[0])
+        if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
+          aggs[key].aggs = toInsertObj
+        }
+        toInsertObj = aggs
       }
+      data.aggs.cdfAgg['aggs'] = toInsertObj;
     }
 
     console.log('data: ', data)
+    console.log('JSON.stringify(data): ', JSON.stringify(data))
 
     // if (isSplitAccordionSearch) {
     //   if (splitedAggregation == 'terms') {
@@ -255,13 +246,16 @@ export function CdfComponent(props: CdfComponentProps) {
       headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {
+        console.log('response: ', response)
         let aggLineDataObj: any = {};
 
-        if (!isSplitAccordionSearch) {
+        if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
+          console.log('single')
           aggLineDataObj[field] = {
             points: parseSingleResponseData(response.data)
           }
         } else {
+          console.log('multiple')
           aggLineDataObj = parseMultiResponseData(response.data)
         }
         if (isAxisExtents) {
