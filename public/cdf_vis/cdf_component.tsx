@@ -22,6 +22,12 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     props.renderComplete();
+    if (window.performance) {
+      if (performance.navigation.type == 1) {
+        props.visParams.subBucketArray = '{}'
+      }
+    }
+
   })
 
   const {
@@ -55,6 +61,8 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
+
+    subBucketArray,
   } = props.visParams
 
   useEffect(() => {
@@ -77,52 +85,74 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
     }
-    if (isSplitAccordionSearch) {
-      if (splitedAggregation == 'terms') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField
+
+    //here works works with aggregation and visualization!!!
+
+    let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
+      let toInsertObj: any = {}
+      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
+        debugger
+        let field = Object.values(value['field'][0])
+        let fieldValue = Object.values(field)
+        let aggs: any = {}
+        if (value['agg'] == 'terms') {
+          aggs = {
+            [key]: {
+              [value['agg']]: {
+                field: fieldValue[0],
+                order: { "_count": "desc" }   // should be dynamic
+              }
+            }
+          }
+
+        }
+        else if (value['agg'] == 'histogram') {
+          let extractInterval = Object.values(value['min_interval'])
+          aggs = {
+            [key]: {
+              [value['agg']]: {
+                field: fieldValue[0],
+                interval: extractInterval[0],
+                min_doc_count: 1
+              }
             }
           }
         }
-      }
-      else if (splitedAggregation == 'histogram') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              interval: splitedHistogramMinInterval,
-              min_doc_count: 1
+        else if (value['agg'] == 'date_histogram') {
+          aggs = {
+            [key]: {
+              [value['agg']]: {
+                field: fieldValue[0],
+                calendar_interval: value['min_interval']
+              }
             }
           }
         }
-      }
-      else if (splitedAggregation == 'date_histogram') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              calendar_interval: splitedDateHistogramMinInterval
+        else if (value['agg'] == 'date_range') {
+          let extractDates = Object.values(value['date_range'])
+          aggs = {
+            [key]: {
+              [value['agg']]: {
+                field: fieldValue[0],
+                format: "MM-yyy",
+                ranges: [
+                  { to: extractDates[1] },
+                  { from: extractDates[0] }
+                ]
+              }
             }
           }
         }
-      }
-      else if (splitedAggregation == 'date_range') {
-        data.aggs.cdfAgg['aggs'] = {
-          innerAgg: {
-            [splitedAggregation]: {
-              field: splitedField,
-              format: "MM-yyy",
-              ranges: [
-                { to: dateRangeEnd },
-                { from: dateRangeStart }
-              ]
-            }
-          }
+        if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
+          aggs[key].aggs = toInsertObj
         }
+        toInsertObj = aggs
       }
+      data.aggs.cdfAgg['aggs'] = toInsertObj;
     }
+
+    console.log('JSON.stringify(data): ', JSON.stringify(data))
 
     axios({
       method: "POST",
@@ -131,13 +161,16 @@ export function CdfComponent(props: CdfComponentProps) {
       headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {
+        console.log('response: ', response.data)
         let aggLineDataObj: any = {};
 
-        if (!isSplitAccordionSearch) {
+        if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
+          console.log('single')
           aggLineDataObj[field] = {
             points: parseSingleResponseData(response.data)
           }
         } else {
+          console.log('multiple')
           aggLineDataObj = parseMultiResponseData(response.data)
         }
         if (isAxisExtents) {
@@ -174,6 +207,7 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
+    subBucketArray
   ]);
 
   return (
@@ -191,7 +225,7 @@ export function CdfComponent(props: CdfComponentProps) {
         <Axis
           id="left"
           title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title}
-          position={Position.Left}
+          // position={Position.Left}
           tickFormat={(d) => `${Number(d).toFixed(2)}%`}
           showGridLines={isHorizontalGrid}
         />
@@ -259,14 +293,17 @@ function parseMultiResponseData(data: any): any {
   let graphResponse: any = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let xPoint = bucket.key
-    bucket.innerAgg.buckets.forEach((innerBucket: any) => {
+    let innerIndex = Object.keys(bucket)
+    bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
       if (graphResponse[innerBucket.key] === undefined) {
         graphResponse[innerBucket.key] = {}
         graphResponse[innerBucket.key]['points'] = []
       }
       graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+      console.log('innerBucket: ', innerBucket)
     })
   });
+  console.log('graphResponse: ', graphResponse)
 
   // parse points data
   Object.keys(graphResponse).forEach(graphName => {

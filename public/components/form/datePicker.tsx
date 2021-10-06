@@ -9,29 +9,24 @@ import {
     EuiButtonEmpty,
 } from '@elastic/eui';
 
-interface DatePickerComponentProps {
-    disabled: boolean;
-    start: any;
-    end: any;
-    setStart(start: any): any;
-    setEnd(end: any): any;
-}
-
-export function DatePicker(props: DatePickerComponentProps) {
+export const DatePicker = ({
+    selectedDateRangeHandlerMiddleware
+}: any) => {
     const [recentlyUsedRanges, setRecentlyUsedRanges] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [start, setStart] = useState('now-30m');
+    const [end, setEnd] = useState('now');
     const [isPaused, setIsPaused] = useState(true);
     const [refreshInterval, setRefreshInterval] = useState();
 
     const onTimeChange = ({ start, end }: any) => {
         const recentlyUsedRange = recentlyUsedRanges.filter((recentlyUsedRange) => {
-            const isDuplicate =
-                recentlyUsedRange.start === start && recentlyUsedRange.end === end;
+            const isDuplicate = recentlyUsedRange.start === start && recentlyUsedRange.end === end;
             return !isDuplicate;
         });
         recentlyUsedRange.unshift({ start, end });
-        props.setStart(start)
-        props.setEnd(end)
+        setStart(start)
+        setEnd(end)
         setRecentlyUsedRanges(
             recentlyUsedRange.length > 10
                 ? recentlyUsedRange.slice(0, 9)
@@ -39,14 +34,24 @@ export function DatePicker(props: DatePickerComponentProps) {
         );
         setIsLoading(true);
         startLoading();
+        selectedDateRangeHandlerMiddleware({start, end});
+
+    };
+
+    const onRefresh = ({ start, end, refreshInterval }: any) => {
+        return new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        }).then(() => {
+            console.log(start, end, refreshInterval);
+        });
     };
 
     const onStartInputChange = (e: any) => {
-        props.setStart(e.target.value)
+        setStart(e.target.value);
     };
 
     const onEndInputChange = (e: any) => {
-        props.setEnd(e.target.value)
+        setEnd(e.target.value);
     };
 
     const startLoading = () => {
@@ -75,7 +80,7 @@ export function DatePicker(props: DatePickerComponentProps) {
                         <input
                             onChange={onStartInputChange}
                             type="text"
-                            value={props.start}
+                            value={start}
                             placeholder="start"
                             className="euiFieldText"
                         />
@@ -85,7 +90,7 @@ export function DatePicker(props: DatePickerComponentProps) {
                             onChange={onEndInputChange}
                             type="text"
                             placeholder="end"
-                            value={props.end}
+                            value={end}
                             className="euiFieldText"
                         />
                     }
@@ -99,15 +104,16 @@ export function DatePicker(props: DatePickerComponentProps) {
             <EuiPanel>
                 <EuiSuperDatePicker
                     isLoading={isLoading}
-                    start={props.start}
-                    end={props.end}
+                    start={start}
+                    end={end}
                     onTimeChange={onTimeChange}
+                    onRefresh={onRefresh}
                     isPaused={isPaused}
                     refreshInterval={refreshInterval}
                     onRefreshChange={onRefreshChange}
                     recentlyUsedRanges={recentlyUsedRanges}
                     showUpdateButton={false}
-                    isDisabled={props.disabled}
+                // isDisabled={props.disabled}
                 />
                 <EuiSpacer />
                 {renderTimeRange()}

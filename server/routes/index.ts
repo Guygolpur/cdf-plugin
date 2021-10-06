@@ -111,7 +111,7 @@ export function defineRoutes(router: IRouter) {
 
         return res.ok({ body: response.body });
 
-      } catch (err) {
+      } catch (err: any) {
         return res.customError({
           statusCode: err.statusCode || 500,
           body: {
