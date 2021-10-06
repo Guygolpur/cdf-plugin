@@ -86,50 +86,13 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
 
-
-    //     GET _search
-    // {
-    //   "query": {
-    //     "range": {
-    //       "time": {
-    //         "gte": "2019-10-01T07:50:06.459Z",
-    //         "lt": "now"
-    //       }
-    //     }
-    //   },
-    //   "size": 0,
-    //   "aggs": {
-    //     "cdfAgg": {
-    //       "histogram": {
-    //         "field": "Delta_TX",
-    //         "interval": 100
-    //       },
-    //       "aggs": {
-    //         "2": {
-    //           "terms": {
-    //             "field": "Projects"
-    //           },
-    //           "aggs": {
-    //             "3": {
-    //               "terms": {
-    //                 "field": "MSISDN"
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-    //here works works with aggregation!!!
+    //here works works with aggregation and visualization!!!
 
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
-      let toInsertObj: any = {
-        // aggs: {}
-      }
+      let toInsertObj: any = {}
       for (const [key, value] of Object.entries(parsedSubBucketArray)) {
-        // debugger
+        debugger
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -145,11 +108,12 @@ export function CdfComponent(props: CdfComponentProps) {
 
         }
         else if (value['agg'] == 'histogram') {
+          let extractInterval = Object.values(value['min_interval'])
           aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                interval: "splitedHistogramMinInterval",
+                interval: extractInterval[0],
                 min_doc_count: 1
               }
             }
@@ -160,20 +124,21 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                calendar_interval: "splitedDateHistogramMinInterval"
+                calendar_interval: value['min_interval']
               }
             }
           }
         }
         else if (value['agg'] == 'date_range') {
+          let extractDates = Object.values(value['date_range'])
           aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
                 format: "MM-yyy",
                 ranges: [
-                  { to: 'dateRangeEnd' },
-                  { from: 'dateRangeStart' }
+                  { to: extractDates[1] },
+                  { from: extractDates[0] }
                 ]
               }
             }
