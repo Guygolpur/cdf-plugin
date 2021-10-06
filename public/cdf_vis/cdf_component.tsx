@@ -378,12 +378,14 @@ function parseMultiResponseData(data: any): any {
   let graphResponse: any = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let xPoint = bucket.key
-    bucket.innerAgg.buckets.forEach((innerBucket: any) => {
-      if (graphResponse[innerBucket.key] === undefined) {
-        graphResponse[innerBucket.key] = {}
-        graphResponse[innerBucket.key]['points'] = []
-      }
-      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+    let innerIndex = Object.keys(bucket)
+    bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
+      // if (graphResponse[innerBucket.key] === undefined) {
+      //   graphResponse[innerBucket.key] = {}
+      //   graphResponse[innerBucket.key]['points'] = []
+      // }
+      // graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+      console.log('innerBucket: ', innerBucket)
     })
   });
 
