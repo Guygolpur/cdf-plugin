@@ -123,16 +123,13 @@ export function CdfComponent(props: CdfComponentProps) {
     // }
     //here works works with aggregation!!!
 
-    console.log('props.visParams.subBucketArray: ', props.visParams.subBucketArray)
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
-    console.log('parsedSubBucketArray: ', parsedSubBucketArray)
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {
         // aggs: {}
       }
       for (const [key, value] of Object.entries(parsedSubBucketArray)) {
         // debugger
-        console.log('Object.keys(value)" ', Object.values(value['field']))
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -140,7 +137,8 @@ export function CdfComponent(props: CdfComponentProps) {
           aggs = {
             [key]: {
               [value['agg']]: {
-                field: fieldValue[0]
+                field: fieldValue[0],
+                order: { "_count": "desc" }   // should be dynamic
               }
             }
           }
@@ -189,55 +187,7 @@ export function CdfComponent(props: CdfComponentProps) {
       data.aggs.cdfAgg['aggs'] = toInsertObj;
     }
 
-    console.log('data: ', data)
     console.log('JSON.stringify(data): ', JSON.stringify(data))
-
-    // if (isSplitAccordionSearch) {
-    //   if (splitedAggregation == 'terms') {
-    //     data.aggs.cdfAgg['aggs'] = {
-    //       innerAgg: {
-    //         [splitedAggregation]: {
-    //           field: splitedField
-    //         }
-    //       }
-    //     }
-    //   }
-    //   else if (splitedAggregation == 'histogram') {
-    //     data.aggs.cdfAgg['aggs'] = {
-    //       innerAgg: {
-    //         [splitedAggregation]: {
-    //           field: splitedField,
-    //           interval: splitedHistogramMinInterval,
-    //           min_doc_count: 1
-    //         }
-    //       }
-    //     }
-    //   }
-    //   else if (splitedAggregation == 'date_histogram') {
-    //     data.aggs.cdfAgg['aggs'] = {
-    //       innerAgg: {
-    //         [splitedAggregation]: {
-    //           field: splitedField,
-    //           calendar_interval: splitedDateHistogramMinInterval
-    //         }
-    //       }
-    //     }
-    //   }
-    //   else if (splitedAggregation == 'date_range') {
-    //     data.aggs.cdfAgg['aggs'] = {
-    //       innerAgg: {
-    //         [splitedAggregation]: {
-    //           field: splitedField,
-    //           format: "MM-yyy",
-    //           ranges: [
-    //             { to: dateRangeEnd },
-    //             { from: dateRangeStart }
-    //           ]
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
 
     axios({
       method: "POST",
@@ -246,7 +196,7 @@ export function CdfComponent(props: CdfComponentProps) {
       headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {
-        console.log('response: ', response)
+        console.log('response: ', response.data)
         let aggLineDataObj: any = {};
 
         if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
@@ -380,14 +330,15 @@ function parseMultiResponseData(data: any): any {
     let xPoint = bucket.key
     let innerIndex = Object.keys(bucket)
     bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
-      // if (graphResponse[innerBucket.key] === undefined) {
-      //   graphResponse[innerBucket.key] = {}
-      //   graphResponse[innerBucket.key]['points'] = []
-      // }
-      // graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+      if (graphResponse[innerBucket.key] === undefined) {
+        graphResponse[innerBucket.key] = {}
+        graphResponse[innerBucket.key]['points'] = []
+      }
+      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
       console.log('innerBucket: ', innerBucket)
     })
   });
+  console.log('graphResponse: ', graphResponse)
 
   // parse points data
   Object.keys(graphResponse).forEach(graphName => {
