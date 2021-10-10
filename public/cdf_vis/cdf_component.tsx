@@ -80,7 +80,8 @@ export function CdfComponent(props: CdfComponentProps) {
         cdfAgg: {
           histogram: {
             field: field,
-            interval: min_interval
+            interval: min_interval,
+            min_doc_count: 1
           }
         }
       }
@@ -89,10 +90,11 @@ export function CdfComponent(props: CdfComponentProps) {
     //here works works with aggregation and visualization!!!
 
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    const sizeOfSubs = Object.entries(parsedSubBucketArray).length
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
-      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
-        debugger
+      for (const [key, value] of Object.entries(parsedSubBucketArray).reverse()) {
+        // debugger
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -101,6 +103,7 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
+                size: 5,  // should be dynamic
                 order: { "_count": "desc" }   // should be dynamic
               }
             }
@@ -171,7 +174,7 @@ export function CdfComponent(props: CdfComponentProps) {
           }
         } else {
           console.log('multiple')
-          aggLineDataObj = parseMultiResponseData(response.data)
+          aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
         }
         if (isAxisExtents) {
           aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
@@ -288,13 +291,14 @@ function parseSingleResponseData(data: any): any {
   })
   return aggLineData;
 }
-
-function parseMultiResponseData(data: any): any {
+// here 10/10
+function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   let graphResponse: any = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let xPoint = bucket.key
     let innerIndex = Object.keys(bucket)
     bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
+      //needs to add deeper by number of sub buckets.
       if (graphResponse[innerBucket.key] === undefined) {
         graphResponse[innerBucket.key] = {}
         graphResponse[innerBucket.key]['points'] = []
