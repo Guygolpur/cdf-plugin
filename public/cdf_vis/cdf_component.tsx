@@ -98,7 +98,6 @@ export function CdfComponent(props: CdfComponentProps) {
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
       for (const [key, value] of Object.entries(parsedSubBucketArray).reverse()) {
-        // debugger
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -295,7 +294,7 @@ function parseSingleResponseData(data: any): any {
   })
   return aggLineData;
 }
-// here 10/10
+
 function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   let graphResponse: any = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
