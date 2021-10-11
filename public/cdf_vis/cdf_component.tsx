@@ -66,6 +66,10 @@ export function CdfComponent(props: CdfComponentProps) {
   } = props.visParams
 
   useEffect(() => {
+    let emptyBucket = 1
+    if (isEmptyBucket) {
+      emptyBucket = 0
+    }
     let data: any = {
       query: {
         range: {
@@ -81,7 +85,7 @@ export function CdfComponent(props: CdfComponentProps) {
           histogram: {
             field: field,
             interval: min_interval,
-            min_doc_count: 1
+            min_doc_count: emptyBucket
           }
         }
       }
