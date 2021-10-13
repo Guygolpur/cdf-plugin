@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import { htmlIdGenerator } from '@elastic/eui';
-
+import React, { useState, useEffect, Fragment } from 'react';
 import {
-    EuiScreenReaderOnly,
     EuiSpacer,
     EuiText,
     EuiButton,
@@ -13,79 +10,92 @@ import { AddSubBucket } from './addSubBucket';
 export const SubBucketRow = ({
     stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
     isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
-    onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
+    onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
-    selectedSplitLinesDateRangeField,
-    setDateRangeStart, setDateRangeEnd
+    selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
+    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer
 }: any) => {
 
-    const [globalCounter, setGlobalCounter] = useState(1);
-    const rows = [];
-    for (let i = 1; i <= globalCounter; i++) {
-        rows.push(
-            <AddSubBucket
-                counter={i}
-                stateParams={stateParams}
-                splitedAggregationArr={splitedAggregationArr}
-                selectedSplitLinesTermsField={selectedSplitLinesTermsField}
-                isIndexSelected={isIndexSelected}
-                isXAxisFieldSelected={isXAxisFieldSelected}
-                numberFieldArr={numberFieldArr}
-                dateFieldArr={dateFieldArr}
-                selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
-                selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
-                selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
+    const [ids, setIds] = useState([]);
+    const [globalCounter, setGlobalCounter] = useState(0);
 
-                selectSplitLinesAggregation={selectSplitLinesAggregation}
-                selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
-                selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
-                selectedDateRangeHandler={selectedDateRangeHandler}
+    useEffect(() => {
+        console.log('ids useEffect: ', ids)
+    }, [ids])
 
-                onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
-                onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
-                setDateRangeStart={setDateRangeStart}
-                setDateRangeEnd={setDateRangeEnd}
+    const deleteHandeler = (removeId: any) => {
+        setIds((ids) => ids.filter((id) => id != removeId));
+        cleanSubBucketArrayBuffer(removeId)
+    };
 
-                onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
-            />
-        );
-    }
+    const addHandeler = () => {
+        setIds((ids) => [...ids, `${globalCounter}`]);
+        setGlobalCounter(globalCounter + 1)
+    };
 
-    const growingAccordianDescriptionId = htmlIdGenerator()();
-    const listId = htmlIdGenerator()();
     return (
         <EuiText size="s">
-            <EuiScreenReaderOnly>
-                <div id={growingAccordianDescriptionId}>
-                    Currently height is set to {globalCounter} items
-                </div>
-            </EuiScreenReaderOnly>
             <EuiSpacer size="s" />
-            <ul id={listId}>{rows}</ul>
-            <div>
+            {ids.map((id) => (
+                <Fragment
+                    key={id}
+                >
+                    <AddSubBucket
+                        counter={parseInt(id)}
+                        stateParams={stateParams}
+                        splitedAggregationArr={splitedAggregationArr}
+                        selectedSplitLinesTermsField={selectedSplitLinesTermsField}
+                        isIndexSelected={isIndexSelected}
+                        isXAxisFieldSelected={isXAxisFieldSelected}
+                        numberFieldArr={numberFieldArr}
+                        dateFieldArr={dateFieldArr}
+                        selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
+                        selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
+                        selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
+                        selectSplitLinesAggregation={selectSplitLinesAggregation}
+                        selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
+                        selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                        selectedDateRangeHandler={selectedDateRangeHandler}
+                        onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
+                        onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
+                        setDateRangeStart={setDateRangeStart}
+                        setDateRangeEnd={setDateRangeEnd}
+                        onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
+                    />
+
+                    <EuiButton
+                        size="s"
+                        iconType="minusInCircleFilled"
+                        aria-controls={id}
+                        aria-describedby={id}
+                        id={id}
+                        onClick={() => deleteHandeler(id)}
+                        isDisabled={globalCounter === 1}
+                        fullWidth
+                    >
+                        Remove last Split lines Bucket {parseInt(id)}
+                    </EuiButton>
+                    <EuiSpacer size="m" />
+                    <hr
+                        style={{
+                            color: '#C0C0C0',
+                            backgroundColor: '#C0C0C0',
+                            height: 5
+                        }}
+                    />
+                    <EuiSpacer size="xl" />
+                </Fragment>
+            ))}
+            <div style={{ textAlign: 'center' }}>
                 <EuiButton
                     size="s"
                     iconType="plusInCircleFilled"
-                    onClick={() => setGlobalCounter(globalCounter + 1)}
-                    aria-controls={listId}
-                    aria-describedby={growingAccordianDescriptionId}
-                    fullWidth
+                    onClick={addHandeler}
                 >
                     Add Split lines
                 </EuiButton>{' '}
                 <EuiSpacer size="s" />
-                <EuiButton
-                    size="s"
-                    iconType="minusInCircleFilled"
-                    aria-controls={listId}
-                    aria-describedby={growingAccordianDescriptionId}
-                    onClick={() => setGlobalCounter(Math.max(0, globalCounter))}
-                    isDisabled={globalCounter === 1}
-                    fullWidth
-                >
-                    Remove last Split lines Bucket
-                </EuiButton>
             </div>
         </EuiText>
     );
