@@ -263,11 +263,17 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('dateRangeEnd', end);
   }
 
+  cleanSubBucketArrayBuffer = async (index: any) => {
+    let subBucketArrayTojson = await JSON.parse(this.props.stateParams['subBucketArray'])
+    delete subBucketArrayTojson[(index - 1)]
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    this.props.setValue('subBucketArray', subBucketArrayToString)
+  }
+
   selectSplitLinesAggregation = async (e: any, counter: number) => {
     // debugger
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
     if (subBucketArrayTojson[counter - 1] == undefined) {
-      console.log('1')
       let splitLinesAggArr;
       switch (e.target.value) {
         case 'terms':
@@ -288,7 +294,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       subBucketArrayTojson[counter - 1] = splitLinesAggArr;
     }
     else {
-      console.log('2')
       console.log('subBucketArrayTojson: ', subBucketArrayTojson)
       //handle default- plus terms only properties
       subBucketArrayTojson[counter - 1].agg = e.target.value;
@@ -297,34 +302,26 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
       //handle date_range
       if (e.target.value != 'date_range' && subBucketArrayTojson[counter - 1].hasOwnProperty('date_range')) {
-        console.log('3')
         delete subBucketArrayTojson[counter - 1].date_range;
       }
       if (e.target.value == 'date_range') {
-        console.log('4')
         let date_range = { 'start': 'now-30m', 'end': 'now' }
         subBucketArrayTojson[counter - 1].date_range = date_range
       }
 
       //handle min_interval on date_histogram && histogram- plus remove min_interval
       if (e.target.value == 'date_histogram' || e.target.value == 'histogram') {
-        console.log('5')
         let min_interval;
         e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
-        console.log('counter: ', counter)
         subBucketArrayTojson[counter - 1].min_interval = min_interval
       }
       else if ('min_interval' in subBucketArrayTojson[counter - 1]) {
-        console.log('6')
         delete subBucketArrayTojson[counter - 1].min_interval;
       }
     }
 
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
-
-    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
     this.props.setValue('subBucketArray', subBucketArrayToString)
-    console.log("selectSplitLinesAggregation[subBucketArray]: ", this.props.stateParams['subBucketArray'])
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
@@ -349,20 +346,13 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       subBucketArrayTojson[counter - 1].isValid = false
     }
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
-    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
-
     this.props.setValue('subBucketArray', subBucketArrayToString)
-
-    console.log("selectedSplitLinesTermsFieldHandler['subBucketArray']: ", this.props.stateParams['subBucketArray'])
-
   }
 
   selectSplitLinesMinimumInterval = (selectedField: any, counter: number) => {
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
     subBucketArrayTojson[counter - 1].min_interval = selectedField.target.value;
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
-    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
-
     this.props.setValue('subBucketArray', subBucketArrayToString)
   }
 
@@ -371,8 +361,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     subBucketArrayTojson[counter - 1].date_range['start'] = start;
     subBucketArrayTojson[counter - 1].date_range['end'] = end;
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
-    console.log('subBucketArrayTojson stringify: ', subBucketArrayTojson)
-
     this.props.setValue('subBucketArray', subBucketArrayToString)
   }
 

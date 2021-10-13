@@ -14,7 +14,7 @@ export const SubBucketRow = ({
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
-    onSplitedShowMissingValuesChange
+    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer
 }: any) => {
 
     const [ids, setIds] = useState([]);
@@ -26,6 +26,7 @@ export const SubBucketRow = ({
 
     const deleteHandeler = (removeId: any) => {
         setIds((ids) => ids.filter((id) => id != removeId));
+        cleanSubBucketArrayBuffer(removeId)
     };
 
     const addHandeler = () => {
