@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { htmlIdGenerator } from '@elastic/eui';
+import React, { useState, useEffect, Fragment } from 'react';
 import {
     EuiSpacer,
     EuiText,
@@ -11,42 +10,36 @@ import { AddSubBucket } from './addSubBucket';
 export const SubBucketRow = ({
     stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
     isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
-    onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
+    onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
-    selectedSplitLinesDateRangeField,
-    setDateRangeStart, setDateRangeEnd
+    selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
+    onSplitedShowMissingValuesChange
 }: any) => {
 
-    const [globalCounter, setGlobalCounter] = useState(1);
-    const [ids, setIds] = useState(['0']);
-    const growingAccordianDescriptionId = htmlIdGenerator()();
-    const listId = htmlIdGenerator()();
+    const [ids, setIds] = useState([]);
+    const [globalCounter, setGlobalCounter] = useState(0);
 
     useEffect(() => {
         console.log('ids useEffect: ', ids)
     }, [ids])
 
-
     const deleteHandeler = (removeId: any) => {
-        console.log('removeId: ', removeId)
         setIds((ids) => ids.filter((id) => id != removeId));
-        setGlobalCounter(Math.max(0, globalCounter))
-        console.log('ids remove: ', ids)
     };
 
     const addHandeler = () => {
         setIds((ids) => [...ids, `${globalCounter}`]);
         setGlobalCounter(globalCounter + 1)
-        console.log('ids: ', ids)
     };
 
-    //here X2
     return (
         <EuiText size="s">
             <EuiSpacer size="s" />
             {ids.map((id) => (
-                <>
+                <Fragment
+                    key={id}
+                >
                     <AddSubBucket
                         counter={parseInt(id)}
                         stateParams={stateParams}
@@ -59,17 +52,14 @@ export const SubBucketRow = ({
                         selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
                         selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
                         selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
-
                         selectSplitLinesAggregation={selectSplitLinesAggregation}
                         selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
                         selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
                         selectedDateRangeHandler={selectedDateRangeHandler}
-
                         onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                         onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
                         setDateRangeStart={setDateRangeStart}
                         setDateRangeEnd={setDateRangeEnd}
-
                         onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
                     />
 
@@ -78,11 +68,12 @@ export const SubBucketRow = ({
                         iconType="minusInCircleFilled"
                         aria-controls={id}
                         aria-describedby={id}
-                        onClick={() => deleteHandeler(parseInt(id) - 1)}
+                        id={id}
+                        onClick={() => deleteHandeler(id)}
                         isDisabled={globalCounter === 1}
                         fullWidth
                     >
-                        Remove last Split lines Bucket {parseInt(id) - 1}
+                        Remove last Split lines Bucket {parseInt(id)}
                     </EuiButton>
                     <EuiSpacer size="m" />
                     <hr
@@ -93,15 +84,13 @@ export const SubBucketRow = ({
                         }}
                     />
                     <EuiSpacer size="xl" />
-                </>
+                </Fragment>
             ))}
             <div style={{ textAlign: 'center' }}>
                 <EuiButton
                     size="s"
                     iconType="plusInCircleFilled"
                     onClick={addHandeler}
-                    aria-controls={listId}
-                    aria-describedby={growingAccordianDescriptionId}
                 >
                     Add Split lines
                 </EuiButton>{' '}
