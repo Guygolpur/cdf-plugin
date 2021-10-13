@@ -74,7 +74,7 @@ export const SubBucketRow = ({
                         isDisabled={globalCounter === 1}
                         fullWidth
                     >
-                        Remove last Split lines Bucket {parseInt(id)}
+                        Remove Split lines
                     </EuiButton>
                     <EuiSpacer size="m" />
                     <hr
