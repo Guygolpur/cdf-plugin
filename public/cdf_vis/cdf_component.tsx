@@ -97,7 +97,7 @@ export function CdfComponent(props: CdfComponentProps) {
     const sizeOfSubs = Object.entries(parsedSubBucketArray).length
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
-      for (const [key, value] of Object.entries(parsedSubBucketArray).reverse()) {
+      for (const [key, value] of Object.entries(parsedSubBucketArray)) {  //removed .reverse()
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -295,20 +295,40 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-function parseMultiResponseData(data: any, sizeOfSubs: number): any {
-  let graphResponse: any = {}
-  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
-    let xPoint = bucket.key
-    let innerIndex = Object.keys(bucket)
-    bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
-      //needs to add deeper by number of sub buckets.
-      if (graphResponse[innerBucket.key] === undefined) {
-        graphResponse[innerBucket.key] = {}
-        graphResponse[innerBucket.key]['points'] = []
+//here
+
+let graphResponse: any = {}
+
+function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any) {
+  Object.keys(o).forEach(function (k) {
+    if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
+      if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
+      iter(o[k], sizeOfSubs, bucketSaw, xPoint);
+      return;
+    }
+    if (bucketSaw == sizeOfSubs) {
+      console.log(' o[k]: ', o[k])
+      console.log('o: ', o)
+      console.log('k:  ', k)
+
+      xPoint = o.key
+      if (graphResponse[o.key] === undefined) {
+        graphResponse[o.key] = {}
+        graphResponse[o.key]['points'] = []
       }
-      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
-      console.log('innerBucket: ', innerBucket)
-    })
+      graphResponse[o.key]['points'].push({ x: xPoint, doc_count: o.doc_count })
+
+    }
+  });
+}
+
+function parseMultiResponseData(data: any, sizeOfSubs: any): any {
+
+  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
+    let bucketSaw: number = 0;
+    let xPoint: any = null
+
+    iter(bucket, sizeOfSubs, bucketSaw, xPoint)
   });
   console.log('graphResponse: ', graphResponse)
 
