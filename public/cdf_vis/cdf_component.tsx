@@ -300,7 +300,7 @@ function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let xPoint = bucket.key
     let innerIndex = Object.keys(bucket)
-    bucket[innerIndex[0]].buckets.forEach((innerBucket: any) => {
+    bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
       //needs to add deeper by number of sub buckets.
       if (graphResponse[innerBucket.key] === undefined) {
         graphResponse[innerBucket.key] = {}
