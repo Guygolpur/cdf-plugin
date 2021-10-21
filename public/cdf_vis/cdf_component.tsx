@@ -91,8 +91,6 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
 
-    //here works works with aggregation and visualization!!!
-
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
     const sizeOfSubs = Object.entries(parsedSubBucketArray).length
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
@@ -295,65 +293,87 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-//here
-
-let graphResponse: any = {}
-
-function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any) {
-  Object.keys(o).forEach(function (k) {
+let graphResponse: any = {} // work here 21/10 13:30
+let secondLayer: any = []
+function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
+  Object.keys(o).forEach(function (k: any, i: number) {
+    // debugger
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
+      xPoint = o.key
+      if (!graphResponse[root].hasOwnProperty(o.key) && o[k].hasOwnProperty('buckets') && (bucketSaw > 0 && bucketSaw < sizeOfSubs)) {
+        graphResponse[root][o.key] = {}
+        // secondLayer = []
+        secondLayer.push(o.key)
+      }
       if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
-      iter(o[k], sizeOfSubs, bucketSaw, xPoint);
+      iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
       return;
     }
-    if (bucketSaw == sizeOfSubs) {
-      console.log(' o[k]: ', o[k])
-      console.log('o: ', o)
-      console.log('k:  ', k)
-
+    if (bucketSaw === sizeOfSubs) {
+      debugger
       xPoint = o.key
-      if (graphResponse[o.key] === undefined) {
-        graphResponse[o.key] = {}
-        graphResponse[o.key]['points'] = []
+      let prop = secondLayer[secondLayer.length - 1]
+      if (graphResponse[root][prop] === undefined) {
+        graphResponse[root][prop] = {}
       }
-      graphResponse[o.key]['points'].push({ x: xPoint, doc_count: o.doc_count })
-
+      if (!('points' in graphResponse[root][prop])) {
+        graphResponse[root][prop]['points'] = []
+      }
+      let isPointExist = graphResponse[root][prop]['points'].some((el: any) => el.x === xPoint)
+      if (!isPointExist) {
+        graphResponse[root][prop]['points'].push({ x: xPoint, doc_count: o.doc_count })
+      }
     }
   });
 }
 
 function parseMultiResponseData(data: any, sizeOfSubs: any): any {
-
+  graphResponse = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let bucketSaw: number = 0;
     let xPoint: any = null
-
-    iter(bucket, sizeOfSubs, bucketSaw, xPoint)
+    graphResponse[bucket.key] = {}
+    iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
   });
-  console.log('graphResponse: ', graphResponse)
 
-  // parse points data
+  // //here need to rearrange the object
+  // let unionObject: any = {}
+  // for (const innerVal of secondLayer) {
+  //   unionObject[innerVal] = {}
+  // }
+
+  // Object.keys(unionObject).forEach((firstProp: any, index: any) => {
+  //   Object.keys(graphResponse).forEach(xAxisValue => {
+  //     unionObject[firstProp][xAxisValue] = {}
+  //   })
+  // })
+  // console.log('unionObject: ', unionObject)
+  // console.log('graphResponse: ', graphResponse)
+
   Object.keys(graphResponse).forEach(graphName => {
-    let totalHits: number = graphResponse[graphName].points.reduce(
-      (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count,
-      0);
+    Object.keys(graphResponse[graphName]).forEach(inner => {
+      let totalHits: number = graphResponse[graphName][inner].points.reduce(
+        (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count, 0
+      );
 
-    graphResponse[graphName].points = graphResponse[graphName].points.map((el: any, currPointIndex: number) => {
-      let tempCounter: number = 0
+      graphResponse[graphName][inner].points = graphResponse[graphName][inner].points.map((el: any, currPointIndex: number) => {
+        let tempCounter: number = 0
 
-      graphResponse[graphName].points.forEach((point: any, pointIndex: number) => {
-        if (pointIndex <= currPointIndex) {
-          tempCounter += point.doc_count
-        } else {
-          return
-        }
+        graphResponse[graphName][inner].points.forEach((point: any, pointIndex: number) => {
+          if (pointIndex <= currPointIndex) {
+            tempCounter += point.doc_count
+          } else {
+            return
+          }
+        });
+
+        let newElement: any[] = [];
+        newElement[0] = el.x;
+        newElement[1] = (tempCounter / totalHits) * 100;
+        return newElement
       });
-
-      let newElement: any[] = [];
-      newElement[0] = el.x;
-      newElement[1] = (tempCounter / totalHits) * 100;
-      return newElement
     });
-  });
+  })
   return graphResponse;
 }
+// 21/10
