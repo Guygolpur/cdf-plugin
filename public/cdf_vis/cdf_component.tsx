@@ -295,20 +295,62 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-function parseMultiResponseData(data: any, sizeOfSubs: number): any {
-  let graphResponse: any = {}
-  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
-    let xPoint = bucket.key
-    let innerIndex = Object.keys(bucket)
-    bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
-      //needs to add deeper by number of sub buckets.
-      if (graphResponse[innerBucket.key] === undefined) {
-        graphResponse[innerBucket.key] = {}
-        graphResponse[innerBucket.key]['points'] = []
+/////// work here to fill projects 21/10 19:44: in size of 1 or 2 split lines- check
+let graphResponse: any = {}
+let name = ''
+function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
+  Object.keys(o).forEach(function (k: any, i: number) {
+    if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
+      if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
+        if (bucketSaw > 0 && bucketSaw !== sizeOfSubs) {
+          if (name.length === 0) { name = o.key }
+          else { name = name + '/-/' + o.key }
+        }
       }
-      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
-      console.log('innerBucket: ', innerBucket)
-    })
+      if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
+      iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
+      return;
+    }
+    else {
+      if (bucketSaw === sizeOfSubs && name.length > 0) {
+        name = name + '/-/' + o.key
+        graphResponse[name] = {}
+      }
+      else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
+        name = o.key
+        graphResponse[name] = {}
+      }
+
+      if (!('points' in graphResponse[name])) {
+        graphResponse[name]['points'] = []
+      }
+      let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
+      if (!isPointExist) {
+        graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
+      }
+      name = ''
+    }
+
+  });
+}
+
+
+function parseMultiResponseData(data: any, sizeOfSubs: number): any {
+  graphResponse = {}
+  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
+    let bucketSaw: number = 0;
+    let xPoint = bucket.key
+    iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
+
+    // bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
+    //   //needs to add deeper by number of sub buckets.
+    //   if (graphResponse[innerBucket.key] === undefined) {
+    //     graphResponse[innerBucket.key] = {}
+    //     graphResponse[innerBucket.key]['points'] = []
+    //   }
+    //   graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
+    //   console.log('innerBucket: ', innerBucket)
+    // })
   });
   console.log('graphResponse: ', graphResponse)
 
@@ -337,3 +379,75 @@ function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   });
   return graphResponse;
 }
+
+
+
+
+//
+// let graphResponse: any = {} // work here 21/10 13:30
+// let secondLayer: any = []
+// function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
+//   Object.keys(o).forEach(function (k: any, i: number) {
+//     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
+//       xPoint = o.key
+//       if (!graphResponse[root].hasOwnProperty(o.key) && o[k].hasOwnProperty('buckets') && (bucketSaw > 0 && bucketSaw < sizeOfSubs)) {
+//         graphResponse[root][o.key] = {}
+//         secondLayer.push(o.key)
+//       }
+//       if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
+//       iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
+//       return;
+//     }
+//     if (bucketSaw === sizeOfSubs) {
+//       debugger
+//       xPoint = o.key
+//       let prop = secondLayer[secondLayer.length - 1]
+//       if (graphResponse[root][prop] === undefined) {
+//         graphResponse[root][prop] = {}
+//       }
+//       if (!('points' in graphResponse[root][prop])) {
+//         graphResponse[root][prop]['points'] = []
+//       }
+//       let isPointExist = graphResponse[root][prop]['points'].some((el: any) => el.x === xPoint)
+//       if (!isPointExist) {
+//         graphResponse[root][prop]['points'].push({ x: xPoint, doc_count: o.doc_count })
+//       }
+//     }
+//   });
+// }
+// //here before method design
+// function parseMultiResponseData(data: any, sizeOfSubs: any): any {
+//   graphResponse = {}
+//   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
+//     let bucketSaw: number = 0;
+//     let xPoint: any = null
+//     graphResponse[bucket.key] = {}
+//     iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
+//   });
+
+//   Object.keys(graphResponse).forEach(graphName => {
+//     Object.keys(graphResponse[graphName]).forEach(inner => {
+//       let totalHits: number = graphResponse[graphName][inner].points.reduce(
+//         (previousScore: any, currentScore: any, index: number) => previousScore + currentScore.doc_count, 0
+//       );
+
+//       graphResponse[graphName][inner].points = graphResponse[graphName][inner].points.map((el: any, currPointIndex: number) => {
+//         let tempCounter: number = 0
+
+//         graphResponse[graphName][inner].points.forEach((point: any, pointIndex: number) => {
+//           if (pointIndex <= currPointIndex) {
+//             tempCounter += point.doc_count
+//           } else {
+//             return
+//           }
+//         });
+
+//         let newElement: any[] = [];
+//         newElement[0] = el.x;
+//         newElement[1] = (tempCounter / totalHits) * 100;
+//         return newElement
+//       });
+//     });
+//   })
+//   return graphResponse;
+// }
