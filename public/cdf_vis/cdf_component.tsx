@@ -91,8 +91,6 @@ export function CdfComponent(props: CdfComponentProps) {
       }
     }
 
-    //here works works with aggregation and visualization!!!
-
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
     const sizeOfSubs = Object.entries(parsedSubBucketArray).length
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
@@ -171,12 +169,10 @@ export function CdfComponent(props: CdfComponentProps) {
         let aggLineDataObj: any = {};
 
         if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
-          console.log('single')
           aggLineDataObj[field] = {
             points: parseSingleResponseData(response.data)
           }
         } else {
-          console.log('multiple')
           aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
         }
         if (isAxisExtents) {
@@ -295,20 +291,69 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-function parseMultiResponseData(data: any, sizeOfSubs: number): any {
-  let graphResponse: any = {}
-  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
-    let xPoint = bucket.key
-    let innerIndex = Object.keys(bucket)
-    bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
-      //needs to add deeper by number of sub buckets.
-      if (graphResponse[innerBucket.key] === undefined) {
-        graphResponse[innerBucket.key] = {}
-        graphResponse[innerBucket.key]['points'] = []
+let graphResponse: any = {}
+let name = ''
+let xPoint: any = null
+function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
+  debugger
+  Object.keys(o).forEach(function (k: any, i: number) {
+    if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
+      if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
+        if (bucketSaw > 0 && bucketSaw !== sizeOfSubs) {
+          if (name.length === 0) { name = `${o.key}` }
+          else { name = name + '//-//' + `${o.key}` }
+        }
       }
-      graphResponse[innerBucket.key]['points'].push({ x: xPoint, doc_count: innerBucket.doc_count })
-      console.log('innerBucket: ', innerBucket)
-    })
+      if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
+      iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
+
+      if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array) && k !== 'buckets') {
+        var removeFromName = name.substr(0, name.lastIndexOf("//-//"));
+        name = removeFromName
+      }
+      return;
+    }
+    else {
+      if (bucketSaw === sizeOfSubs && name.length > 0) {
+        name = name + '//-//' + `${o.key}`
+        if (graphResponse[name] === undefined) {
+          graphResponse[name] = {}
+        }
+        if (!('points' in graphResponse[name])) {
+          graphResponse[name]['points'] = []
+        }
+        let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
+        if (!isPointExist) {
+          graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
+        }
+        bucketSaw = bucketSaw + 1
+      }
+      else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
+        name = `${o.key}`
+        if (graphResponse[name] === undefined) {
+          graphResponse[name] = {}
+        }
+        if (!('points' in graphResponse[name])) {
+          graphResponse[name]['points'] = []
+        }
+        let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
+        if (!isPointExist) {
+          graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
+        }
+        name = ''
+      }
+    }
+
+  });
+}
+
+function parseMultiResponseData(data: any, sizeOfSubs: number): any {
+  graphResponse = {}
+  data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
+    let bucketSaw: number = 0;
+    xPoint = bucket.key
+    name = ''
+    iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
   });
   console.log('graphResponse: ', graphResponse)
 
