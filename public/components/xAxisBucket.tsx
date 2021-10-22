@@ -19,7 +19,7 @@ import {
 
 export const AxisBucket = ({
   onGeneralValChange, onGeneralBoolValChange, selectedHistogramFieldHandler,
-  selectedHistogramField, isExtendBounds, isEmptyBucket, advancedValue,
+  selectedHistogramField, isEmptyBucket, advancedValue,
   aggregationArr, isIndexSelected }: any
 ) => {
   return (
@@ -100,18 +100,6 @@ export const AxisBucket = ({
           name="switch"
           checked={isEmptyBucket}
           onChange={() => onGeneralBoolValChange('isEmptyBucket')}
-          disabled={!isIndexSelected}
-        />
-      </EuiFormRow>
-
-      <EuiSpacer size="m" />
-
-      <EuiFormRow label="Switch" fullWidth hasChildLabel={false}>
-        <EuiSwitch
-          label="Extend bounds"
-          name="switch"
-          checked={isExtendBounds}
-          onChange={() => onGeneralBoolValChange('isExtendBounds')}
           disabled={!isIndexSelected}
         />
       </EuiFormRow>
