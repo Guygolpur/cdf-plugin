@@ -295,27 +295,35 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-/////// work here to fill projects 21/10 19:44: in size of 1 or 2 split lines 22/10
+/////// work here to fill projects in size of 1 or 2 with visualizeing split lines 22/10
 let graphResponse: any = {}
 let name = ''
 let xPoint: any = null
 function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
+  debugger
   Object.keys(o).forEach(function (k: any, i: number) {
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
       if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
         if (bucketSaw > 0 && bucketSaw !== sizeOfSubs) {
           if (name.length === 0) { name = o.key }
-          else { name = name + '/-/' + o.key }
+          else { name = name + '//-//' + o.key }
         }
       }
       if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
       iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
+
+      if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array) && k !== 'buckets') {
+        var removeFromName = name.substr(0, name.lastIndexOf("//-//"));
+        name = removeFromName
+      }
       return;
     }
     else {
       if (bucketSaw === sizeOfSubs && name.length > 0) {
-        name = name + '/-/' + o.key
-        graphResponse[name] = {}
+        name = name + '//-//' + o.key
+        if (graphResponse[name] === undefined) {
+          graphResponse[name] = {}
+        }
         if (!('points' in graphResponse[name])) {
           graphResponse[name]['points'] = []
         }
@@ -323,7 +331,8 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
         if (!isPointExist) {
           graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
         }
-        name = ''
+        bucketSaw = bucketSaw + 1
+        // name = ''
       }
       else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
         name = o.key
