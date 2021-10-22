@@ -295,9 +295,10 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
-/////// work here to fill projects 21/10 19:44: in size of 1 or 2 split lines- check
+/////// work here to fill projects 21/10 19:44: in size of 1 or 2 split lines 22/10
 let graphResponse: any = {}
 let name = ''
+let xPoint: any = null
 function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
   Object.keys(o).forEach(function (k: any, i: number) {
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
@@ -315,20 +316,29 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
       if (bucketSaw === sizeOfSubs && name.length > 0) {
         name = name + '/-/' + o.key
         graphResponse[name] = {}
+        if (!('points' in graphResponse[name])) {
+          graphResponse[name]['points'] = []
+        }
+        let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
+        if (!isPointExist) {
+          graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
+        }
+        name = ''
       }
       else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
         name = o.key
-        graphResponse[name] = {}
+        if (graphResponse[name] === undefined) {
+          graphResponse[name] = {}
+        }
+        if (!('points' in graphResponse[name])) {
+          graphResponse[name]['points'] = []
+        }
+        let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
+        if (!isPointExist) {
+          graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
+        }
+        name = ''
       }
-
-      if (!('points' in graphResponse[name])) {
-        graphResponse[name]['points'] = []
-      }
-      let isPointExist = graphResponse[name]['points'].some((el: any) => el.x === xPoint)
-      if (!isPointExist) {
-        graphResponse[name]['points'].push({ x: xPoint, doc_count: o.doc_count })
-      }
-      name = ''
     }
 
   });
@@ -339,7 +349,7 @@ function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   graphResponse = {}
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let bucketSaw: number = 0;
-    let xPoint = bucket.key
+    xPoint = bucket.key
     iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
 
     // bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
