@@ -305,8 +305,8 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
       if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
         if (bucketSaw > 0 && bucketSaw !== sizeOfSubs) {
-          if (name.length === 0) { name = o.key }
-          else { name = name + '//-//' + o.key }
+          if (name.length === 0) { name = `${o.key}` }
+          else { name = name + '//-//' + `${o.key}` }
         }
       }
       if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
@@ -320,7 +320,7 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
     }
     else {
       if (bucketSaw === sizeOfSubs && name.length > 0) {
-        name = name + '//-//' + o.key
+        name = name + '//-//' + `${o.key}`
         if (graphResponse[name] === undefined) {
           graphResponse[name] = {}
         }
@@ -335,7 +335,7 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
         // name = ''
       }
       else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
-        name = o.key
+        name = `${o.key}`
         if (graphResponse[name] === undefined) {
           graphResponse[name] = {}
         }
@@ -359,6 +359,7 @@ function parseMultiResponseData(data: any, sizeOfSubs: number): any {
   data.aggregations.cdfAgg.buckets.forEach((bucket: any, i: number) => {
     let bucketSaw: number = 0;
     xPoint = bucket.key
+    name = ''
     iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
 
     // bucket[innerIndex[innerIndex.length -1]].buckets.forEach((innerBucket: any) => {
