@@ -196,18 +196,6 @@ export const AddSubBucket = ({
 
             <EuiSpacer size="m" />
 
-            <EuiFormRow fullWidth hasChildLabel={false}>
-                <EuiSwitch
-                    label="Drop partial buckets"
-                    name="switch"
-                    checked={stateParams.isSplitedSeperateBucket}
-                    onChange={onSplitedSeperateBucketChange}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="s" />
-
             <EuiSpacer size="s" />
 
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
@@ -304,19 +292,7 @@ export const AddSubBucket = ({
                 />
             </EuiFormRow>
 
-            <EuiSpacer size="s" />
-
-            <EuiFormRow fullWidth hasChildLabel={false}>
-                <EuiSwitch
-                    label="Extend bounds"
-                    name="switch"
-                    checked={stateParams.isSplitedShowMissingValues}
-                    onChange={onSplitedShowMissingValuesChange}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="s" />
+            <EuiSpacer size="m" />
 
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
                 <EuiFieldText

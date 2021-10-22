@@ -239,7 +239,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue(valName, e)
   }
 
-  // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, isExtendBounds, 
+  // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, 
   // isSplitedSeperateBucket, isSplitedShowMissingValues, isSplitAccordionSearch
   onGeneralBoolValChange = (valName: (keyof CounterParams)) => {
     this.props.setValue(valName, !this.props.stateParams[valName]);
@@ -389,7 +389,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                     selectedHistogramField={this.state.selectedHistogramField}
                     field={this.props.stateParams.field}
                     isEmptyBucket={this.props.stateParams.isEmptyBucket}
-                    isExtendBounds={this.props.stateParams.isExtendBounds}
                     advancedValue={this.props.stateParams.advancedValue}
                     aggregationArr={this.state.numberFieldArr}
                     isIndexSelected={this.state.isIndexSelected}
