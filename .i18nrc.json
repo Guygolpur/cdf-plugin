@@ -1,7 +1,7 @@
 {
-  "prefix": "test",
+  "prefix": "cdf",
   "paths": {
-    "test": "."
+    "cdf": "."
   },
   "translations": ["translations/ja-JP.json"]
 }
