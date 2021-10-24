@@ -1,5 +1,5 @@
 # CDF
-# Guy Golpur 24/10/2021- KPMG
+<!-- # Guy Golpur 24/10/2021- KPMG -->
 
 CDF plugin for Kibana 7.12.0
 
