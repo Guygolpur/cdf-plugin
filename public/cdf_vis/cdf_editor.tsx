@@ -114,6 +114,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('splitedAggregation', 'terms')
     this.props.setValue('splitedOrder', 'desc')
     this.props.setValue('subBucketArray', '{}')
+    this.props.setValidity(false)
 
     this.getIndices().then(indices => {
       const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, label: element.attributes.title } })
@@ -198,12 +199,14 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
   selectedIndexHandler = (selectedOptions: any) => {
     if (selectedOptions.length > 0) {
+      this.props.setValidity(true)
       this.setState({
         selectedIndexPattern: selectedOptions,
         isIndexSelected: true
       })
     }
     else {
+      this.props.setValidity(false)
       this.setState({
         selectedIndexPattern: selectedOptions,
         isIndexSelected: false
@@ -214,14 +217,17 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedHistogramFieldHandler = (selectedField: any) => {
+    // debugger
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('field', selectedField[0].value);
       this.setState({
         selectedHistogramField: selectedField,
         isXAxisFieldSelected: true
       })
+      this.props.setValidity(true)
     }
     else {
+      this.props.setValidity(false)
       this.props.setValue('field', selectedField);
       this.setState({
         selectedHistogramField: selectedField,
@@ -270,6 +276,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     delete subBucketArrayTojson[(index - 1)]
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
     this.props.setValue('subBucketArray', subBucketArrayToString)
+    this.props.setValidity(true)
   }
 
   selectSplitLinesAggregation = async (e: any, counter: number) => {
@@ -296,7 +303,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       subBucketArrayTojson[counter - 1] = splitLinesAggArr;
     }
     else {
-      console.log('subBucketArrayTojson: ', subBucketArrayTojson)
       //handle default- plus terms only properties
       subBucketArrayTojson[counter - 1].agg = e.target.value;
       subBucketArrayTojson[counter - 1].field = [];
@@ -327,6 +333,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
+    // if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
+    //   this.props.setValidity(true)
+    // }
+    // else {
+    //     this.props.setValidity(false)
+    // }
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
 
     if (subBucketArrayTojson[counter - 1] == undefined) {
@@ -508,6 +520,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
             isClearable={false}
             data-test-subj="indexPattern"
             fullWidth
+            isInvalid={this.state.selectedIndexPattern.length === 0}
           />
         </EuiFormRow>
         <EuiTabbedContent

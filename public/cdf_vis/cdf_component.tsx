@@ -93,10 +93,13 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
-    const sizeOfSubs = Object.entries(parsedSubBucketArray).length
+    // const sizeOfSubs = Object.entries(parsedSubBucketArray).length
+    let sizeOfSubs = 0
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
       for (const [key, value] of Object.entries(parsedSubBucketArray).reverse()) {
+        if (!value.isValid) { continue; }
+        sizeOfSubs = sizeOfSubs + 1;
         let field = Object.values(value['field'][0])
         let fieldValue = Object.values(field)
         let aggs: any = {}
@@ -166,7 +169,6 @@ export function CdfComponent(props: CdfComponentProps) {
       headers: { "kbn-xsrf": "true" },
     })
       .then(function (response) {
-        console.log('response: ', response.data)
         let aggLineDataObj: any = {};
 
         if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
@@ -297,7 +299,6 @@ let graphResponse: any = {}
 let name = ''
 let xPoint: any = null
 function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any) {
-  debugger
   Object.keys(o).forEach(function (k: any, i: number) {
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
       if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
