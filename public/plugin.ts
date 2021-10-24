@@ -56,7 +56,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
 
           splitedAggregation: 'terms',
           splitedField: '',
-          splitedOrder: 'Descending',
+          splitedOrder: 'desc',
           splitedCustomLabel: '',
           dateFilterFrom: 'now-15m',
           dateFilterTo: 'now',

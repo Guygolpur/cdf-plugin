@@ -112,6 +112,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValue('field', '');
     this.props.setValue('isSplitAccordionSearch', false)
     this.props.setValue('splitedAggregation', 'terms')
+    this.props.setValue('splitedOrder', 'desc')
+    this.props.setValue('subBucketArray', '{}')
 
     this.getIndices().then(indices => {
       const indicesList = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, label: element.attributes.title } })

@@ -89,8 +89,8 @@ export const AddSubBucket = ({
                     <EuiFormRow label="Order" >
                         <EuiSelect
                             options={[
-                                { value: 'Descending', text: 'Descending' },
-                                { value: 'Ascending', text: 'Ascending' },
+                                { value: 'desc', text: 'Descending' },
+                                { value: 'asc', text: 'Ascending' },
                             ]}
                             onChange={(e) => onGeneralValChange(e, 'splitedOrder')}
                             disabled={!(isIndexSelected && isXAxisFieldSelected)}
