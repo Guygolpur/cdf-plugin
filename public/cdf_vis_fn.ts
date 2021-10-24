@@ -178,7 +178,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
     },
     splitedOrder: {
       types: ['string'],
-      default: '',
+      default: 'desc',
       help: 'Visualization only argument with type string',
     },
     isSplitedSeperateBucket: {

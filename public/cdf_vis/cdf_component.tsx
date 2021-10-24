@@ -63,6 +63,7 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedDateHistogramMinInterval,
 
     subBucketArray,
+    splitedOrder,
   } = props.visParams
 
   useEffect(() => {
@@ -105,7 +106,7 @@ export function CdfComponent(props: CdfComponentProps) {
               [value['agg']]: {
                 field: fieldValue[0],
                 size: 5,  // should be dynamic
-                order: { "_count": "desc" }   // should be dynamic
+                order: { "_count": splitedOrder }   // should be dynamic
               }
             }
           }
@@ -209,7 +210,8 @@ export function CdfComponent(props: CdfComponentProps) {
     dateFilterTo,
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
-    subBucketArray
+    subBucketArray,
+    splitedOrder
   ]);
 
   return (
