@@ -71,7 +71,7 @@ export const SubBucketRow = ({
                         aria-describedby={id}
                         id={id}
                         onClick={() => deleteHandeler(id)}
-                        isDisabled={globalCounter === 1}
+                        isDisabled={globalCounter === 0}
                         fullWidth
                     >
                         Remove Split lines
