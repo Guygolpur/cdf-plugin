@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment, useState, useMemo } from 'react';
 import { CDFVisParams } from '../cdf_vis_fn';
 import { KIBANA_METRICS } from './test_dataset_kibana';
 import axios from 'axios';
@@ -10,15 +10,34 @@ import {
   Position,
   ScaleType,
   CurveType,
+  SeriesKey,
+  Color,
+  LegendColorPicker,
+  toEntries,
 } from '@elastic/charts';
+
+import {
+  EuiSpacer,
+  EuiFlexItem,
+  EuiWrappingPopover,
+  EuiColorPicker,
+  EuiButtonEmpty,
+  EuiButton,
+} from '@elastic/eui';
+
+import { action } from '@storybook/addon-actions';
+
 
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
 }
 
+const onChangeAction = action('onChange');
+
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
+  const [colors, setColors] = useState<Record<SeriesKey, Color | null>>({});
 
   useEffect(() => {
     props.renderComplete();
@@ -216,25 +235,51 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedOrder
   ]);
 
+  const CustomColorPicker: LegendColorPicker = useMemo(
+    () => ({ anchor, color, onClose, seriesIdentifiers, onChange }) => {
+      const handleClose = () => {
+        onClose();
+        setColors((prevColors) => ({
+          ...prevColors,
+          ...toEntries(seriesIdentifiers, 'key', color),
+        }));
+      };
+      const handleChange = (c: Color | null) => {
+        setColors((prevColors) => ({
+          ...prevColors,
+          ...toEntries(seriesIdentifiers, 'key', c),
+        }));
+        onChange(c);
+        onChangeAction(c);
+      };
+
+      return (
+        <>
+          <EuiWrappingPopover isOpen button={anchor} closePopover={handleClose} anchorPosition="leftCenter">
+            <EuiColorPicker display="inline" color={color} onChange={handleChange} />
+            <EuiSpacer size="m" />
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty size="s" onClick={() => handleChange(null)}>
+                Clear color
+              </EuiButtonEmpty>
+            </EuiFlexItem>
+            <EuiButton fullWidth size="s" onClick={handleClose}>
+              Done
+            </EuiButton>
+          </EuiWrappingPopover>
+        </>
+      );
+    },
+    [setColors],
+  );
+
+  CustomColorPicker.displayName = 'CustomColorPicker';
   return (
     <Fragment>
       <Chart className="story-chart" size={["100%", "80%"]}>
-        <Settings showLegend legendPosition={Position.Bottom} />
-        <Axis
-          id="bottom"
-          title={customLabel}
-          position={Position.Bottom}
-          showOverlappingTicks
-          tickFormat={(d) => Number(d).toFixed(0)}
-          showGridLines={isVerticalGrid}
-        />
-        <Axis
-          id="left"
-          title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title}
-          // position={Position.Left}
-          tickFormat={(d) => `${Number(d).toFixed(2)}%`}
-          showGridLines={isHorizontalGrid}
-        />
+        <Settings showLegend  legendColorPicker={CustomColorPicker} />
+        <Axis id="bottom" position={Position.Bottom} title={customLabel} showOverlappingTicks tickFormat={(d) => Number(d).toFixed(0)} showGridLines={isVerticalGrid} />
+        <Axis id="left" title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title} position={Position.Left} tickFormat={(d) => `${Number(d).toFixed(2)}%`} showGridLines={isHorizontalGrid} />
         {Object.keys(aggLineData).map((item: any, i: any) => {
           return (
             <LineSeries
@@ -243,9 +288,11 @@ export function CdfComponent(props: CdfComponentProps) {
               yScaleType={ScaleType.Linear}
               xAccessor={0}
               yAccessors={[1]}
+              // splitSeriesAccessors={i}
               data={aggLineData[item]['points']}
               curve={CurveType.LINEAR}
               key={i}
+              color={({ key }) => colors[key] ?? null}
             />
           )
         })}
