@@ -41,11 +41,11 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     props.renderComplete();
-    if (window.performance) {
-      if (performance.navigation.type == 1) {
-        props.visParams.subBucketArray = '{}'
-      }
-    }
+    // if (window.performance) {
+    //   if (performance.navigation.type == 1) {
+    //     props.visParams.subBucketArray = '{}'
+    //   }
+    // }
 
   })
 
