@@ -54,8 +54,8 @@ export const SubBucketRow = ({
                 <Fragment
                     key={id}
                 >
-                    <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} initialIsOpen={true} extraAction={extraAction(id)} className="euiAccordionForm">
-                        <EuiPanel style={{ maxWidth: '100%' }}>
+                    <EuiPanel color="subdued">
+                        <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} initialIsOpen={true} extraAction={extraAction(id)} className="euiAccordionForm">
                             <AddSubBucket
                                 counter={parseInt(id)}
                                 stateParams={stateParams}
@@ -78,17 +78,9 @@ export const SubBucketRow = ({
                                 setDateRangeEnd={setDateRangeEnd}
                                 onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
                             />
-
                             <EuiSpacer size="m" />
-                            <hr
-                                style={{
-                                    color: '#C0C0C0',
-                                    backgroundColor: '#C0C0C0',
-                                    height: 5
-                                }}
-                            />
-                        </EuiPanel>
-                    </EuiAccordion>
+                        </EuiAccordion>
+                    </EuiPanel>
                     <EuiSpacer size="xl" />
                 </Fragment>
             ))}

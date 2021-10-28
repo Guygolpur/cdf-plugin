@@ -394,20 +394,22 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 description=""
               >
                 {/* X-Axis */}
-
-                <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
-                  <AxisBucket
-                    onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
-                    onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
-                    selectedHistogramFieldHandler={this.selectedHistogramFieldHandler}
-                    selectedHistogramField={this.state.selectedHistogramField}
-                    field={this.props.stateParams.field}
-                    isEmptyBucket={this.props.stateParams.isEmptyBucket}
-                    advancedValue={this.props.stateParams.advancedValue}
-                    aggregationArr={this.state.numberFieldArr}
-                    isIndexSelected={this.state.isIndexSelected}
-                  ></AxisBucket>
-                </EuiAccordion>
+                
+                <EuiPanel id="panel" color="subdued">
+                  <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
+                    <AxisBucket
+                      onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                      onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
+                      selectedHistogramFieldHandler={this.selectedHistogramFieldHandler}
+                      selectedHistogramField={this.state.selectedHistogramField}
+                      field={this.props.stateParams.field}
+                      isEmptyBucket={this.props.stateParams.isEmptyBucket}
+                      advancedValue={this.props.stateParams.advancedValue}
+                      aggregationArr={this.state.numberFieldArr}
+                      isIndexSelected={this.state.isIndexSelected}
+                    ></AxisBucket>
+                  </EuiAccordion>
+                </EuiPanel>
 
                 <EuiSpacer size="m" />
 
