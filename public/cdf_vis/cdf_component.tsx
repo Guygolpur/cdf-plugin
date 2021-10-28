@@ -116,7 +116,7 @@ export function CdfComponent(props: CdfComponentProps) {
     let sizeOfSubs = 0
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
-      for (const [key, value] of Object.entries(parsedSubBucketArray).reverse()) {
+      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
         if (!value.isValid) { continue; }
         sizeOfSubs = sizeOfSubs + 1;
         let field = Object.values(value['field'][0])
