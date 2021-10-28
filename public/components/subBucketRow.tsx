@@ -5,6 +5,7 @@ import {
     EuiButton,
     EuiAccordion,
     EuiPanel,
+    EuiButtonIcon,
 } from '@elastic/eui';
 import { AddSubBucket } from './addSubBucket';
 
@@ -36,6 +37,15 @@ export const SubBucketRow = ({
         setGlobalCounter(globalCounter + 1)
     };
 
+    const extraAction = (id: any) => (
+        <EuiButtonIcon
+            iconType="cross"
+            color="danger"
+            aria-label="Delete"
+            onClick={() => deleteHandeler(id)}
+        />
+    );
+
     return (
 
         <EuiText size="s">
@@ -44,7 +54,7 @@ export const SubBucketRow = ({
                 <Fragment
                     key={id}
                 >
-                    <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} initialIsOpen={true}>
+                    <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} initialIsOpen={true} extraAction={extraAction(id)} className="euiAccordionForm">
                         <EuiPanel style={{ maxWidth: '100%' }}>
                             <AddSubBucket
                                 counter={parseInt(id)}
@@ -69,18 +79,6 @@ export const SubBucketRow = ({
                                 onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
                             />
 
-                            <EuiButton
-                                size="s"
-                                iconType="minusInCircleFilled"
-                                aria-controls={id}
-                                aria-describedby={id}
-                                id={id}
-                                onClick={() => deleteHandeler(id)}
-                                isDisabled={globalCounter === 0}
-                                fullWidth
-                            >
-                                Remove Split lines
-                            </EuiButton>
                             <EuiSpacer size="m" />
                             <hr
                                 style={{
