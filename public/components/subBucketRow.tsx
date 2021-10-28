@@ -3,6 +3,9 @@ import {
     EuiSpacer,
     EuiText,
     EuiButton,
+    EuiAccordion,
+    EuiPanel,
+    EuiButtonIcon,
 } from '@elastic/eui';
 import { AddSubBucket } from './addSubBucket';
 
@@ -34,56 +37,50 @@ export const SubBucketRow = ({
         setGlobalCounter(globalCounter + 1)
     };
 
+    const extraAction = (id: any) => (
+        <EuiButtonIcon
+            iconType="cross"
+            color="danger"
+            aria-label="Delete"
+            onClick={() => deleteHandeler(id)}
+        />
+    );
+
     return (
+
         <EuiText size="s">
             <EuiSpacer size="s" />
             {ids.map((id) => (
                 <Fragment
                     key={id}
                 >
-                    <AddSubBucket
-                        counter={parseInt(id)}
-                        stateParams={stateParams}
-                        splitedAggregationArr={splitedAggregationArr}
-                        selectedSplitLinesTermsField={selectedSplitLinesTermsField}
-                        isIndexSelected={isIndexSelected}
-                        isXAxisFieldSelected={isXAxisFieldSelected}
-                        numberFieldArr={numberFieldArr}
-                        dateFieldArr={dateFieldArr}
-                        selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
-                        selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
-                        selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
-                        selectSplitLinesAggregation={selectSplitLinesAggregation}
-                        selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
-                        selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
-                        selectedDateRangeHandler={selectedDateRangeHandler}
-                        onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
-                        onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
-                        setDateRangeStart={setDateRangeStart}
-                        setDateRangeEnd={setDateRangeEnd}
-                        onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
-                    />
-
-                    <EuiButton
-                        size="s"
-                        iconType="minusInCircleFilled"
-                        aria-controls={id}
-                        aria-describedby={id}
-                        id={id}
-                        onClick={() => deleteHandeler(id)}
-                        isDisabled={globalCounter === 0}
-                        fullWidth
-                    >
-                        Remove Split lines
-                    </EuiButton>
-                    <EuiSpacer size="m" />
-                    <hr
-                        style={{
-                            color: '#C0C0C0',
-                            backgroundColor: '#C0C0C0',
-                            height: 5
-                        }}
-                    />
+                    <EuiPanel color="subdued">
+                        <EuiAccordion id="accordionSplit" buttonContent={`Split lines`} initialIsOpen={true} extraAction={extraAction(id)} className="euiAccordionForm">
+                            <AddSubBucket
+                                counter={parseInt(id)}
+                                stateParams={stateParams}
+                                splitedAggregationArr={splitedAggregationArr}
+                                selectedSplitLinesTermsField={selectedSplitLinesTermsField}
+                                isIndexSelected={isIndexSelected}
+                                isXAxisFieldSelected={isXAxisFieldSelected}
+                                numberFieldArr={numberFieldArr}
+                                dateFieldArr={dateFieldArr}
+                                selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
+                                selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
+                                selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
+                                selectSplitLinesAggregation={selectSplitLinesAggregation}
+                                selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
+                                selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                                selectedDateRangeHandler={selectedDateRangeHandler}
+                                onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
+                                onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
+                                setDateRangeStart={setDateRangeStart}
+                                setDateRangeEnd={setDateRangeEnd}
+                                onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
+                            />
+                            <EuiSpacer size="m" />
+                        </EuiAccordion>
+                    </EuiPanel>
                     <EuiSpacer size="xl" />
                 </Fragment>
             ))}
