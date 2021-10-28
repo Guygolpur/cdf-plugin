@@ -412,8 +412,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 <EuiSpacer size="m" />
 
                 {/* Splited */}
-                <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}>
-                  <EuiPanel style={{ maxWidth: '100%' }}>
+                {/* <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}> */}
+                  {/* <EuiPanel style={{ maxWidth: '100%' }}> */}
                     <SubBucketRow
                       stateParams={this.props.stateParams}
                       splitedAggregationArr={this.state.splitedAggregationArr}
@@ -439,8 +439,8 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                       onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
                       cleanSubBucketArrayBuffer={this.cleanSubBucketArrayBuffer}
                     />
-                  </EuiPanel>
-                </EuiAccordion>
+                  {/* </EuiPanel> */}
+                {/* </EuiAccordion> */}
 
                 <EuiSpacer size="m" />
 
