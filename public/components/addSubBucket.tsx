@@ -14,6 +14,7 @@ import {
     EuiIconTip,
     EuiTextArea,
     EuiFieldNumber,
+    EuiAccordion,
 } from '@elastic/eui';
 import { DatePicker } from './form/datePicker';
 
@@ -22,7 +23,7 @@ export const AddSubBucket = ({
     isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
-    dateFieldArr, selectSplitLinesAggregation,
+    dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -42,8 +43,9 @@ export const AddSubBucket = ({
         { value: '1y', text: 'Yearly' },
     ]
 
+    
     const [selectedAggregationOptions, setAggregationSelected] = useState(aggregationOptions[0].value);
-    const [selectedFieldOptions, setFieldSelected] = useState([]);
+    const [selectedFieldOptions, setFieldSelected] = useState<any>([]);
     const [selectedMinimumInterval, setMinimumIntervalSelected] = useState(min_interval[0].value);
 
     const onAggregationChange = (selected: any) => {
@@ -62,8 +64,12 @@ export const AddSubBucket = ({
     };
 
     const selectedDateRangeHandlerMiddleware = ({ start, end }: any) => {
-        selectedDateRangeHandler({start, end}, counter)
+        selectedDateRangeHandler({ start, end }, counter)
     }
+
+    const extraAction = (id: any, selectedAggregationOptions: any, selectedFieldOptions: any) => (
+        selectIDtoRemove(id, selectedAggregationOptions, selectedFieldOptions)
+    );
 
     if (selectedAggregationOptions == 'terms') {
         splitedSubAggregationContent = <>
@@ -393,20 +399,23 @@ export const AddSubBucket = ({
 
     return (
         <Fragment>
-            <EuiFormRow label="Sub aggregation" fullWidth>
-                <EuiSelect
-                    id="selectAggregation"
-                    options={aggregationOptions}
-                    value={selectedAggregationOptions}
-                    onChange={(e) => onAggregationChange(e)}
-                    fullWidth
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
+            <EuiAccordion id="accordionSplit" buttonContent={'Split lines '} initialIsOpen={true} extraAction={extraAction(counter, selectedAggregationOptions, selectedFieldOptions)} className="euiAccordionForm">
 
-            {splitedSubAggregationContent}
+                <EuiFormRow label="Sub aggregation" fullWidth>
+                    <EuiSelect
+                        id="selectAggregation"
+                        options={aggregationOptions}
+                        value={selectedAggregationOptions}
+                        onChange={(e) => onAggregationChange(e)}
+                        fullWidth
+                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    />
+                </EuiFormRow>
 
-            <EuiSpacer size="xl" />
+                {splitedSubAggregationContent}
+
+                <EuiSpacer size="xl" />
+            </EuiAccordion>
         </Fragment>
     );
 };

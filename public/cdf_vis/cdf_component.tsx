@@ -277,7 +277,7 @@ export function CdfComponent(props: CdfComponentProps) {
   return (
     <Fragment>
       <Chart className="story-chart" size={["100%", "80%"]}>
-        <Settings showLegend  legendColorPicker={CustomColorPicker} />
+        <Settings showLegend  legendColorPicker={CustomColorPicker} legendPosition={Position.Bottom}/>
         <Axis id="bottom" position={Position.Bottom} title={customLabel} showOverlappingTicks tickFormat={(d) => Number(d).toFixed(0)} showGridLines={isVerticalGrid} />
         <Axis id="left" title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title} position={Position.Left} tickFormat={(d) => `${Number(d).toFixed(2)}%`} showGridLines={isHorizontalGrid} />
         {Object.keys(aggLineData).map((item: any, i: any) => {
