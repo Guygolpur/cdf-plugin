@@ -127,8 +127,8 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                size: 5,  // should be dynamic
-                order: { "_count": splitedOrder }   // should be dynamic
+                size: 10000,
+                order: { "_count": splitedOrder }
               }
             }
           }
