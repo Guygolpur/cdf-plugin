@@ -217,7 +217,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedHistogramFieldHandler = (selectedField: any) => {
-    // debugger
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('field', selectedField[0].value);
       this.setState({
@@ -279,6 +278,13 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValidity(true)
   }
 
+  ignoreSubBucketArrayBuffer = async (index: any, isIgnore: any) => {
+    let subBucketArrayTojson = await JSON.parse(this.props.stateParams['subBucketArray'])
+    subBucketArrayTojson[index - 1]['isValid'] = isIgnore;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    this.props.setValue('subBucketArray', subBucketArrayToString)
+  }
+
   selectSplitLinesAggregation = async (e: any, counter: number) => {
     // debugger
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
@@ -333,12 +339,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
-    // if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-    //   this.props.setValidity(true)
-    // }
-    // else {
-    //     this.props.setValidity(false)
-    // }
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
 
     if (subBucketArrayTojson[counter - 1] == undefined) {
@@ -394,7 +394,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
                 description=""
               >
                 {/* X-Axis */}
-                
+
                 <EuiPanel id="panel" color="subdued">
                   <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
                     <AxisBucket
@@ -439,6 +439,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
 
                   onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
                   cleanSubBucketArrayBuffer={this.cleanSubBucketArrayBuffer}
+                  ignoreSubBucketArrayBuffer={this.ignoreSubBucketArrayBuffer}
                 />
 
                 <EuiSpacer size="m" />

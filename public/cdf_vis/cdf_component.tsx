@@ -112,7 +112,6 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
-    // const sizeOfSubs = Object.entries(parsedSubBucketArray).length
     let sizeOfSubs = 0
     if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
       let toInsertObj: any = {}
@@ -178,8 +177,6 @@ export function CdfComponent(props: CdfComponentProps) {
       }
       data.aggs.cdfAgg['aggs'] = toInsertObj;
     }
-
-    console.log('JSON.stringify(data): ', JSON.stringify(data))
 
     axios({
       method: "POST",
@@ -405,7 +402,6 @@ function parseMultiResponseData(data: any, sizeOfSubs: number): any {
     name = ''
     iter(bucket, sizeOfSubs, bucketSaw, xPoint, bucket.key)
   });
-  console.log('graphResponse: ', graphResponse)
 
   // parse points data
   Object.keys(graphResponse).forEach(graphName => {

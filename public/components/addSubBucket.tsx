@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 
 import {
     EuiFlexItem,
@@ -15,6 +15,7 @@ import {
     EuiTextArea,
     EuiFieldNumber,
     EuiAccordion,
+    EuiButtonIcon,
 } from '@elastic/eui';
 import { DatePicker } from './form/datePicker';
 
@@ -24,6 +25,7 @@ export const AddSubBucket = ({
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
+    ignoreSubBucketArrayBuffer, deleteHandeler,
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -43,10 +45,20 @@ export const AddSubBucket = ({
         { value: '1y', text: 'Yearly' },
     ]
 
-    
+
     const [selectedAggregationOptions, setAggregationSelected] = useState(aggregationOptions[0].value);
     const [selectedFieldOptions, setFieldSelected] = useState<any>([]);
     const [selectedMinimumInterval, setMinimumIntervalSelected] = useState(min_interval[0].value);
+    const [isIgnore, setIsIgnore] = useState(true);
+    // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
+    const [IdToIgnore, setIdToIgnore] = useState();
+
+    useEffect(() => {
+        if (IdToIgnore !== undefined) {
+            ignoreSubBucketArrayBuffer(IdToIgnore, isIgnore)
+        }
+    }, [isIgnore])
+
 
     const onAggregationChange = (selected: any) => {
         setAggregationSelected(selected.target.value);
@@ -67,9 +79,38 @@ export const AddSubBucket = ({
         selectedDateRangeHandler({ start, end }, counter)
     }
 
-    const extraAction = (id: any, selectedAggregationOptions: any, selectedFieldOptions: any) => (
+    const ignoreHandeler = (removeId: any) => {
+        // setIdToIgnore((ids: any) => ids.filter((id: any) => id != removeId));
+        setIdToIgnore(removeId)
+        setIsIgnore(!isIgnore);
+    };
+
+    const extraAction = (id: any, selectedAggregationOptions: any, selectedFieldOptions: any) => {
         selectIDtoRemove(id, selectedAggregationOptions, selectedFieldOptions)
-    );
+        return (
+            <div className="eui-textRight">
+                {selectedFieldOptions.length > 0 ?
+                    `${selectedAggregationOptions}: ${selectedFieldOptions[0].value}`
+                    :
+                    `${selectedAggregationOptions}`
+                }
+
+                <EuiButtonIcon
+                    iconType={isIgnore ? 'eye' : 'eyeClosed'}
+                    color="subdued"
+                    aria-label="Ignore"
+                    onClick={() => ignoreHandeler(id)}
+                />
+
+                <EuiButtonIcon
+                    iconType="cross"
+                    color="danger"
+                    aria-label="Delete"
+                    onClick={() => deleteHandeler(id)}
+                />
+            </div>
+        )
+    };
 
     if (selectedAggregationOptions == 'terms') {
         splitedSubAggregationContent = <>
