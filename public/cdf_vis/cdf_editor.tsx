@@ -18,6 +18,7 @@ import { htmlIdGenerator } from '@elastic/eui';
 import { AxisBucket } from '../components/xAxisBucket';
 import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
+import { DataPublicPluginStart } from 'src/plugins/data/public';
 
 interface CounterParams {
   // High level
@@ -55,6 +56,7 @@ interface CounterParams {
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   subBucketArray: string;
+  data: DataPublicPluginStart;
 }
 
 interface CDFEditorComponentState {
@@ -107,6 +109,10 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   componentDidMount() {
+    // let hi = this.props.stateParams.data.query.queryString.getQuery()
+    // let filters = this.props.stateParams.data.query.filterManager.getFilters()
+    // console.log('hi:: ', hi)
+    // console.log('hi2:: ', filters)
     this.props.setValue('dateFilterFrom', this.props.timeRange.from);
     this.props.setValue('dateFilterTo', this.props.timeRange.to);
     this.props.setValue('field', '');
@@ -138,6 +144,12 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     if (prevProps.timeRange.to !== this.props.timeRange.to) {
       this.props.setValue('dateFilterTo', this.props.timeRange.to);
     }
+
+
+    let hi = this.props.stateParams.data.query.queryString.getQuery()
+    let filters = this.props.stateParams.data.query.filterManager.getFilters()
+    // console.log('hi:: ', hi)
+    console.log('hi2:: ', filters)
   }
 
   getIndices = () => {
