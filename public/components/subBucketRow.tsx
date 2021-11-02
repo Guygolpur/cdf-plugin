@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import {
     EuiSpacer,
     EuiText,
@@ -16,15 +16,11 @@ export const SubBucketRow = ({
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
-    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer
+    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer
 }: any) => {
 
     const [ids, setIds] = useState<any>([]);
     const [globalCounter, setGlobalCounter] = useState(0);
-
-    useEffect(() => {
-        console.log('ids useEffect: ', ids)
-    }, [ids])
 
     const deleteHandeler = (removeId: any) => {
         setIds((ids: any) => ids.filter((id: any) => id != removeId));
@@ -84,6 +80,8 @@ export const SubBucketRow = ({
                             setDateRangeEnd={setDateRangeEnd}
                             onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
                             selectIDtoRemove={extraAction}
+                            ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
+                            deleteHandeler={deleteHandeler}
                         />
                         <EuiSpacer size="m" />
                     </EuiPanel>
