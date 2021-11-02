@@ -131,7 +131,6 @@ export function CdfComponent(props: CdfComponentProps) {
               }
             }
           }
-
         }
         else if (value['agg'] == 'histogram') {
           let extractInterval = Object.values(value['min_interval'])
@@ -175,7 +174,11 @@ export function CdfComponent(props: CdfComponentProps) {
         }
         toInsertObj = aggs
       }
-      data.aggs.cdfAgg['aggs'] = toInsertObj;
+      if (Object.values(parsedSubBucketArray).some(allIgnored)) { data.aggs.cdfAgg['aggs'] = toInsertObj; }
+      else {
+        data = data
+      }
+
     }
 
     axios({
@@ -186,8 +189,7 @@ export function CdfComponent(props: CdfComponentProps) {
     })
       .then(function (response) {
         let aggLineDataObj: any = {};
-
-        if (Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) {
+        if ((Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) || !Object.values(parsedSubBucketArray).some(allIgnored)) {
           aggLineDataObj[field] = {
             points: parseSingleResponseData(response.data)
           }
@@ -201,7 +203,6 @@ export function CdfComponent(props: CdfComponentProps) {
       }).catch(function (error) {
         console.log('error', error);
       });
-
 
   }, [
     // X-axis
@@ -231,6 +232,8 @@ export function CdfComponent(props: CdfComponentProps) {
     subBucketArray,
     splitedOrder
   ]);
+
+  const allIgnored = (element: any) => element.isValid === true
 
   const CustomColorPicker: LegendColorPicker = useMemo(
     () => ({ anchor, color, onClose, seriesIdentifiers, onChange }) => {
@@ -274,7 +277,7 @@ export function CdfComponent(props: CdfComponentProps) {
   return (
     <Fragment>
       <Chart className="story-chart" size={["100%", "80%"]}>
-        <Settings showLegend  legendColorPicker={CustomColorPicker} legendPosition={Position.Bottom}/>
+        <Settings showLegend legendColorPicker={CustomColorPicker} legendPosition={Position.Bottom} />
         <Axis id="bottom" position={Position.Bottom} title={customLabel} showOverlappingTicks tickFormat={(d) => Number(d).toFixed(0)} showGridLines={isVerticalGrid} />
         <Axis id="left" title={KIBANA_METRICS.metrics.kibana_os_load[0].metric.title} position={Position.Left} tickFormat={(d) => `${Number(d).toFixed(2)}%`} showGridLines={isHorizontalGrid} />
         {Object.keys(aggLineData).map((item: any, i: any) => {
