@@ -217,7 +217,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedHistogramFieldHandler = (selectedField: any) => {
-    // debugger
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       this.props.setValue('field', selectedField[0].value);
       this.setState({
@@ -279,6 +278,13 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
     this.props.setValidity(true)
   }
 
+  ignoreSubBucketArrayBuffer = async (index: any, isIgnore: any) => {
+    let subBucketArrayTojson = await JSON.parse(this.props.stateParams['subBucketArray'])
+    subBucketArrayTojson[index - 1]['isValid'] = isIgnore;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    this.props.setValue('subBucketArray', subBucketArrayToString)
+  }
+
   selectSplitLinesAggregation = async (e: any, counter: number) => {
     // debugger
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
@@ -333,12 +339,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   selectedSplitLinesTermsFieldHandler = (selectedField: any, counter: number, selectedAggregationOptions: string) => {
-    // if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
-    //   this.props.setValidity(true)
-    // }
-    // else {
-    //     this.props.setValidity(false)
-    // }
     let subBucketArrayTojson = JSON.parse(this.props.stateParams['subBucketArray']);
 
     if (subBucketArrayTojson[counter - 1] == undefined) {
@@ -395,52 +395,52 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
               >
                 {/* X-Axis */}
 
-                <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
-                  <AxisBucket
-                    onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
-                    onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
-                    selectedHistogramFieldHandler={this.selectedHistogramFieldHandler}
-                    selectedHistogramField={this.state.selectedHistogramField}
-                    field={this.props.stateParams.field}
-                    isEmptyBucket={this.props.stateParams.isEmptyBucket}
-                    advancedValue={this.props.stateParams.advancedValue}
-                    aggregationArr={this.state.numberFieldArr}
-                    isIndexSelected={this.state.isIndexSelected}
-                  ></AxisBucket>
-                </EuiAccordion>
+                <EuiPanel id="panel" color="subdued">
+                  <EuiAccordion id="accordion1" buttonContent={`X-Axis`}>
+                    <AxisBucket
+                      onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                      onGeneralBoolValChange={(valName: (keyof CounterParams)) => this.onGeneralBoolValChange(valName)}
+                      selectedHistogramFieldHandler={this.selectedHistogramFieldHandler}
+                      selectedHistogramField={this.state.selectedHistogramField}
+                      field={this.props.stateParams.field}
+                      isEmptyBucket={this.props.stateParams.isEmptyBucket}
+                      advancedValue={this.props.stateParams.advancedValue}
+                      aggregationArr={this.state.numberFieldArr}
+                      isIndexSelected={this.state.isIndexSelected}
+                    ></AxisBucket>
+                  </EuiAccordion>
+                </EuiPanel>
 
                 <EuiSpacer size="m" />
 
                 {/* Splited */}
-                <EuiAccordion id="accordionSplit" buttonContent={`Split lines`}>
-                  <EuiPanel style={{ maxWidth: '100%' }}>
-                    <SubBucketRow
-                      stateParams={this.props.stateParams}
-                      splitedAggregationArr={this.state.splitedAggregationArr}
-                      selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
-                      isIndexSelected={this.state.isIndexSelected}
-                      isXAxisFieldSelected={this.state.isXAxisFieldSelected}
-                      numberFieldArr={this.state.numberFieldArr}
-                      dateFieldArr={this.state.dateFieldArr}
-                      selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
-                      selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
-                      selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
 
-                      selectSplitLinesAggregation={this.selectSplitLinesAggregation}
-                      selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
-                      selectSplitLinesMinimumInterval={this.selectSplitLinesMinimumInterval}
-                      selectedDateRangeHandler={this.selectedDateRangeHandler}
+                <SubBucketRow
+                  stateParams={this.props.stateParams}
+                  splitedAggregationArr={this.state.splitedAggregationArr}
+                  selectedSplitLinesTermsField={this.state.selectedSplitLinesTermsField}
+                  isIndexSelected={this.state.isIndexSelected}
+                  isXAxisFieldSelected={this.state.isXAxisFieldSelected}
+                  numberFieldArr={this.state.numberFieldArr}
+                  dateFieldArr={this.state.dateFieldArr}
+                  selectedSplitLinesHistogramField={this.state.selectedSplitLinesHistogramField}
+                  selectedSplitLinesDateHistogramField={this.state.selectedSplitLinesDateHistogramField}
+                  selectedSplitLinesDateRangeField={this.state.selectedSplitLinesDateRangeField}
 
-                      onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
-                      onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
-                      setDateRangeStart={this.setDateRangeStart}
-                      setDateRangeEnd={this.setDateRangeEnd}
+                  selectSplitLinesAggregation={this.selectSplitLinesAggregation}
+                  selectedSplitLinesTermsFieldHandler={this.selectedSplitLinesTermsFieldHandler}
+                  selectSplitLinesMinimumInterval={this.selectSplitLinesMinimumInterval}
+                  selectedDateRangeHandler={this.selectedDateRangeHandler}
 
-                      onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
-                      cleanSubBucketArrayBuffer={this.cleanSubBucketArrayBuffer}
-                    />
-                  </EuiPanel>
-                </EuiAccordion>
+                  onSplitedSeperateBucketChange={this.onSplitedSeperateBucketChange}
+                  onSplitedShowMissingValuesChange={this.onSplitedShowMissingValuesChange}
+                  setDateRangeStart={this.setDateRangeStart}
+                  setDateRangeEnd={this.setDateRangeEnd}
+
+                  onGeneralValChange={(e: any, valName: (keyof CounterParams)) => this.onGeneralValChange(e, valName)}
+                  cleanSubBucketArrayBuffer={this.cleanSubBucketArrayBuffer}
+                  ignoreSubBucketArrayBuffer={this.ignoreSubBucketArrayBuffer}
+                />
 
                 <EuiSpacer size="m" />
 

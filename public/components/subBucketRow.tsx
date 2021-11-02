@@ -1,8 +1,10 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import {
     EuiSpacer,
     EuiText,
     EuiButton,
+    EuiPanel,
+    EuiButtonIcon,
 } from '@elastic/eui';
 import { AddSubBucket } from './addSubBucket';
 
@@ -14,77 +16,76 @@ export const SubBucketRow = ({
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
-    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer
+    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer
 }: any) => {
 
-    const [ids, setIds] = useState([]);
+    const [ids, setIds] = useState<any>([]);
     const [globalCounter, setGlobalCounter] = useState(0);
 
-    useEffect(() => {
-        console.log('ids useEffect: ', ids)
-    }, [ids])
-
     const deleteHandeler = (removeId: any) => {
-        setIds((ids) => ids.filter((id) => id != removeId));
+        setIds((ids: any) => ids.filter((id: any) => id != removeId));
         cleanSubBucketArrayBuffer(removeId)
     };
 
     const addHandeler = () => {
-        setIds((ids) => [...ids, `${globalCounter}`]);
+        setIds((ids: any) => [...ids, `${globalCounter}`]);
         setGlobalCounter(globalCounter + 1)
     };
 
+    const extraAction = (id: any, selectedAggregationOptions: any, selectedFieldOptions: any) => (
+        <div className="eui-textRight">
+            {selectedFieldOptions.length > 0 ?
+                `${selectedAggregationOptions}: ${selectedFieldOptions[0].value}`
+                :
+                `${selectedAggregationOptions}`
+            }
+
+            <EuiButtonIcon
+                iconType="cross"
+                color="danger"
+                aria-label="Delete"
+                onClick={() => deleteHandeler(id)}
+            />
+        </div>
+    );
+
     return (
+
         <EuiText size="s">
             <EuiSpacer size="s" />
-            {ids.map((id) => (
+            {ids.map((id: any) => (
                 <Fragment
                     key={id}
                 >
-                    <AddSubBucket
-                        counter={parseInt(id)}
-                        stateParams={stateParams}
-                        splitedAggregationArr={splitedAggregationArr}
-                        selectedSplitLinesTermsField={selectedSplitLinesTermsField}
-                        isIndexSelected={isIndexSelected}
-                        isXAxisFieldSelected={isXAxisFieldSelected}
-                        numberFieldArr={numberFieldArr}
-                        dateFieldArr={dateFieldArr}
-                        selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
-                        selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
-                        selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
-                        selectSplitLinesAggregation={selectSplitLinesAggregation}
-                        selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
-                        selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
-                        selectedDateRangeHandler={selectedDateRangeHandler}
-                        onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
-                        onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
-                        setDateRangeStart={setDateRangeStart}
-                        setDateRangeEnd={setDateRangeEnd}
-                        onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
-                    />
-
-                    <EuiButton
-                        size="s"
-                        iconType="minusInCircleFilled"
-                        aria-controls={id}
-                        aria-describedby={id}
-                        id={id}
-                        onClick={() => deleteHandeler(id)}
-                        isDisabled={globalCounter === 0}
-                        fullWidth
-                    >
-                        Remove Split lines
-                    </EuiButton>
-                    <EuiSpacer size="m" />
-                    <hr
-                        style={{
-                            color: '#C0C0C0',
-                            backgroundColor: '#C0C0C0',
-                            height: 5
-                        }}
-                    />
-                    <EuiSpacer size="xl" />
+                    <EuiPanel color="subdued">
+                        <AddSubBucket
+                            counter={parseInt(id)}
+                            stateParams={stateParams}
+                            splitedAggregationArr={splitedAggregationArr}
+                            selectedSplitLinesTermsField={selectedSplitLinesTermsField}
+                            isIndexSelected={isIndexSelected}
+                            isXAxisFieldSelected={isXAxisFieldSelected}
+                            numberFieldArr={numberFieldArr}
+                            dateFieldArr={dateFieldArr}
+                            selectedSplitLinesHistogramField={selectedSplitLinesHistogramField}
+                            selectedSplitLinesDateHistogramField={selectedSplitLinesDateHistogramField}
+                            selectedSplitLinesDateRangeField={selectedSplitLinesDateRangeField}
+                            selectSplitLinesAggregation={selectSplitLinesAggregation}
+                            selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
+                            selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                            selectedDateRangeHandler={selectedDateRangeHandler}
+                            onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
+                            onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
+                            setDateRangeStart={setDateRangeStart}
+                            setDateRangeEnd={setDateRangeEnd}
+                            onGeneralValChange={(e: any, valName: any) => onGeneralValChange(e, valName)}
+                            selectIDtoRemove={extraAction}
+                            ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
+                            deleteHandeler={deleteHandeler}
+                        />
+                        <EuiSpacer size="m" />
+                    </EuiPanel>
+                    <EuiSpacer size="l" />
                 </Fragment>
             ))}
             <div style={{ textAlign: 'center' }}>

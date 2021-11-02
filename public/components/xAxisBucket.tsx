@@ -23,7 +23,7 @@ export const AxisBucket = ({
   aggregationArr, isIndexSelected }: any
 ) => {
   return (
-    <EuiPanel id="panel" style={{ maxWidth: '100%' }}>
+    <>
       <EuiText size="xs">
         <div>
           <EuiFlexGroup responsive={false}>
@@ -140,6 +140,6 @@ export const AxisBucket = ({
         </EuiText>
       </EuiCollapsibleNavGroup>
 
-    </EuiPanel>
+    </>
   );
 };
