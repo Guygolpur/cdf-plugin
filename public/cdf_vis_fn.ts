@@ -250,7 +250,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
     },
     filters: {
       types: ['string', 'null'],
-      default: '{}',
+      default: '[{"match_all": {}}]',
       help: 'Visualization only argument with type object',
     },
 

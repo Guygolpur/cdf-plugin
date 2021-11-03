@@ -138,24 +138,17 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       this.props.setValue('dateFilterTo', this.props.timeRange.to);
     }
 
-    // let hi = this.props.vis.type.visConfig.data.query.queryString.getQuery()
-    let filters = this.props.vis.type.visConfig.data.query.filterManager.getFilters()  //02/11- stopped here- need to extract the query and send in request
-    console.log('filters: ', filters)
-    if (filters.length > 0) {
-      let filterTojson: any
-      Object.values(filters).forEach((key: any, val: any) => {
-        filterTojson = JSON.parse(this.props.stateParams['filters']);
-        filterTojson[val] = key.query;
-        let filterToString = JSON.stringify(filterTojson)
-        this.props.setValue('filters', filterToString)
-      })
-      Object.values(filterTojson).forEach((key: any, val: any) => {
-        console.log('key: ', key)
-        console.log('key: ', key)
-
-      })
-    }
-    console.log('hi3:: ', this.props.stateParams['filters'])
+    // // let hi = this.props.vis.type.visConfig.data.query.queryString.getQuery()
+    // let filters = this.props.vis.type.visConfig.data.query.filterManager.getFilters()
+    // if (filters.length > 0) {
+    //   let filterTojson = JSON.parse(this.props.stateParams['filters']);
+    //   Object.values(filters).forEach((key: any, val: any) => {
+    //     filterTojson.push(key.query);
+    //   })
+    //   let filterToString = JSON.stringify(filterTojson)
+    //   this.props.setValue('filters', filterToString)
+    // }
+    // console.log("this.props.stateParams['filters']", this.props.stateParams['filters'])
   }
 
   getIndices = () => {

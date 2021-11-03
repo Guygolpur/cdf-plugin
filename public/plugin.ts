@@ -67,7 +67,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           splitedDateHistogramMinInterval: 'auto',
           numberOfTickTexts: 10,
           subBucketArray: '{}',
-          filters: '{}',
+          filters: '[{"match_all": {}}]',
 
           splitedHistogramMinInterval: 1,
 
