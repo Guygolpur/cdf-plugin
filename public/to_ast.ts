@@ -45,6 +45,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
     subBucketArray,
+    filters,
   } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
@@ -85,6 +86,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       splitedHistogramMinInterval,
       splitedDateHistogramMinInterval,
       subBucketArray,
+      filters,
     }
   );
 

@@ -37,6 +37,7 @@ export interface CDFVisParams {
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   subBucketArray: string | null;
+  filters: string| null;
 }
 
 export interface CDFVisRenderValue {
@@ -76,6 +77,7 @@ export interface CDFVisRenderValue {
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
     subBucketArray: string | null;
+    filters: string | null;
   };
 }
 
@@ -246,6 +248,11 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '{}',
       help: 'Visualization only argument with type object',
     },
+    filters: {
+      types: ['string', 'null'],
+      default: '{}',
+      help: 'Visualization only argument with type object',
+    },
 
   },
   async fn(input, args) {
@@ -299,7 +306,8 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
-          subBucketArray: args.subBucketArray
+          subBucketArray: args.subBucketArray,
+          filters: args.filters,
         },
       },
     };

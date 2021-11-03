@@ -57,6 +57,7 @@ interface CounterParams {
   splitedDateHistogramMinInterval: string;
   subBucketArray: string;
   data: DataPublicPluginStart;
+  filters: string;
 }
 
 interface CDFEditorComponentState {
@@ -109,10 +110,6 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
   }
 
   componentDidMount() {
-    // let hi = this.props.stateParams.data.query.queryString.getQuery()
-    // let filters = this.props.stateParams.data.query.filterManager.getFilters()
-    // console.log('hi:: ', hi)
-    // console.log('hi2:: ', filters)
     this.props.setValue('dateFilterFrom', this.props.timeRange.from);
     this.props.setValue('dateFilterTo', this.props.timeRange.to);
     this.props.setValue('field', '');
@@ -130,11 +127,7 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       this.indicesMappingHandler()
     })
 
-    // if (window.performance) {
-    //   if (performance.navigation.type == 1) {
-    //     this.props.setValue('subBucketArray', '{}')
-    //   }
-    // }
+
   }
 
   componentDidUpdate(prevProps: any) {
@@ -145,11 +138,23 @@ export class CDFEditor extends React.Component<VisEditorOptionsProps<CounterPara
       this.props.setValue('dateFilterTo', this.props.timeRange.to);
     }
 
+    // let hi = this.props.stateParams.data.query.queryString.getQuery()
+    // let filters = this.props.stateParams.data.query.filterManager.getFilters()  //02/11- stopped here- need to extract the query and send in request
+    // console.log('filters: ', filters)
+    // let filterTojson: any
+    // Object.values(filters).forEach((key: any, val: any) => {
+    //   filterTojson = JSON.parse(this.props.stateParams['filters']);
+    //   filterTojson[val] = key.query;
+    //   let filterToString = JSON.stringify(filterTojson)
+    //   this.props.setValue('filters', filterToString)
+    // })
+    // Object.values(filterTojson).forEach((key: any, val: any) => {
+    //   console.log('key: ', key)
+    //   console.log('key: ', key)
 
-    let hi = this.props.stateParams.data.query.queryString.getQuery()
-    let filters = this.props.stateParams.data.query.filterManager.getFilters()
-    // console.log('hi:: ', hi)
-    console.log('hi2:: ', filters)
+    // })
+
+    // console.log('hi3:: ', this.props.stateParams['filters'])
   }
 
   getIndices = () => {
