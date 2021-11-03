@@ -28,6 +28,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       icon: cdfSvgIcon,
       description: 'The CDF (cumulative distribution function) uses a line chart to represent symbolic distribution.',
       visConfig: {
+        data,
         defaults: {
           // High level
           indexPattern: null,
@@ -67,7 +68,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           numberOfTickTexts: 10,
           subBucketArray: '{}',
           filters: '{}',
-          data: data,
 
           splitedHistogramMinInterval: 1,
 
