@@ -106,7 +106,8 @@ export function CdfComponent(props: CdfComponentProps) {
     let data: any = {
       query: {
         bool: {
-          must: filterToJson
+          must: filterToJson,
+          filter: [], should: [], must_not: [] // 04/11- stopped here- need to take care when negative
         }
       },
       size: 0,

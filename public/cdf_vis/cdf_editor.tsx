@@ -130,7 +130,10 @@ export function CDFEditor({
           filterTojson.push(existsObj);
         }
         else if (key.hasOwnProperty('query')) {
-          filterTojson.push(key.query);
+          if (key.meta.negate === false) {filterTojson.push(key.query);}
+          else {
+              console.log('need to add negative') // 04/11- stopped here- need to take care when negative
+          }
         }
         console.log('key: ', key)
         console.log('val: ', val)
