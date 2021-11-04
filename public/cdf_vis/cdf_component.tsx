@@ -83,6 +83,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
     subBucketArray,
     splitedOrder,
+    filters
   } = props.visParams
 
   useEffect(() => {
@@ -90,13 +91,22 @@ export function CdfComponent(props: CdfComponentProps) {
     if (isEmptyBucket) {
       emptyBucket = 0
     }
-    let data: any = {
-      query: {
+    debugger
+    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
+    filterToJson.push(
+      {
         range: {
           time: {
             gte: dateFilterFrom,
             lt: dateFilterTo
           }
+        }
+      }
+    )
+    let data: any = {
+      query: {
+        bool: {
+          must: filterToJson
         }
       },
       size: 0,
@@ -230,7 +240,11 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
     subBucketArray,
-    splitedOrder
+    splitedOrder,
+    filters,
+
+    dateRangeStart,
+    dateRangeEnd,
   ]);
 
   const allIgnored = (element: any) => element.isValid === true

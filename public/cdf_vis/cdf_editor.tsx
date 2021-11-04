@@ -127,6 +127,9 @@ export function CDFEditor({
       let filterToString = JSON.stringify(filterTojson)
       setValue('filters', filterToString)
     }
+    else {
+      setValue('filters', '[{"match_all": {}}]')
+    }
   }
 
   const getIndices = () => {
