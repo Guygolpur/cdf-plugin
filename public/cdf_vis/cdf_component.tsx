@@ -91,7 +91,7 @@ export function CdfComponent(props: CdfComponentProps) {
     if (isEmptyBucket) {
       emptyBucket = 0
     }
-    debugger
+    
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     filterToJson.push(
       {

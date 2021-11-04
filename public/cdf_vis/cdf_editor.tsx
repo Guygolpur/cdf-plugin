@@ -114,6 +114,7 @@ export function CDFEditor({
 
   useEffect(() => {
     filterListener()
+    console.log('vis.type.visConfig.data.query: ', vis.type.visConfig.data.query.filterManager.getFilters())
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   const filterListener = () => {
@@ -122,7 +123,17 @@ export function CDFEditor({
     if (filters.length > 0) {
       let filterTojson = JSON.parse(stateParams['filters']);
       Object.values(filters).forEach((key: any, val: any) => {
-        filterTojson.push(key.query);
+        if (key.hasOwnProperty('exists')) {
+          let existsObj = {
+            exists: key.exists
+          }
+          filterTojson.push(existsObj);
+        }
+        else if (key.hasOwnProperty('query')) {
+          filterTojson.push(key.query);
+        }
+        console.log('key: ', key)
+        console.log('val: ', val)
       })
       let filterToString = JSON.stringify(filterTojson)
       setValue('filters', filterToString)
