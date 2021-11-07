@@ -146,18 +146,39 @@ export function CDFEditor({
           }
         }
         else if (key.hasOwnProperty('query')) {
-          if (key.meta.negate === false) { filterTojson.push(key.query); }
-          else {
-            for (var prop in key.query) {
-              if (key.query.hasOwnProperty(prop)) {
-                var innerObj: any = {};
-                innerObj[prop] = key.query[prop];
-                negativeFilters.push(innerObj)
+          if (key.query.hasOwnProperty('match_phrase') || key.query.hasOwnProperty('bool')) {
+            let queryObj
+            if (key.query.hasOwnProperty('bool')) {
+              queryObj = {
+                bool: key.query.bool
               }
+            }
+            else { queryObj = key.query }
+            if (key.meta.negate === false) { filterTojson.push(queryObj); }
+            else {
+              if (key.query.hasOwnProperty('bool')) {
+                queryObj = {
+                  bool: key.query.bool
+                }
+              }
+              else {
+                queryObj = {
+                  match_phrase: key.query.match_phrase
+                }
+              }
+              negativeFilters.push(queryObj)
+              // for (var prop in key.query) {
+              //   if (key.query.hasOwnProperty(prop)) {
+              //     var innerObj: any = {};
+              //     innerObj[prop] = key.query[prop];
+              //     negativeFilters.push(innerObj)
+              //   }
+              // }
             }
           }
         }
       })
+
       let negativeFilterToString = JSON.stringify(negativeFilters)
       setValue('negativeFilters', negativeFilterToString)
 
