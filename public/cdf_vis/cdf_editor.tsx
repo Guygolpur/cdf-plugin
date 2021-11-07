@@ -32,7 +32,6 @@ interface CounterParams {
   isEmptyBucket: boolean;
   isExtendBounds: boolean;
   customLabel: string;
-  advancedValue: string;
   jsonInput: string;
 
   // Metrix & Axes
@@ -56,13 +55,13 @@ interface CounterParams {
   dateRangeEnd: string;
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
-  subBucketArray: string;
-  data: DataPublicPluginStart;
+  subBucketArray: string | null;
+  // data: DataPublicPluginStart;
 
   // Filters
-  filters: string;
-  negativeFilters: string;
-  rangeFilters: string;
+  filters: string | null;
+  negativeFilters: string | null;
+  rangeFilters: string | null;
 }
 
 export function CDFEditor({
@@ -284,7 +283,7 @@ export function CDFEditor({
     }
   }
 
-  // field, min_interval, aggregation, xMin, xMax, customLabel, advancedValue, jsonInput,
+  // field, min_interval, aggregation, xMin, xMax, customLabel, jsonInput,
   // splitedAggregation, splitedField, splitedOrder, splitedCustomLabel
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   const onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
@@ -451,7 +450,6 @@ export function CDFEditor({
                     selectedHistogramField={selectedHistogramField}
                     field={stateParams.field}
                     isEmptyBucket={stateParams.isEmptyBucket}
-                    advancedValue={stateParams.advancedValue}
                     aggregationArr={numberFieldArr}
                     isIndexSelected={isIndexSelected}
                   ></AxisBucket>

@@ -11,7 +11,6 @@ export interface CDFVisParams {
   isEmptyBucket: boolean;
   isExtendBounds: boolean;
   customLabel: string;
-  advancedValue: string;
   jsonInput: string;
 
   handleNoResults: boolean;
@@ -56,7 +55,6 @@ export interface CDFVisRenderValue {
     isEmptyBucket: boolean;
     isExtendBounds: boolean;
     customLabel: string;
-    advancedValue: string;
     jsonInput: string;
 
     // Metrix & Axes
@@ -139,11 +137,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       help: 'Visualization only argument with type boolean',
     },
     customLabel: {
-      types: ['string'],
-      default: '',
-      help: 'Visualization only argument with type string',
-    },
-    advancedValue: {
       types: ['string'],
       default: '',
       help: 'Visualization only argument with type string',
@@ -300,7 +293,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isEmptyBucket: args.isEmptyBucket,
           isExtendBounds: args.isExtendBounds,
           customLabel: args.customLabel,
-          advancedValue: args.advancedValue,
           jsonInput: args.jsonInput,
 
           // Metrix & Axes

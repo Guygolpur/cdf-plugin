@@ -60,7 +60,6 @@ export function CdfComponent(props: CdfComponentProps) {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes
@@ -230,7 +229,6 @@ export function CdfComponent(props: CdfComponentProps) {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes

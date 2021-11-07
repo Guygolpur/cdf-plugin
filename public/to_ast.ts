@@ -20,7 +20,6 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes
@@ -65,7 +64,6 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       isEmptyBucket,
       isExtendBounds,
       customLabel,
-      advancedValue,
       jsonInput,
 
       // Metrix & Axes

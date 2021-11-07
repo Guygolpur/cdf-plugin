@@ -40,7 +40,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isEmptyBucket: false,
           isExtendBounds: false,
           customLabel: '',
-          advancedValue: '',
           jsonInput: '',  // json syntax validation
 
           // Metrix & Axes
