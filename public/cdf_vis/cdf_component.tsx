@@ -84,9 +84,10 @@ export function CdfComponent(props: CdfComponentProps) {
     subBucketArray,
     splitedOrder,
 
-    // Metrix & Axes
+    // Filters
     filters,
     negativeFilters,
+    rangeFilters,
 
   } = props.visParams
 
@@ -252,6 +253,7 @@ export function CdfComponent(props: CdfComponentProps) {
     // Filters
     filters,
     negativeFilters,
+    rangeFilters,
 
     dateRangeStart,
     dateRangeEnd,

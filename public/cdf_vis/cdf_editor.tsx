@@ -59,9 +59,10 @@ interface CounterParams {
   subBucketArray: string;
   data: DataPublicPluginStart;
 
-  // Metrix & Axes
+  // Filters
   filters: string;
   negativeFilters: string;
+  rangeFilters: string;
 }
 
 export function CDFEditor({
@@ -130,7 +131,8 @@ export function CDFEditor({
     console.log('filters: ', filters)
     if (filters.length > 0) {
       let filterTojson: any = [];
-      let negativeFilters: any = []
+      let negativeFilters: any = [];
+      let rangeFilters: any = [{ 'match_all': {} }];
       Object.values(filters).forEach((key: any, val: any) => {
         if (key.hasOwnProperty('exists')) {
           let existsObj = {
@@ -167,17 +169,22 @@ export function CDFEditor({
                 }
               }
               negativeFilters.push(queryObj)
-              // for (var prop in key.query) {
-              //   if (key.query.hasOwnProperty(prop)) {
-              //     var innerObj: any = {};
-              //     innerObj[prop] = key.query[prop];
-              //     negativeFilters.push(innerObj)
-              //   }
-              // }
             }
           }
         }
+        else if (key.hasOwnProperty('range')) {
+          let rangeObj = {
+            range: key.range
+          }
+          if (key.meta.negate === false) { rangeFilters.push(rangeObj); }
+          else {
+            negativeFilters.push(rangeObj)
+          }
+        }
       })
+
+      let rangeFilterToString = JSON.stringify(rangeFilters)
+      setValue('rangeFilters', rangeFilterToString)
 
       let negativeFilterToString = JSON.stringify(negativeFilters)
       setValue('negativeFilters', negativeFilterToString)
@@ -186,6 +193,7 @@ export function CDFEditor({
       setValue('filters', filterToString)
     }
     else {
+      setValue('rangeFilters', '[]')
       setValue('negativeFilters', '[]')
       setValue('filters', '[{"match_all": {}}]')
     }
