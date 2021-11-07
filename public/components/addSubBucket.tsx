@@ -10,9 +10,7 @@ import {
     EuiComboBox,
     EuiSwitch,
     EuiFieldText,
-    EuiCollapsibleNavGroup,
     EuiIconTip,
-    EuiTextArea,
     EuiFieldNumber,
     EuiAccordion,
     EuiButtonIcon,
@@ -180,35 +178,6 @@ export const AddSubBucket = ({
                     disabled={!(isIndexSelected && isXAxisFieldSelected)}
                 />
             </EuiFormRow>
-
-            <EuiCollapsibleNavGroup
-                data-test-subj="ADVANCED"
-                background="light"
-                title="Advanced"
-                arrowDisplay="left"
-                isCollapsible={true}
-                initialIsOpen={false}>
-                <EuiText style={{ display: "inline" }} onChange={(e) => onGeneralValChange(e, 'jsonInput')} >
-                    <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-                        <dt style={{ display: "inline" }}>JSON input</dt>
-                    </dl>
-                </EuiText>
-                <EuiIconTip
-                    aria-label="Warning"
-                    size="m"
-                    type="alert"
-                    color="black"
-                    content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-                />
-                <EuiText size="s" color="subdued">
-                    <EuiTextArea
-                        aria-label="Use aria labels when no actual label is in use"
-                        value={stateParams.advancedValue}
-                        onChange={(e) => onGeneralValChange(e, 'advancedValue')}
-                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                    />
-                </EuiText>
-            </EuiCollapsibleNavGroup>
         </>
     }
     else if (selectedAggregationOptions == 'date_histogram') {
@@ -248,35 +217,6 @@ export const AddSubBucket = ({
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
                 <EuiFieldText name="first" fullWidth disabled={!(isIndexSelected && isXAxisFieldSelected)} />
             </EuiFormRow>
-
-            <EuiCollapsibleNavGroup
-                data-test-subj="ADVANCED"
-                background="light"
-                title="Advanced"
-                arrowDisplay="left"
-                isCollapsible={true}
-                initialIsOpen={false}>
-                <EuiText style={{ display: "inline" }} onChange={(e) => onGeneralValChange(e, 'jsonInput')}  >
-                    <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-                        <dt style={{ display: "inline" }}>JSON input</dt>
-                    </dl>
-                </EuiText>
-                <EuiIconTip
-                    aria-label="Warning"
-                    size="m"
-                    type="alert"
-                    color="black"
-                    content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-                />
-                <EuiText size="s" color="subdued">
-                    <EuiTextArea
-                        aria-label="Use aria labels when no actual label is in use"
-                        value={stateParams.advancedValue}
-                        onChange={(e) => onGeneralValChange(e, 'advancedValue')}
-                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                    />
-                </EuiText>
-            </EuiCollapsibleNavGroup>
         </>
     }
     else if (selectedAggregationOptions == 'histogram') {
@@ -348,35 +288,6 @@ export const AddSubBucket = ({
                     disabled={!(isIndexSelected && isXAxisFieldSelected)}
                 />
             </EuiFormRow>
-
-            <EuiCollapsibleNavGroup
-                data-test-subj="ADVANCED"
-                background="light"
-                title="Advanced"
-                arrowDisplay="left"
-                isCollapsible={true}
-                initialIsOpen={false}>
-                <EuiText style={{ display: "inline" }} onChange={(e) => onGeneralValChange(e, 'jsonInput')}  >
-                    <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-                        <dt style={{ display: "inline" }}>JSON input</dt>
-                    </dl>
-                </EuiText>
-                <EuiIconTip
-                    aria-label="Warning"
-                    size="m"
-                    type="iInCircle"
-                    color="black"
-                    content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-                />
-                <EuiText size="s" color="subdued">
-                    <EuiTextArea
-                        aria-label="Use aria labels when no actual label is in use"
-                        value={stateParams.advancedValue}
-                        onChange={(e) => onGeneralValChange(e, 'advancedValue')}
-                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                    />
-                </EuiText>
-            </EuiCollapsibleNavGroup>
         </>
     }
     else if (selectedAggregationOptions == 'date_range') {
@@ -406,35 +317,6 @@ export const AddSubBucket = ({
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
                 <EuiFieldText name="first" fullWidth disabled={!(isIndexSelected && isXAxisFieldSelected)} />
             </EuiFormRow>
-
-            <EuiCollapsibleNavGroup
-                data-test-subj="ADVANCED"
-                background="light"
-                title="Advanced"
-                arrowDisplay="left"
-                isCollapsible={true}
-                initialIsOpen={false}>
-                <EuiText style={{ display: "inline" }} onChange={(e) => onGeneralValChange(e, 'jsonInput')} >
-                    <dl className="eui-definitionListReverse" style={{ display: "inline" }}>
-                        <dt style={{ display: "inline" }}>JSON input</dt>
-                    </dl>
-                </EuiText>
-                <EuiIconTip
-                    aria-label="Warning"
-                    size="m"
-                    type="alert"
-                    color="black"
-                    content="Any JSON formatted properties you add here will be marged with the elasticsearch aggregation definition for this section. For example 'shard_size' on a terms aggregation."
-                />
-                <EuiText size="s" color="subdued">
-                    <EuiTextArea
-                        aria-label="Use aria labels when no actual label is in use"
-                        value={stateParams.advancedValue}
-                        onChange={(e) => onGeneralValChange(e, 'advancedValue')}
-                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
-                    />
-                </EuiText>
-            </EuiCollapsibleNavGroup>
         </>
     }
 

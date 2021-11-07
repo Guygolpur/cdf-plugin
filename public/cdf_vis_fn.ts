@@ -11,7 +11,6 @@ export interface CDFVisParams {
   isEmptyBucket: boolean;
   isExtendBounds: boolean;
   customLabel: string;
-  advancedValue: string;
   jsonInput: string;
 
   handleNoResults: boolean;
@@ -37,6 +36,11 @@ export interface CDFVisParams {
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   subBucketArray: string | null;
+
+  // Filters
+  filters: string | null;
+  negativeFilters: string | null;
+  rangeFilters: string | null;
 }
 
 export interface CDFVisRenderValue {
@@ -51,7 +55,6 @@ export interface CDFVisRenderValue {
     isEmptyBucket: boolean;
     isExtendBounds: boolean;
     customLabel: string;
-    advancedValue: string;
     jsonInput: string;
 
     // Metrix & Axes
@@ -76,6 +79,11 @@ export interface CDFVisRenderValue {
     splitedHistogramMinInterval: number;
     splitedDateHistogramMinInterval: string;
     subBucketArray: string | null;
+
+    // Filters
+    filters: string | null;
+    negativeFilters: string | null;
+    rangeFilters: string | null;
   };
 }
 
@@ -129,11 +137,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       help: 'Visualization only argument with type boolean',
     },
     customLabel: {
-      types: ['string'],
-      default: '',
-      help: 'Visualization only argument with type string',
-    },
-    advancedValue: {
       types: ['string'],
       default: '',
       help: 'Visualization only argument with type string',
@@ -246,6 +249,21 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '{}',
       help: 'Visualization only argument with type object',
     },
+    filters: {
+      types: ['string', 'null'],
+      default: '[{"match_all": {}}]',
+      help: 'Visualization only argument with type object',
+    },
+    negativeFilters: {
+      types: ['string', 'null'],
+      default: '[]',
+      help: 'Visualization only argument with type object',
+    },
+    rangeFilters: {
+      types: ['string', 'null'],
+      default: '[]',
+      help: 'Visualization only argument with type object',
+    },
 
   },
   async fn(input, args) {
@@ -275,7 +293,6 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           isEmptyBucket: args.isEmptyBucket,
           isExtendBounds: args.isExtendBounds,
           customLabel: args.customLabel,
-          advancedValue: args.advancedValue,
           jsonInput: args.jsonInput,
 
           // Metrix & Axes
@@ -299,7 +316,10 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           dateRangeEnd: args.dateRangeEnd,
           splitedHistogramMinInterval: args.splitedHistogramMinInterval,
           splitedDateHistogramMinInterval: args.splitedDateHistogramMinInterval,
-          subBucketArray: args.subBucketArray
+          subBucketArray: args.subBucketArray,
+          filters: args.filters,
+          negativeFilters: args.negativeFilters,
+          rangeFilters: args.rangeFilters,
         },
       },
     };

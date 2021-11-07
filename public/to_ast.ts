@@ -20,7 +20,6 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes
@@ -45,6 +44,11 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
     subBucketArray,
+
+    // Filters
+    filters,
+    negativeFilters,
+    rangeFilters,
   } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
@@ -60,7 +64,6 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       isEmptyBucket,
       isExtendBounds,
       customLabel,
-      advancedValue,
       jsonInput,
 
       // Metrix & Axes
@@ -85,6 +88,11 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       splitedHistogramMinInterval,
       splitedDateHistogramMinInterval,
       subBucketArray,
+
+      // Filters
+      filters,
+      negativeFilters,
+      rangeFilters,
     }
   );
 

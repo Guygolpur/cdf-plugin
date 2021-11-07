@@ -41,11 +41,11 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     props.renderComplete();
-    if (window.performance) {
-      if (performance.navigation.type == 1) {
-        props.visParams.subBucketArray = '{}'
-      }
-    }
+    // if (window.performance) {
+    //   if (performance.navigation.type == 1) {
+    //     props.visParams.subBucketArray = '{}'
+    //   }
+    // }
 
   })
 
@@ -60,7 +60,6 @@ export function CdfComponent(props: CdfComponentProps) {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes
@@ -83,6 +82,12 @@ export function CdfComponent(props: CdfComponentProps) {
 
     subBucketArray,
     splitedOrder,
+
+    // Filters
+    filters,
+    negativeFilters,
+    rangeFilters,
+
   } = props.visParams
 
   useEffect(() => {
@@ -90,13 +95,25 @@ export function CdfComponent(props: CdfComponentProps) {
     if (isEmptyBucket) {
       emptyBucket = 0
     }
-    let data: any = {
-      query: {
+
+    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
+    let negativeFilterToJson = JSON.parse(negativeFilters)
+    
+    filterToJson.push(
+      {
         range: {
           time: {
             gte: dateFilterFrom,
             lt: dateFilterTo
           }
+        }
+      }
+    )
+    let data: any = {
+      query: {
+        bool: {
+          must: filterToJson,
+          filter: [], should: [], must_not: negativeFilterToJson // 04/11- stopped here- need to take care when negative
         }
       },
       size: 0,
@@ -212,7 +229,6 @@ export function CdfComponent(props: CdfComponentProps) {
     isEmptyBucket,
     isExtendBounds,
     customLabel,
-    advancedValue,
     jsonInput,
 
     // Metrix & Axes
@@ -230,7 +246,15 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedHistogramMinInterval,
     splitedDateHistogramMinInterval,
     subBucketArray,
-    splitedOrder
+    splitedOrder,
+
+    // Filters
+    filters,
+    negativeFilters,
+    rangeFilters,
+
+    dateRangeStart,
+    dateRangeEnd,
   ]);
 
   const allIgnored = (element: any) => element.isValid === true

@@ -28,10 +28,11 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
       icon: cdfSvgIcon,
       description: 'The CDF (cumulative distribution function) uses a line chart to represent symbolic distribution.',
       visConfig: {
+        data,
         defaults: {
           // High level
           indexPattern: null,
-          
+
           // X-axis
           aggregation: 'histogram',
           field: null,
@@ -39,7 +40,6 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           isEmptyBucket: false,
           isExtendBounds: false,
           customLabel: '',
-          advancedValue: '',
           jsonInput: '',  // json syntax validation
 
           // Metrix & Axes
@@ -60,7 +60,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           splitedCustomLabel: '',
           dateFilterFrom: 'now-15m',
           dateFilterTo: 'now',
-          
+
           dateRangeStart: 'now-15m',
           dateRangeEnd: 'now',
           splitedDateHistogramMinInterval: 'auto',
@@ -68,6 +68,11 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           subBucketArray: '{}',
 
           splitedHistogramMinInterval: 1,
+
+          // Filters
+          filters: '[{"match_all": {}}]',
+          negativeFilters: '[]',
+          rangeFilters: '[]',
 
           grid: {
             categoryLines: false,
