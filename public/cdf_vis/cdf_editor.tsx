@@ -127,15 +127,23 @@ export function CDFEditor({
   const filterListener = () => {
     // let hi = this.vis.type.visConfig.data.query.queryString.getQuery()
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
+    console.log('filters: ', filters)
     if (filters.length > 0) {
-      let filterTojson = JSON.parse(stateParams['filters']);
+      let filterTojson: any = [];
       let negativeFilters: any = []
       Object.values(filters).forEach((key: any, val: any) => {
         if (key.hasOwnProperty('exists')) {
           let existsObj = {
             exists: key.exists
           }
-          filterTojson.push(existsObj);
+          if (key.meta.negate === false) {
+            {
+              filterTojson.push(existsObj);
+            }
+          }
+          else {
+            negativeFilters.push(existsObj)
+          }
         }
         else if (key.hasOwnProperty('query')) {
           if (key.meta.negate === false) { filterTojson.push(key.query); }
