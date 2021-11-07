@@ -58,7 +58,10 @@ interface CounterParams {
   splitedDateHistogramMinInterval: string;
   subBucketArray: string;
   data: DataPublicPluginStart;
+
+  // Metrix & Axes
   filters: string;
+  negativeFilters: string;
 }
 
 export function CDFEditor({
@@ -113,8 +116,12 @@ export function CDFEditor({
   }, [])
 
   useEffect(() => {
+    setValue('dateFilterFrom', timeRange.from);
+    setValue('dateFilterTo', timeRange.to);
+  }, [timeRange.from, timeRange.to])
+
+  useEffect(() => {
     filterListener()
-    console.log('vis.type.visConfig.data.query: ', vis.type.visConfig.data.query.filterManager.getFilters())
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   const filterListener = () => {
@@ -122,6 +129,7 @@ export function CDFEditor({
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
     if (filters.length > 0) {
       let filterTojson = JSON.parse(stateParams['filters']);
+      let negativeFilters: any = []
       Object.values(filters).forEach((key: any, val: any) => {
         if (key.hasOwnProperty('exists')) {
           let existsObj = {
@@ -130,18 +138,26 @@ export function CDFEditor({
           filterTojson.push(existsObj);
         }
         else if (key.hasOwnProperty('query')) {
-          if (key.meta.negate === false) {filterTojson.push(key.query);}
+          if (key.meta.negate === false) { filterTojson.push(key.query); }
           else {
-              console.log('need to add negative') // 04/11- stopped here- need to take care when negative
+            for (var prop in key.query) {
+              if (key.query.hasOwnProperty(prop)) {
+                var innerObj: any = {};
+                innerObj[prop] = key.query[prop];
+                negativeFilters.push(innerObj)
+              }
+            }
           }
         }
-        console.log('key: ', key)
-        console.log('val: ', val)
       })
+      let negativeFilterToString = JSON.stringify(negativeFilters)
+      setValue('negativeFilters', negativeFilterToString)
+
       let filterToString = JSON.stringify(filterTojson)
       setValue('filters', filterToString)
     }
     else {
+      setValue('negativeFilters', '[]')
       setValue('filters', '[{"match_all": {}}]')
     }
   }

@@ -83,7 +83,11 @@ export function CdfComponent(props: CdfComponentProps) {
 
     subBucketArray,
     splitedOrder,
-    filters
+
+    // Metrix & Axes
+    filters,
+    negativeFilters,
+
   } = props.visParams
 
   useEffect(() => {
@@ -91,8 +95,10 @@ export function CdfComponent(props: CdfComponentProps) {
     if (isEmptyBucket) {
       emptyBucket = 0
     }
-    
+
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
+    let negativeFilterToJson = JSON.parse(negativeFilters)
+    
     filterToJson.push(
       {
         range: {
@@ -107,7 +113,7 @@ export function CdfComponent(props: CdfComponentProps) {
       query: {
         bool: {
           must: filterToJson,
-          filter: [], should: [], must_not: [] // 04/11- stopped here- need to take care when negative
+          filter: [], should: [], must_not: negativeFilterToJson // 04/11- stopped here- need to take care when negative
         }
       },
       size: 0,
@@ -242,7 +248,10 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedDateHistogramMinInterval,
     subBucketArray,
     splitedOrder,
+
+    // Filters
     filters,
+    negativeFilters,
 
     dateRangeStart,
     dateRangeEnd,
