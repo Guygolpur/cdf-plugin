@@ -143,7 +143,7 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                size: 10000,
+                size: 100000,
                 order: { "_count": splitedOrder }
               }
             }
