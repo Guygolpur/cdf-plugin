@@ -133,51 +133,53 @@ export function CDFEditor({
       let negativeFilters: any = [];
       let rangeFilters: any = [{ 'match_all': {} }];
       Object.values(filters).forEach((key: any, val: any) => {
-        if (key.hasOwnProperty('exists')) {
-          let existsObj = {
-            exists: key.exists
-          }
-          if (key.meta.negate === false) {
-            {
-              filterTojson.push(existsObj);
+        if (!key.meta.disabled) {
+          if (key.hasOwnProperty('exists')) {
+            let existsObj = {
+              exists: key.exists
             }
-          }
-          else {
-            negativeFilters.push(existsObj)
-          }
-        }
-        else if (key.hasOwnProperty('query')) {
-          if (key.query.hasOwnProperty('match_phrase') || key.query.hasOwnProperty('bool')) {
-            let queryObj
-            if (key.query.hasOwnProperty('bool')) {
-              queryObj = {
-                bool: key.query.bool
+            if (key.meta.negate === false) {
+              {
+                filterTojson.push(existsObj);
               }
             }
-            else { queryObj = key.query }
-            if (key.meta.negate === false) { filterTojson.push(queryObj); }
             else {
+              negativeFilters.push(existsObj)
+            }
+          }
+          else if (key.hasOwnProperty('query')) {
+            if (key.query.hasOwnProperty('match_phrase') || key.query.hasOwnProperty('bool')) {
+              let queryObj
               if (key.query.hasOwnProperty('bool')) {
                 queryObj = {
                   bool: key.query.bool
                 }
               }
+              else { queryObj = key.query }
+              if (key.meta.negate === false) { filterTojson.push(queryObj); }
               else {
-                queryObj = {
-                  match_phrase: key.query.match_phrase
+                if (key.query.hasOwnProperty('bool')) {
+                  queryObj = {
+                    bool: key.query.bool
+                  }
                 }
+                else {
+                  queryObj = {
+                    match_phrase: key.query.match_phrase
+                  }
+                }
+                negativeFilters.push(queryObj)
               }
-              negativeFilters.push(queryObj)
             }
           }
-        }
-        else if (key.hasOwnProperty('range')) {
-          let rangeObj = {
-            range: key.range
-          }
-          if (key.meta.negate === false) { rangeFilters.push(rangeObj); }
-          else {
-            negativeFilters.push(rangeObj)
+          else if (key.hasOwnProperty('range')) {
+            let rangeObj = {
+              range: key.range
+            }
+            if (key.meta.negate === false) { rangeFilters.push(rangeObj); }
+            else {
+              negativeFilters.push(rangeObj)
+            }
           }
         }
       })
