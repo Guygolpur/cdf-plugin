@@ -121,13 +121,22 @@ export function CDFEditor({
   }, [timeRange.from, timeRange.to])
 
   useEffect(() => {
+    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString)
     filterListener()
-  }, [vis.type.visConfig.data.query.filterManager.filters])
+  }, [vis.type.visConfig.data.query.filterManager.filters, vis.type.visConfig.data.query.queryString.getQuery()])
+
+  useEffect(() => {
+    queryListener()
+  }, [vis.type.visConfig.data.query.queryString.getQuery()])
+
+  const queryListener = () => {
+    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString)
+  }
 
   const filterListener = () => {
-    let hi = vis.type.visConfig.data.query.queryString.getQuery()
-    console.log('hi: ', hi)
+    let queries = vis.type.visConfig.data.query.queryString.getQuery()
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
+    console.log('queries: ', queries)
     console.log('filters: ', filters)
     if (filters.length > 0) {
       let filterTojson: any = [];
