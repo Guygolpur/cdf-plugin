@@ -122,7 +122,7 @@ export function CDFEditor({
 
   useEffect(() => {
     filterListener()
-  }, [vis.type.visConfig.data.query.filterManager.filters, vis.type.visConfig.data.query.queryString.getQuery()])
+  }, [vis.type.visConfig.data.query.filterManager.filters])
 
   useEffect(() => {
     queryListener()
