@@ -121,7 +121,6 @@ export function CDFEditor({
   }, [timeRange.from, timeRange.to])
 
   useEffect(() => {
-    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString)
     filterListener()
   }, [vis.type.visConfig.data.query.filterManager.filters, vis.type.visConfig.data.query.queryString.getQuery()])
 
@@ -130,7 +129,7 @@ export function CDFEditor({
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
 
   const queryListener = () => {
-    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString)
+    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString.getQuery())
   }
 
   const filterListener = () => {
