@@ -95,6 +95,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
         ],
       },
       toExpressionAst,
+      requiresSearch: true,   //src\plugins\vis_type_table\public\legacy\table_vis_legacy_type.ts
     });
   }
 

@@ -125,7 +125,8 @@ export function CDFEditor({
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   const filterListener = () => {
-    // let hi = this.vis.type.visConfig.data.query.queryString.getQuery()
+    let hi = vis.type.visConfig.data.query.queryString.getQuery()
+    console.log('hi: ', hi)
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
     console.log('filters: ', filters)
     if (filters.length > 0) {
