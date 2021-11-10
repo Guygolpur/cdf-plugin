@@ -33,7 +33,7 @@ interface CdfComponentProps {
   visParams: CDFVisParams;
 }
 
-const onChangeAction = action('onChange');
+// const onChangeAction = action('onChange');
 
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
@@ -274,7 +274,7 @@ export function CdfComponent(props: CdfComponentProps) {
           ...toEntries(seriesIdentifiers, 'key', c),
         }));
         onChange(c);
-        onChangeAction(c);
+        // onChangeAction(c);
       };
 
       return (
