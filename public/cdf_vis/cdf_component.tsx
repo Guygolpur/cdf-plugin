@@ -87,7 +87,7 @@ export function CdfComponent(props: CdfComponentProps) {
     filters,
     negativeFilters,
     rangeFilters,
-
+    searchShould,
   } = props.visParams
 
   useEffect(() => {
@@ -252,6 +252,7 @@ export function CdfComponent(props: CdfComponentProps) {
     filters,
     negativeFilters,
     rangeFilters,
+    searchShould,
 
     dateRangeStart,
     dateRangeEnd,

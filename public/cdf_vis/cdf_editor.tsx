@@ -62,6 +62,7 @@ interface CounterParams {
   filters: string | null;
   negativeFilters: string | null;
   rangeFilters: string | null;
+  searchShould: string | null;
 }
 
 export function CDFEditor({
@@ -129,13 +130,22 @@ export function CDFEditor({
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
 
   const queryListener = () => {
-    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString.getQuery())
+    let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
+    let splitedQueriesByOr: any = []
+    let splitedQueriesByand: any = []
+    console.log('queries: ', queries);
+    splitedQueriesByOr = queries.split(' or ')
+    console.log('splitedQueriesByOr: ', splitedQueriesByOr)
+
+    splitedQueriesByOr.forEach((element:any) => {
+      splitedQueriesByand.push(element.split(' and '))
+    });
+
+    console.log('splitedQueriesByand: ', splitedQueriesByand)
   }
 
   const filterListener = () => {
-    let queries = vis.type.visConfig.data.query.queryString.getQuery()
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
-    console.log('queries: ', queries)
     console.log('filters: ', filters)
     if (filters.length > 0) {
       let filterTojson: any = [];
