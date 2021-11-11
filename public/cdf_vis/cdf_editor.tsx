@@ -124,9 +124,18 @@ export function CDFEditor({
     filterListener()
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
+  useEffect(() => {
+    queryListener()
+  }, [vis.type.visConfig.data.query.queryString.getQuery()])
+
+  const queryListener = () => {
+    console.log('vis.type.visConfig.data.query.queryString: ', vis.type.visConfig.data.query.queryString.getQuery())
+  }
+
   const filterListener = () => {
-    // let hi = this.vis.type.visConfig.data.query.queryString.getQuery()
+    let queries = vis.type.visConfig.data.query.queryString.getQuery()
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
+    console.log('queries: ', queries)
     console.log('filters: ', filters)
     if (filters.length > 0) {
       let filterTojson: any = [];
