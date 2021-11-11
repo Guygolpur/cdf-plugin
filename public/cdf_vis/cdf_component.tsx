@@ -25,15 +25,10 @@ import {
   EuiButton,
 } from '@elastic/eui';
 
-import { action } from '@storybook/addon-actions';
-
-
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
 }
-
-// const onChangeAction = action('onChange');
 
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
@@ -113,7 +108,7 @@ export function CdfComponent(props: CdfComponentProps) {
       query: {
         bool: {
           must: filterToJson,
-          filter: [], should: [], must_not: negativeFilterToJson // 04/11- stopped here- need to take care when negative
+          filter: [], should: [], must_not: negativeFilterToJson
         }
       },
       size: 0,
@@ -275,7 +270,6 @@ export function CdfComponent(props: CdfComponentProps) {
           ...toEntries(seriesIdentifiers, 'key', c),
         }));
         onChange(c);
-        // onChangeAction(c);
       };
 
       return (
@@ -313,7 +307,6 @@ export function CdfComponent(props: CdfComponentProps) {
               yScaleType={ScaleType.Linear}
               xAccessor={0}
               yAccessors={[1]}
-              // splitSeriesAccessors={i}
               data={aggLineData[item]['points']}
               curve={CurveType.LINEAR}
               key={i}

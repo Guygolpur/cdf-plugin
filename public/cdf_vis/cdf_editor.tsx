@@ -131,17 +131,60 @@ export function CDFEditor({
 
   const queryListener = () => {
     let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
+    console.log('queries: ', queries);
+
+    let splitedQueries = splitQueries(queries)
+    console.log('splitedQueries: ', splitedQueries)
+
+    let esQuery = manipulateToESQuery(splitedQueries)
+  }
+
+  function splitQueries(queries: any) {
     let splitedQueriesByOr: any = []
     let splitedQueriesByand: any = []
-    console.log('queries: ', queries);
-    splitedQueriesByOr = queries.split(' or ')
-    console.log('splitedQueriesByOr: ', splitedQueriesByOr)
 
-    splitedQueriesByOr.forEach((element:any) => {
+    splitedQueriesByOr = queries.split(' or ')
+
+    splitedQueriesByOr.forEach((element: any) => {
       splitedQueriesByand.push(element.split(' and '))
     });
 
-    console.log('splitedQueriesByand: ', splitedQueriesByand)
+    return splitedQueriesByand;
+  }
+
+  function manipulateToESQuery(splitedQueries: any) {   //stopped here: should convert to es query
+    let shouldArr: any = []
+    splitedQueries.forEach((orElement: any) => {
+      console.log('orElement: ', orElement)
+      let boolObj: any = {
+        bool: {
+          should: [
+          ]
+        }
+      }
+      console.log('orElement: ', orElement.length)
+      for (let i = 1; i < orElement.length; i++) {
+        let key = Object.keys(orElement[i])
+        let value = Object.values(orElement[i])
+        console.log(key, value)
+        if (i % 2 === 0) {
+          console.log('andElement pair: ', orElement[i])
+          boolObj.bool.should = [{
+            match: {
+              // key: value
+            }
+          }]
+        }
+        else {
+          console.log('andElement odd: ', orElement[i])
+          boolObj.bool.filter = []
+        }
+      }
+      console.log('boolObj: ', boolObj)
+
+    });
+
+    return shouldArr;
   }
 
   const filterListener = () => {
