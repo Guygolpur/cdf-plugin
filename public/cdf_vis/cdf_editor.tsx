@@ -131,13 +131,18 @@ export function CDFEditor({
 
   const queryListener = () => {
     let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
-    console.log('queries: ', queries);
+    if (queries.length > 0) {
+      let splitedQueries = splitQueries(queries)
+      let esQuery = manipulateToESQuery(splitedQueries);
+      let esQueryToString = JSON.stringify([esQuery])
+      console.log('esQueryToString: ', esQueryToString)
+      setValue('searchShould', esQueryToString)
+      console.log('esQuery: ', esQuery)
+    }
+    else {
+      setValue('searchShould', '[]')
+    }
 
-    let splitedQueries = splitQueries(queries)
-    console.log('splitedQueries: ', splitedQueries)
-
-    let esQuery = manipulateToESQuery(splitedQueries);
-    console.log('esQuery: ', esQuery)
   }
 
   function splitQueries(queries: any) {
@@ -281,7 +286,7 @@ export function CDFEditor({
 
       shouldArr.bool.should.push(orSeperatorObj)
     });
-
+    shouldArr.bool.minimum_should_match = 1
     return shouldArr;
   }
 

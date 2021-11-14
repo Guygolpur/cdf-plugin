@@ -93,7 +93,10 @@ export function CdfComponent(props: CdfComponentProps) {
 
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
-    
+    let searchShouldToJson = JSON.parse(searchShould)
+
+    console.log('searchShouldToJson: ', searchShouldToJson)
+
     filterToJson.push(
       {
         range: {
@@ -108,7 +111,7 @@ export function CdfComponent(props: CdfComponentProps) {
       query: {
         bool: {
           must: filterToJson,
-          filter: [], should: [], must_not: negativeFilterToJson
+          filter: searchShouldToJson, should: [], must_not: negativeFilterToJson
         }
       },
       size: 0,
