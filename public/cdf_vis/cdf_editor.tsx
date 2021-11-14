@@ -153,7 +153,7 @@ export function CDFEditor({
     return splitedQueriesByand;
   }
 
-  function manipulateToESQuery(splitedQueries: any) {   //stopped here: should convert to es query
+  function manipulateToESQuery(splitedQueries: any) {
     let shouldArr: any = {
       bool: {
         should: []
@@ -161,36 +161,51 @@ export function CDFEditor({
     }
 
     splitedQueries.forEach((orElement: any) => {
+      let isSingle: boolean = true
+      let filterOrShould = 'should'
+
+      if (orElement.length > 1) {
+        isSingle = false
+        filterOrShould = 'filter'
+      }
+
       let orSeperatorObj: any = {
         bool: {
-          filter: []
+          [filterOrShould]: []
         }
       }
-      console.log('orElement: ', orElement)
 
       orElement.forEach((andElement: any) => {
-        let isSingle: boolean = true
-        if (orElement.length > 1) {
-          isSingle = false
-        }
         let singleAnd = {}
 
-        if (andElement.includes(' : ') && !andElement.includes(' * ')) {
-          singleAnd = {
-            bool: {
-              should: [
-                {
-                  match: {
-                    key: andElement
+
+
+        if (andElement.includes(' : ') && !andElement.includes(' *')) {
+
+          if (!isSingle) {
+            singleAnd = {
+              bool: {
+                should: [
+                  {
+                    match: {
+                      key: andElement
+                    }
                   }
-                }
-              ],
-              minimum_should_match: 1
+                ],
+                minimum_should_match: 1
+              }
+            }
+          }
+          else {
+            singleAnd = {
+              match: {
+                key: andElement
+              }
             }
           }
         }
 
-        else if (andElement.includes(' * ')) {
+        else if (andElement.includes(' : ') && andElement.includes(' *')) {
           singleAnd = {
             exists: {
               field: andElement
@@ -234,11 +249,11 @@ export function CDFEditor({
           }
         }
 
-        orSeperatorObj.bool.filter.push(singleAnd)
-        if (!isSingle) {
+        orSeperatorObj.bool[filterOrShould].push(singleAnd)
+        if (isSingle) {
           orSeperatorObj.bool.minimum_should_match = 1
         }
-        
+
       });
 
       shouldArr.bool.should.push(orSeperatorObj)
