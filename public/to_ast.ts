@@ -49,6 +49,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     filters,
     negativeFilters,
     rangeFilters,
+    searchShould,
   } = vis.params;
 
   const cdfVis = buildExpressionFunction<CDFVisExpressionFunctionDefinition>(
@@ -93,6 +94,7 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       filters,
       negativeFilters,
       rangeFilters,
+      searchShould,
     }
   );
 

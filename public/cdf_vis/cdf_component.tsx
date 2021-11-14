@@ -25,15 +25,10 @@ import {
   EuiButton,
 } from '@elastic/eui';
 
-import { action } from '@storybook/addon-actions';
-
-
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
 }
-
-// const onChangeAction = action('onChange');
 
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
@@ -87,7 +82,7 @@ export function CdfComponent(props: CdfComponentProps) {
     filters,
     negativeFilters,
     rangeFilters,
-
+    searchShould,
   } = props.visParams
 
   useEffect(() => {
@@ -98,7 +93,8 @@ export function CdfComponent(props: CdfComponentProps) {
 
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
-    
+    let searchShouldToJson = JSON.parse(searchShould)
+
     filterToJson.push(
       {
         range: {
@@ -113,7 +109,7 @@ export function CdfComponent(props: CdfComponentProps) {
       query: {
         bool: {
           must: filterToJson,
-          filter: [], should: [], must_not: negativeFilterToJson // 04/11- stopped here- need to take care when negative
+          filter: searchShouldToJson, should: [], must_not: negativeFilterToJson
         }
       },
       size: 0,
@@ -252,6 +248,7 @@ export function CdfComponent(props: CdfComponentProps) {
     filters,
     negativeFilters,
     rangeFilters,
+    searchShould,
 
     dateRangeStart,
     dateRangeEnd,
@@ -274,7 +271,6 @@ export function CdfComponent(props: CdfComponentProps) {
           ...toEntries(seriesIdentifiers, 'key', c),
         }));
         onChange(c);
-        // onChangeAction(c);
       };
 
       return (
@@ -312,7 +308,6 @@ export function CdfComponent(props: CdfComponentProps) {
               yScaleType={ScaleType.Linear}
               xAccessor={0}
               yAccessors={[1]}
-              // splitSeriesAccessors={i}
               data={aggLineData[item]['points']}
               curve={CurveType.LINEAR}
               key={i}

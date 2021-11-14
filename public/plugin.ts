@@ -73,6 +73,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
           filters: '[{"match_all": {}}]',
           negativeFilters: '[]',
           rangeFilters: '[]',
+          searchShould: '[]',
 
           grid: {
             categoryLines: false,

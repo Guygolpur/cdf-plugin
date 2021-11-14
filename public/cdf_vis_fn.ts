@@ -41,6 +41,7 @@ export interface CDFVisParams {
   filters: string | null;
   negativeFilters: string | null;
   rangeFilters: string | null;
+  searchShould: string | null;
 }
 
 export interface CDFVisRenderValue {
@@ -84,6 +85,7 @@ export interface CDFVisRenderValue {
     filters: string | null;
     negativeFilters: string | null;
     rangeFilters: string | null;
+    searchShould: string | null;
   };
 }
 
@@ -264,6 +266,11 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
       default: '[]',
       help: 'Visualization only argument with type object',
     },
+    searchShould: {
+      types: ['string', 'null'],
+      default: '[]',
+      help: 'Visualization only argument with type object',
+    },
 
   },
   async fn(input, args) {
@@ -320,6 +327,7 @@ export const cdfVisFn: CDFVisExpressionFunctionDefinition = {
           filters: args.filters,
           negativeFilters: args.negativeFilters,
           rangeFilters: args.rangeFilters,
+          searchShould: args.searchShould,
         },
       },
     };
