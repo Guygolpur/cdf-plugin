@@ -136,7 +136,8 @@ export function CDFEditor({
     let splitedQueries = splitQueries(queries)
     console.log('splitedQueries: ', splitedQueries)
 
-    let esQuery = manipulateToESQuery(splitedQueries)
+    let esQuery = manipulateToESQuery(splitedQueries);
+    console.log('esQuery: ', esQuery)
   }
 
   function splitQueries(queries: any) {
@@ -153,35 +154,94 @@ export function CDFEditor({
   }
 
   function manipulateToESQuery(splitedQueries: any) {   //stopped here: should convert to es query
-    let shouldArr: any = []
-    splitedQueries.forEach((orElement: any) => {
-      console.log('orElement: ', orElement)
-      let boolObj: any = {
-        bool: {
-          should: [
-          ]
-        }
+    let shouldArr: any = {
+      bool: {
+        should: []
       }
-      console.log('orElement: ', orElement.length)
-      for (let i = 1; i < orElement.length; i++) {
-        let key = Object.keys(orElement[i])
-        let value = Object.values(orElement[i])
-        console.log(key, value)
-        if (i % 2 === 0) {
-          console.log('andElement pair: ', orElement[i])
-          boolObj.bool.should = [{
-            match: {
-              // key: value
-            }
-          }]
-        }
-        else {
-          console.log('andElement odd: ', orElement[i])
-          boolObj.bool.filter = []
-        }
-      }
-      console.log('boolObj: ', boolObj)
+    }
 
+    splitedQueries.forEach((orElement: any) => {
+      let orSeperatorObj: any = {
+        bool: {
+          filter: []
+        }
+      }
+      console.log('orElement: ', orElement)
+
+      orElement.forEach((andElement: any) => {
+        let isSingle: boolean = true
+        if (orElement.length > 1) {
+          isSingle = false
+        }
+        let singleAnd = {}
+
+        if (andElement.includes(' : ') && !andElement.includes(' * ')) {
+          singleAnd = {
+            bool: {
+              should: [
+                {
+                  match: {
+                    key: andElement
+                  }
+                }
+              ],
+              minimum_should_match: 1
+            }
+          }
+        }
+
+        else if (andElement.includes(' * ')) {
+          singleAnd = {
+            exists: {
+              field: andElement
+            }
+          }
+        }
+
+        else {
+          let rangeOp: any
+          if (andElement.includes(' <= ')) {
+            rangeOp = 'lte'
+          }
+          else if (andElement.includes(' >= ')) {
+            rangeOp = 'gte'
+          }
+          else if (andElement.includes(' < ')) {
+            rangeOp = 'lt'
+          }
+          else if (andElement.includes(' > ')) {
+            rangeOp = 'gt'
+          }
+
+          if (!isSingle) {
+            singleAnd = {
+              bool: {
+                should: [{
+                  range: {
+                    [rangeOp]: andElement
+                  }
+                }],
+                minimum_should_match: 1
+              }
+            }
+          }
+          else {
+            singleAnd = {
+              range: {
+                [rangeOp]: andElement
+              }
+            }
+          }
+        }
+
+        orSeperatorObj.bool.filter.push(singleAnd)
+        if (!isSingle) {
+          orSeperatorObj.bool.minimum_should_match = 1
+        }
+        
+      });
+
+      shouldArr.bool.should.push(orSeperatorObj)
     });
 
     return shouldArr;
