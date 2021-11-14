@@ -135,9 +135,7 @@ export function CDFEditor({
       let splitedQueries = splitQueries(queries)
       let esQuery = manipulateToESQuery(splitedQueries);
       let esQueryToString = JSON.stringify([esQuery])
-      console.log('esQueryToString: ', esQueryToString)
       setValue('searchShould', esQueryToString)
-      console.log('esQuery: ', esQuery)
     }
     else {
       setValue('searchShould', '[]')
@@ -287,7 +285,12 @@ export function CDFEditor({
       shouldArr.bool.should.push(orSeperatorObj)
     });
     shouldArr.bool.minimum_should_match = 1
-    return shouldArr;
+    if(splitedQueries.length > 1 || splitedQueries[0].length > 1) {
+      return shouldArr;
+    }
+    else {
+      return shouldArr.bool.should[0];
+    }
   }
 
   const getSplitedKeyVal = (andElement: any) => {
@@ -310,12 +313,12 @@ export function CDFEditor({
     }
     splitString[0] = splitString[0].trim()
     splitString[1] = splitString[1].trim()
+    splitString[1] = splitString[1].replaceAll('"', '')
     return splitString
   }
 
   const filterListener = () => {
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
-    console.log('filters: ', filters)
     if (filters.length > 0) {
       let filterTojson: any = [];
       let negativeFilters: any = [];

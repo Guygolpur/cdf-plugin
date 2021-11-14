@@ -95,8 +95,6 @@ export function CdfComponent(props: CdfComponentProps) {
     let negativeFilterToJson = JSON.parse(negativeFilters)
     let searchShouldToJson = JSON.parse(searchShould)
 
-    console.log('searchShouldToJson: ', searchShouldToJson)
-
     filterToJson.push(
       {
         range: {
