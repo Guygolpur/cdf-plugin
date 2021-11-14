@@ -181,13 +181,17 @@ export function CDFEditor({
 
 
         if (andElement.includes(' : ') && !andElement.includes(' *')) {
+          let match = 'match'
+          if (andElement.includes(' : "')) {
+            match = 'match_phrase'
+          }
 
           if (!isSingle) {
             singleAnd = {
               bool: {
                 should: [
                   {
-                    match: {
+                    [match]: {
                       key: andElement
                     }
                   }
@@ -198,7 +202,7 @@ export function CDFEditor({
           }
           else {
             singleAnd = {
-              match: {
+              [match]: {
                 key: andElement
               }
             }
@@ -206,9 +210,25 @@ export function CDFEditor({
         }
 
         else if (andElement.includes(' : ') && andElement.includes(' *')) {
-          singleAnd = {
-            exists: {
-              field: andElement
+          if (!isSingle) {
+            singleAnd = {
+              bool: {
+                should: [
+                  {
+                    exists: {
+                      field: andElement
+                    }
+                  }
+                ],
+                minimum_should_match: 1
+              }
+            }
+          }
+          else {
+            singleAnd = {
+              exists: {
+                field: andElement
+              }
             }
           }
         }
