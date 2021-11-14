@@ -177,8 +177,7 @@ export function CDFEditor({
 
       orElement.forEach((andElement: any) => {
         let singleAnd = {}
-
-
+        let splitString = getSplitedKeyVal(andElement)
 
         if (andElement.includes(' : ') && !andElement.includes(' *')) {
           let match = 'match'
@@ -192,7 +191,7 @@ export function CDFEditor({
                 should: [
                   {
                     [match]: {
-                      key: andElement
+                      [splitString[0]]: splitString[1]
                     }
                   }
                 ],
@@ -203,7 +202,7 @@ export function CDFEditor({
           else {
             singleAnd = {
               [match]: {
-                key: andElement
+                [splitString[0]]: splitString[1]
               }
             }
           }
@@ -216,7 +215,7 @@ export function CDFEditor({
                 should: [
                   {
                     exists: {
-                      field: andElement
+                      field: splitString[0]
                     }
                   }
                 ],
@@ -227,7 +226,7 @@ export function CDFEditor({
           else {
             singleAnd = {
               exists: {
-                field: andElement
+                field: splitString[0]
               }
             }
           }
@@ -253,7 +252,9 @@ export function CDFEditor({
               bool: {
                 should: [{
                   range: {
-                    [rangeOp]: andElement
+                    [splitString[0]]: {
+                      [rangeOp]: splitString[1]
+                    }
                   }
                 }],
                 minimum_should_match: 1
@@ -263,7 +264,9 @@ export function CDFEditor({
           else {
             singleAnd = {
               range: {
-                [rangeOp]: andElement
+                [splitString[0]]: {
+                  [rangeOp]: splitString[1]
+                }
               }
             }
           }
@@ -280,6 +283,29 @@ export function CDFEditor({
     });
 
     return shouldArr;
+  }
+
+  const getSplitedKeyVal = (andElement: any) => {
+    let splitString;
+
+    if (andElement.includes(' : ')) {
+      splitString = andElement.split(':')
+    }
+    else if (andElement.includes(' <= ')) {
+      splitString = andElement.split('<=')
+    }
+    else if (andElement.includes(' >= ')) {
+      splitString = andElement.split('>=')
+    }
+    else if (andElement.includes(' < ')) {
+      splitString = andElement.split('<')
+    }
+    else if (andElement.includes(' > ')) {
+      splitString = andElement.split('>')
+    }
+    splitString[0] = splitString[0].trim()
+    splitString[1] = splitString[1].trim()
+    return splitString
   }
 
   const filterListener = () => {
