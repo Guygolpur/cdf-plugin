@@ -78,6 +78,9 @@ export function CdfComponent(props: CdfComponentProps) {
     subBucketArray,
     splitedOrder,
 
+    splitedGlobalCounter,
+    splitedGlobalIds,
+
     // Filters
     filters,
     negativeFilters,
@@ -243,6 +246,9 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedDateHistogramMinInterval,
     subBucketArray,
     splitedOrder,
+
+    splitedGlobalCounter,
+    splitedGlobalIds,
 
     // Filters
     filters,

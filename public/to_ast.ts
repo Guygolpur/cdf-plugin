@@ -45,6 +45,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
     splitedDateHistogramMinInterval,
     subBucketArray,
 
+    splitedGlobalCounter,
+    splitedGlobalIds,
+
     // Filters
     filters,
     negativeFilters,
@@ -89,6 +92,9 @@ export const toExpressionAst: VisToExpressionAst<CDFVisParams> = (vis) => {
       splitedHistogramMinInterval,
       splitedDateHistogramMinInterval,
       subBucketArray,
+
+      splitedGlobalCounter,
+      splitedGlobalIds,
 
       // Filters
       filters,

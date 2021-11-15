@@ -54,6 +54,9 @@ interface CounterParams {
   splitedDateHistogramMinInterval: string;
   subBucketArray: string | null;
 
+  splitedGlobalCounter: number;
+  splitedGlobalIds: string;
+
   // Filters
   filters: string | null;
   negativeFilters: string | null;
@@ -603,6 +606,14 @@ export function CDFEditor({
     setValue('subBucketArray', subBucketArrayToString)
   }
 
+  const splitedGlobalCounterHandler = (counter: any) => {
+    setValue('splitedGlobalCounter', counter)
+  }
+
+  const splitedGlobalIdsHandler = (id: any) => {
+    setValue('splitedGlobalIds', id)
+  }
+
   let tabs = [
     {
       id: 'data',
@@ -662,6 +673,12 @@ export function CDFEditor({
                 onGeneralValChange={(e: any, valName: (keyof CounterParams)) => onGeneralValChange(e, valName)}
                 cleanSubBucketArrayBuffer={cleanSubBucketArrayBuffer}
                 ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
+
+                splitedGlobalCounter={vis.params.splitedGlobalCounter}
+                splitedGlobalCounterHandler={splitedGlobalCounterHandler}
+
+                splitedGlobalIds={vis.params.splitedGlobalIds}
+                splitedGlobalIdsHandler={splitedGlobalIdsHandler}
               />
 
               <EuiSpacer size="m" />
