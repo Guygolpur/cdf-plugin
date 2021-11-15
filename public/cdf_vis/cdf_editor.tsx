@@ -105,7 +105,7 @@ export function CDFEditor({
 
   useEffect(() => {
     setValidity(true)
-    indicesMappingHandler()
+    if (stateParams.indexPattern !== null) { indicesMappingHandler() }
   }, [stateParams.indexPattern])
 
   useEffect(() => {
