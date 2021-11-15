@@ -16,7 +16,7 @@ import {
 
 export const AxisBucket = ({
   onGeneralValChange, onGeneralBoolValChange, selectedHistogramFieldHandler,
-  selectedHistogramField, isEmptyBucket, aggregationArr, isIndexSelected }: any
+  selectedHistogramField, isEmptyBucket, aggregationArr }: any
 ) => {
   return (
     <>
@@ -41,7 +41,6 @@ export const AxisBucket = ({
           ]}
           onChange={(e) => onGeneralValChange(e, 'aggregation')}
           fullWidth
-          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
@@ -57,7 +56,6 @@ export const AxisBucket = ({
           isClearable={true}
           data-test-subj="histogramField"
           fullWidth
-          isDisabled={!isIndexSelected}
           isInvalid={!(selectedHistogramField.length > 0)}
         />
       </EuiFormRow>
@@ -85,7 +83,7 @@ export const AxisBucket = ({
       <EuiSpacer size="xs" />
 
       <EuiFormRow fullWidth>
-        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth disabled={!isIndexSelected} />
+        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth />
       </EuiFormRow>
 
       <EuiSpacer size="m" />
@@ -96,14 +94,13 @@ export const AxisBucket = ({
           name="switch"
           checked={isEmptyBucket}
           onChange={() => onGeneralBoolValChange('isEmptyBucket')}
-          disabled={!isIndexSelected}
         />
       </EuiFormRow>
 
       <EuiSpacer size="m" />
 
       <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'customLabel')}>
-        <EuiFieldText name="first" fullWidth disabled={!isIndexSelected} />
+        <EuiFieldText name="first" fullWidth />
       </EuiFormRow>
     </>
   );

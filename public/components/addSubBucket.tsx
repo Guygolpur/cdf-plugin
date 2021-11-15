@@ -19,7 +19,7 @@ import { DatePicker } from './form/datePicker';
 
 export const AddSubBucket = ({
     counter, stateParams, splitedAggregationArr,
-    isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
+    isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
@@ -122,7 +122,7 @@ export const AddSubBucket = ({
                     isClearable={true}
                     data-test-subj="splitLinesTermsField"
                     fullWidth
-                    isDisabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    isDisabled={!(isXAxisFieldSelected)}
                     isInvalid={!(selectedFieldOptions.length > 0)}
                 />
             </EuiFormRow>
@@ -138,7 +138,7 @@ export const AddSubBucket = ({
                                 { value: 'asc', text: 'Ascending' },
                             ]}
                             onChange={(e) => onGeneralValChange(e, 'splitedOrder')}
-                            disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                            disabled={!(isXAxisFieldSelected)}
                         />
                     </EuiFormRow>
                 </EuiFlexItem>
@@ -153,7 +153,7 @@ export const AddSubBucket = ({
                     name="switch"
                     checked={stateParams.isSplitedSeperateBucket}
                     onChange={onSplitedSeperateBucketChange}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
@@ -165,7 +165,7 @@ export const AddSubBucket = ({
                     name="switch"
                     checked={stateParams.isSplitedShowMissingValues}
                     onChange={onSplitedShowMissingValuesChange}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
@@ -175,7 +175,7 @@ export const AddSubBucket = ({
                 <EuiFieldText
                     name="first"
                     fullWidth
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
         </>
@@ -192,7 +192,7 @@ export const AddSubBucket = ({
                     isClearable={true}
                     data-test-subj="splitLinesDateHistogramField"
                     fullWidth
-                    isDisabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    isDisabled={!(isXAxisFieldSelected)}
                     isInvalid={!(selectedFieldOptions.length > 0)}
                 />
             </EuiFormRow>
@@ -206,7 +206,7 @@ export const AddSubBucket = ({
                     value={selectedMinimumInterval}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
                     fullWidth
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
@@ -215,7 +215,7 @@ export const AddSubBucket = ({
             <EuiSpacer size="s" />
 
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText name="first" fullWidth disabled={!(isIndexSelected && isXAxisFieldSelected)} />
+                <EuiFieldText name="first" fullWidth disabled={!(isXAxisFieldSelected)} />
             </EuiFormRow>
         </>
     }
@@ -231,7 +231,7 @@ export const AddSubBucket = ({
                     isClearable={true}
                     data-test-subj="selectedSplitLinesHistogramField"
                     fullWidth
-                    isDisabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    isDisabled={!(isXAxisFieldSelected)}
                     isInvalid={!(selectedFieldOptions.length > 0)}
                 />
             </EuiFormRow>
@@ -263,7 +263,7 @@ export const AddSubBucket = ({
                     placeholder={'1'}
                     min={1}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
@@ -275,7 +275,7 @@ export const AddSubBucket = ({
                     name="switch"
                     checked={stateParams.isSplitedSeperateBucket}
                     onChange={onSplitedSeperateBucketChange}
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
 
@@ -285,7 +285,7 @@ export const AddSubBucket = ({
                 <EuiFieldText
                     name="first"
                     fullWidth
-                    disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
         </>
@@ -302,7 +302,7 @@ export const AddSubBucket = ({
                     isClearable={true}
                     data-test-subj="splitLinesDateRangeField"
                     fullWidth
-                    isDisabled={!(isIndexSelected && isXAxisFieldSelected)}
+                    isDisabled={!(isXAxisFieldSelected)}
                     isInvalid={!(selectedFieldOptions.length > 0)}
                 />
             </EuiFormRow>
@@ -315,7 +315,7 @@ export const AddSubBucket = ({
             <EuiSpacer size="m" />
 
             <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText name="first" fullWidth disabled={!(isIndexSelected && isXAxisFieldSelected)} />
+                <EuiFieldText name="first" fullWidth disabled={!(isXAxisFieldSelected)} />
             </EuiFormRow>
         </>
     }
@@ -331,7 +331,7 @@ export const AddSubBucket = ({
                         value={selectedAggregationOptions}
                         onChange={(e) => onAggregationChange(e)}
                         fullWidth
-                        disabled={!(isIndexSelected && isXAxisFieldSelected)}
+                        disabled={!(isXAxisFieldSelected)}
                     />
                 </EuiFormRow>
 
