@@ -90,17 +90,7 @@ export function CDFEditor({
   }
 
   useEffect(() => {
-    setValue('dateFilterFrom', timeRange.from);
-    setValue('dateFilterTo', timeRange.to);
-    setValue('field', '');
-    setValue('isSplitAccordionSearch', false)
-    setValue('splitedAggregation', 'terms')
-    setValue('splitedOrder', 'desc')
-    setValue('subBucketArray', '{}')
-    setValidity(false)
-
-    setValue('indexPattern', vis.data.indexPattern?.title)
-
+    initiateValues()
   }, [])
 
   useEffect(() => {
@@ -120,6 +110,37 @@ export function CDFEditor({
   useEffect(() => {
     queryListener()
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
+
+  const initiateValues = () => {
+    //High-level
+    setValue('dateFilterFrom', timeRange.from);
+    setValue('dateFilterTo', timeRange.to);
+    setValue('indexPattern', vis.data.indexPattern?.title)
+    setValidity(false)
+
+    //X-Axis
+    if (vis.params.field) {
+      setValue('field', vis.params.field);
+    }
+    else {
+      setValue('field', '');
+    }
+
+    if (vis.params.min_interval) {
+      setValue('min_interval', vis.params.min_interval);
+    }
+    else {
+      setValue('min_interval', 1);
+    }
+
+    setValue('isEmptyBucket', vis.params.isEmptyBucket)
+
+    //Splited
+    setValue('isSplitAccordionSearch', false)
+    setValue('splitedAggregation', 'terms')
+    setValue('splitedOrder', 'desc')
+    setValue('subBucketArray', '{}')
+  }
 
   const queryListener = () => {
     let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
