@@ -11,7 +11,7 @@ import { AddSubBucket } from './addSubBucket';
 
 export const SubBucketRow = ({
     stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
-    isIndexSelected, isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
+    isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
     onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
@@ -63,7 +63,6 @@ export const SubBucketRow = ({
                             stateParams={stateParams}
                             splitedAggregationArr={splitedAggregationArr}
                             selectedSplitLinesTermsField={selectedSplitLinesTermsField}
-                            isIndexSelected={isIndexSelected}
                             isXAxisFieldSelected={isXAxisFieldSelected}
                             numberFieldArr={numberFieldArr}
                             dateFieldArr={dateFieldArr}

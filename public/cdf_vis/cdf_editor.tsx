@@ -3,14 +3,12 @@ import React, { Fragment, useState } from 'react';
 import axios from 'axios';
 import {
   EuiCheckbox,
-  EuiFormRow,
   EuiTabbedContent,
   EuiSpacer,
   EuiCard,
   EuiFlexGroup,
   EuiFlexItem,
   EuiAccordion,
-  EuiComboBox,
   EuiPanel,
 } from '@elastic/eui';
 import { VisEditorOptionsProps } from 'src/plugins/visualizations/public';
@@ -18,7 +16,6 @@ import { htmlIdGenerator } from '@elastic/eui';
 import { AxisBucket } from '../components/xAxisBucket';
 import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
-import { DataPublicPluginStart } from 'src/plugins/data/public';
 import { useEffect } from 'react';
 
 interface CounterParams {
@@ -56,7 +53,6 @@ interface CounterParams {
   splitedHistogramMinInterval: number;
   splitedDateHistogramMinInterval: string;
   subBucketArray: string | null;
-  // data: DataPublicPluginStart;
 
   // Filters
   filters: string | null;
@@ -74,16 +70,12 @@ export function CDFEditor({
   timeRange
 }: VisEditorOptionsProps<CounterParams>) {
 
-  const [indicesList, setIndicesList] = useState<any>([]);
-  const [selectedIndexPattern, setSelectedIndexPattern] = useState([]);
-  const [isIndexSelected, setIsIndexSelected] = useState(false);
   const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(false);
   const [selectedHistogramField, setSelectedHistogramField] = useState([]);
   const [selectedSplitLinesTermsField, setSelectedSplitLinesTermsField] = useState([]);
   const [selectedSplitLinesDateHistogramField, setSelectedSplitLinesDateHistogramField] = useState([]);
   const [selectedSplitLinesDateRangeField, setSelectedSplitLinesDateRangeField] = useState([]);
   const [selectedSplitLinesHistogramField, setSelectedSplitLinesHistogramField] = useState([]);
-  const [comboBoxSelectionOptions, setComboBoxSelectionOptions] = useState([]);
   const [numberFieldArr, setNumberFieldArr] = useState<any>([]);
   const [dateFieldArr, setDateFieldArr] = useState<any>([]);
   const [booleanDateNumberStringFieldArr, setBooleanDateNumberStringFieldArr] = useState<any>([]);
@@ -107,14 +99,14 @@ export function CDFEditor({
     setValue('subBucketArray', '{}')
     setValidity(false)
 
-    getIndices().then(indices => {
-      const indicesListLocal = indices.data.saved_objects.map((element: any) => { return { value: element.attributes.title, label: element.attributes.title } })
-      setIndicesList((indicesList: any) => [...indicesList, indicesListLocal])
-      setValue('indexPattern', indicesListLocal[0].value);
-    }).then(res => {
-      indicesMappingHandler()
-    })
+    setValue('indexPattern', vis.data.indexPattern?.title)
+
   }, [])
+
+  useEffect(() => {
+    setValidity(true)
+    if (stateParams.indexPattern !== null) { indicesMappingHandler() }
+  }, [stateParams.indexPattern])
 
   useEffect(() => {
     setValue('dateFilterFrom', timeRange.from);
@@ -140,7 +132,6 @@ export function CDFEditor({
     else {
       setValue('searchShould', '[]')
     }
-
   }
 
   function splitQueries(queries: any) {
@@ -285,7 +276,7 @@ export function CDFEditor({
       shouldArr.bool.should.push(orSeperatorObj)
     });
     shouldArr.bool.minimum_should_match = 1
-    if(splitedQueries.length > 1 || splitedQueries[0].length > 1) {
+    if (splitedQueries.length > 1 || splitedQueries[0].length > 1) {
       return shouldArr;
     }
     else {
@@ -391,14 +382,6 @@ export function CDFEditor({
     }
   }
 
-  const getIndices = () => {
-    return axios({
-      url: '/_find',
-      method: 'GET',
-      headers: { "kbn-xsrf": "true" }
-    })
-  }
-
   const getIndicesMapping = () => {
     return axios({
       url: `/api/mappings/${stateParams.indexPattern}`,
@@ -446,21 +429,6 @@ export function CDFEditor({
       .catch((error: any) => { console.log('err: ', error) })
   }
 
-  const selectedIndexHandler = (selectedOptions: any) => {
-    if (selectedOptions.length > 0) {
-      setValidity(true)
-      setSelectedIndexPattern(selectedOptions)
-      setIsIndexSelected(true)
-    }
-    else {
-      setValidity(false)
-      setSelectedIndexPattern(selectedOptions)
-      setIsIndexSelected(false)
-    }
-
-    onMappingValChange(selectedOptions[0].value, 'indexPattern').then(indicesMappingHandler).catch(e => console.log('error: ', e))
-  }
-
   const selectedHistogramFieldHandler = (selectedField: any) => {
     if (selectedField.length > 0 && selectedField[0].hasOwnProperty('value')) {
       setValue('field', selectedField[0].value);
@@ -481,10 +449,6 @@ export function CDFEditor({
   // splitedHistogramMinInterval, splitedDateHistogramMinInterval
   const onGeneralValChange = (e: any, valName: (keyof CounterParams)) => {
     setValue(valName, e.target.value);
-  }
-
-  const onMappingValChange = async (e: any, valName: (keyof CounterParams)) => {
-    setValue(valName, e)
   }
 
   // isVerticalGrid, isHorizontalGrid, isAxisExtents, isEmptyBucket, 
@@ -644,7 +608,6 @@ export function CDFEditor({
                     field={stateParams.field}
                     isEmptyBucket={stateParams.isEmptyBucket}
                     aggregationArr={numberFieldArr}
-                    isIndexSelected={isIndexSelected}
                   ></AxisBucket>
                 </EuiAccordion>
               </EuiPanel>
@@ -657,7 +620,6 @@ export function CDFEditor({
                 stateParams={stateParams}
                 splitedAggregationArr={splitedAggregationArr}
                 selectedSplitLinesTermsField={selectedSplitLinesTermsField}
-                isIndexSelected={isIndexSelected}
                 isXAxisFieldSelected={isXAxisFieldSelected}
                 numberFieldArr={numberFieldArr}
                 dateFieldArr={dateFieldArr}
@@ -747,20 +709,7 @@ export function CDFEditor({
 
   return (
     <Fragment>
-      <EuiSpacer size="xl" />
-      <EuiFormRow label="Index-pattern" fullWidth>
-        <EuiComboBox
-          singleSelection={{ asPlainText: true }}
-          placeholder="Search"
-          options={indicesList[0]}
-          selectedOptions={selectedIndexPattern}
-          onChange={selectedIndexHandler}
-          isClearable={false}
-          data-test-subj="indexPattern"
-          fullWidth
-          isInvalid={selectedIndexPattern.length === 0}
-        />
-      </EuiFormRow>
+      <EuiSpacer size="s" />
       <EuiTabbedContent
         tabs={tabs}
         initialSelectedTab={tabs[0]}
