@@ -71,7 +71,7 @@ export function CDFEditor({
 }: VisEditorOptionsProps<CounterParams>) {
 
   const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(false);
-  const [selectedHistogramField, setSelectedHistogramField] = useState([{value: vis.params.field, label: vis.params.field}]);
+  const [selectedHistogramField, setSelectedHistogramField] = useState(vis.params.field ? [{ value: vis.params.field, label: vis.params.field }] : []);
   const [selectedSplitLinesTermsField, setSelectedSplitLinesTermsField] = useState([]);
   const [selectedSplitLinesDateHistogramField, setSelectedSplitLinesDateHistogramField] = useState([]);
   const [selectedSplitLinesDateRangeField, setSelectedSplitLinesDateRangeField] = useState([]);
@@ -608,6 +608,7 @@ export function CDFEditor({
                     field={stateParams.field}
                     isEmptyBucket={stateParams.isEmptyBucket}
                     aggregationArr={numberFieldArr}
+                    storedMinimumInterval={vis.params.min_interval}
                   ></AxisBucket>
                 </EuiAccordion>
               </EuiPanel>

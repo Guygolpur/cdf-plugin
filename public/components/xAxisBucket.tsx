@@ -16,7 +16,8 @@ import {
 
 export const AxisBucket = ({
   onGeneralValChange, onGeneralBoolValChange, selectedHistogramFieldHandler,
-  selectedHistogramField, isEmptyBucket, aggregationArr }: any
+  selectedHistogramField, isEmptyBucket, aggregationArr,
+  storedMinimumInterval }: any
 ) => {
   return (
     <>
@@ -83,7 +84,7 @@ export const AxisBucket = ({
       <EuiSpacer size="xs" />
 
       <EuiFormRow fullWidth>
-        <EuiFieldNumber placeholder={'1'} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth />
+        <EuiFieldNumber placeholder={storedMinimumInterval} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth />
       </EuiFormRow>
 
       <EuiSpacer size="m" />
