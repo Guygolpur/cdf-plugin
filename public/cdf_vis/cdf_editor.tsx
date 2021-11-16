@@ -73,7 +73,7 @@ export function CDFEditor({
   timeRange
 }: VisEditorOptionsProps<CounterParams>) {
 
-  const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(false);
+  const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(vis.params.field ? true: false);
   const [selectedHistogramField, setSelectedHistogramField] = useState(vis.params.field ? [{ value: vis.params.field, label: vis.params.field }] : []);
   const [selectedSplitLinesTermsField, setSelectedSplitLinesTermsField] = useState([]);
   const [selectedSplitLinesDateHistogramField, setSelectedSplitLinesDateHistogramField] = useState([]);
