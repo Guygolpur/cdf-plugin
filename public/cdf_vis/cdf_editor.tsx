@@ -139,10 +139,10 @@ export function CDFEditor({
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
 
     //Splited
-    setValue('isSplitAccordionSearch', false)
-    setValue('splitedAggregation', 'terms')
-    setValue('splitedOrder', 'desc')
-    setValue('subBucketArray', '{}')
+    // setValue('isSplitAccordionSearch', false)
+    // setValue('splitedAggregation', 'terms')
+    // setValue('splitedOrder', 'desc')
+    // setValue('subBucketArray', '{}')
   }
 
   const queryListener = () => {
@@ -679,6 +679,8 @@ export function CDFEditor({
 
                 splitedGlobalIds={vis.params.splitedGlobalIds}
                 splitedGlobalIdsHandler={splitedGlobalIdsHandler}
+
+                subBucketArray={vis.params.subBucketArray}
               />
 
               <EuiSpacer size="m" />

@@ -23,7 +23,7 @@ export const AddSubBucket = ({
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
-    ignoreSubBucketArrayBuffer, deleteHandeler,
+    ignoreSubBucketArrayBuffer, deleteHandeler, subBucketArray
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -44,8 +44,8 @@ export const AddSubBucket = ({
     ]
 
 
-    const [selectedAggregationOptions, setAggregationSelected] = useState(aggregationOptions[0].value);
-    const [selectedFieldOptions, setFieldSelected] = useState<any>([]);
+    const [selectedAggregationOptions, setAggregationSelected] = useState(subBucketArray[counter-1]? subBucketArray[counter-1].agg : aggregationOptions[0].value);
+    const [selectedFieldOptions, setFieldSelected] = useState<any>(subBucketArray[counter-1]? subBucketArray[counter-1].field : []);
     const [selectedMinimumInterval, setMinimumIntervalSelected] = useState(min_interval[0].value);
     const [isIgnore, setIsIgnore] = useState(true);
     // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
@@ -57,6 +57,12 @@ export const AddSubBucket = ({
         }
     }, [isIgnore])
 
+    useEffect(() => {
+        console.log('counter: ', counter)
+        console.log('subBucketArray: ', subBucketArray)
+        console.log('subBucketArray[counter]: ', subBucketArray[counter-1]?.agg)
+        console.log('type: ', typeof(subBucketArray[counter-1]?.agg))
+    }, [])
 
     const onAggregationChange = (selected: any) => {
         setAggregationSelected(selected.target.value);

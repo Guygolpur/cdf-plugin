@@ -17,7 +17,8 @@ export const SubBucketRow = ({
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
     onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer,
-    splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler
+    splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler,
+    subBucketArray
 }: any) => {
 
     const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
@@ -100,6 +101,7 @@ export const SubBucketRow = ({
                             selectIDtoRemove={extraAction}
                             ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
                             deleteHandeler={deleteHandeler}
+                            subBucketArray={JSON.parse(subBucketArray)}
                         />
                         <EuiSpacer size="m" />
                     </EuiPanel>
