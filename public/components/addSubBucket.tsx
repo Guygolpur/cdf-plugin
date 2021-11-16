@@ -44,9 +44,9 @@ export const AddSubBucket = ({
     ]
 
 
-    const [selectedAggregationOptions, setAggregationSelected] = useState(subBucketArray[counter-1]? subBucketArray[counter-1].agg : aggregationOptions[0].value);
-    const [selectedFieldOptions, setFieldSelected] = useState<any>(subBucketArray[counter-1]? subBucketArray[counter-1].field : []);
-    const [selectedMinimumInterval, setMinimumIntervalSelected] = useState(min_interval[0].value);
+    const [selectedAggregationOptions, setAggregationSelected] = useState(subBucketArray[counter - 1] ? subBucketArray[counter - 1].agg : aggregationOptions[0].value);
+    const [selectedFieldOptions, setFieldSelected] = useState<any>(subBucketArray[counter - 1] ? subBucketArray[counter - 1].field : []);
+    const [selectedMinimumInterval, setMinimumIntervalSelected] = useState((!subBucketArray[counter - 1]) ? (min_interval[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (subBucketArray[counter - 1].min_interval) : (min_interval[0].value)));
     const [isIgnore, setIsIgnore] = useState(true);
     // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
     const [IdToIgnore, setIdToIgnore] = useState();
@@ -60,8 +60,10 @@ export const AddSubBucket = ({
     useEffect(() => {
         console.log('counter: ', counter)
         console.log('subBucketArray: ', subBucketArray)
-        console.log('subBucketArray[counter]: ', subBucketArray[counter-1]?.agg)
-        console.log('type: ', typeof(subBucketArray[counter-1]?.agg))
+        console.log('subBucketArray[counter]: ', subBucketArray[counter - 1]?.agg)
+        console.log('type: ', typeof (subBucketArray[counter - 1]?.agg))
+
+        console.log("h: ", (!subBucketArray[counter - 1]) ? (console.log('1: ', counter - 1, min_interval[0].value)) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (console.log('2: ', counter - 1, subBucketArray[counter - 1].min_interval)) : (console.log('3: ', counter - 1, min_interval[0].value))))
     }, [])
 
     const onAggregationChange = (selected: any) => {
@@ -266,7 +268,7 @@ export const AddSubBucket = ({
 
             <EuiFormRow fullWidth>
                 <EuiFieldNumber
-                    placeholder={'1'}
+                    placeholder={selectedMinimumInterval == '1m' ? '1' : `${selectedMinimumInterval}`}
                     min={1}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
                     disabled={!(isXAxisFieldSelected)}
