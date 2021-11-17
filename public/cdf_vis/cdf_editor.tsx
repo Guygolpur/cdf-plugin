@@ -598,6 +598,13 @@ export function CDFEditor({
     setValue('subBucketArray', subBucketArrayToString)
   }
 
+  const selectSplitLinesTermsOrder = (selectedOrder: any, counter: number) => {
+    let subBucketArrayTojson = JSON.parse(stateParams['subBucketArray']);
+    subBucketArrayTojson[counter - 1].order = selectedOrder.target.value;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    setValue('subBucketArray', subBucketArrayToString)
+  }
+
   const selectedDateRangeHandler = ({ start, end }: any, counter: any) => {
     let subBucketArrayTojson = JSON.parse(stateParams['subBucketArray']);
     subBucketArrayTojson[counter - 1].date_range['start'] = start;
@@ -663,6 +670,7 @@ export function CDFEditor({
                 selectSplitLinesAggregation={selectSplitLinesAggregation}
                 selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
                 selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                 selectedDateRangeHandler={selectedDateRangeHandler}
 
                 onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}

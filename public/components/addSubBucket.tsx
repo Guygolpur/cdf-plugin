@@ -23,7 +23,8 @@ export const AddSubBucket = ({
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
-    ignoreSubBucketArrayBuffer, deleteHandeler, subBucketArray
+    ignoreSubBucketArrayBuffer, deleteHandeler, subBucketArray,
+    selectSplitLinesTermsOrder
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -43,10 +44,17 @@ export const AddSubBucket = ({
         { value: '1y', text: 'Yearly' },
     ]
 
+    const order = [
+        { value: 'desc', text: 'Descending' },
+        { value: 'asc', text: 'Ascending' },
+    ]
+
 
     const [selectedAggregationOptions, setAggregationSelected] = useState(subBucketArray[counter - 1] ? subBucketArray[counter - 1].agg : aggregationOptions[0].value);
     const [selectedFieldOptions, setFieldSelected] = useState<any>(subBucketArray[counter - 1] ? subBucketArray[counter - 1].field : []);
     const [selectedMinimumInterval, setMinimumIntervalSelected] = useState((!subBucketArray[counter - 1]) ? (min_interval[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (subBucketArray[counter - 1].min_interval) : (min_interval[0].value)));
+    const [selectedTermsOrder, setSelectedTermsOrder] = useState((!subBucketArray[counter - 1]) ? (order[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('order')) ? (subBucketArray[counter - 1].order) : (order[0].value)));
+
     const [isIgnore, setIsIgnore] = useState(true);
     // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
     const [IdToIgnore, setIdToIgnore] = useState();
@@ -79,6 +87,11 @@ export const AddSubBucket = ({
     const onGeneralMinimumIntervalChange = (selected: any) => {
         setMinimumIntervalSelected(selected.target.value);
         selectSplitLinesMinimumInterval(selected, counter);
+    };
+
+    const onTermsOrderChange = (selected: any) => {
+        setSelectedTermsOrder(selected.target.value)
+        selectSplitLinesTermsOrder(selected, counter);
     };
 
     const selectedDateRangeHandlerMiddleware = ({ start, end }: any) => {
@@ -141,11 +154,9 @@ export const AddSubBucket = ({
                 <EuiFlexItem>
                     <EuiFormRow label="Order" >
                         <EuiSelect
-                            options={[
-                                { value: 'desc', text: 'Descending' },
-                                { value: 'asc', text: 'Ascending' },
-                            ]}
-                            onChange={(e) => onGeneralValChange(e, 'splitedOrder')}
+                            options={order}
+                            value={selectedTermsOrder}
+                            onChange={(e): any => onTermsOrderChange(e)}
                             disabled={!(isXAxisFieldSelected)}
                         />
                     </EuiFormRow>

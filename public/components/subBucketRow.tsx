@@ -18,13 +18,13 @@ export const SubBucketRow = ({
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
     onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer,
     splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler,
-    subBucketArray
+    subBucketArray, selectSplitLinesTermsOrder
 }: any) => {
 
     const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
     const [globalCounter, setGlobalCounter] = useState(splitedGlobalCounter);
 
-    useEffect(() => {   // Stopped here, work with keeping split lines windows- but empty. now need to create an object for each split line for storing it fields.
+    useEffect(() => {   // Stopped here, work with keeping split lines windows, aggregation, field, min_interval.. need to support: Terms: Order, Histogram: Shoe empty buckets, Date_Range: calendar
         console.log('-------------------------------------------')      // need also to make sure on refresh: dates + XAxis- field appears but not really selected.
         console.log('ids: ', ids)
         console.log('splitedGlobalIds: ', JSON.parse(splitedGlobalIds))
@@ -92,6 +92,7 @@ export const SubBucketRow = ({
                             selectSplitLinesAggregation={selectSplitLinesAggregation}
                             selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
                             selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                            selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                             selectedDateRangeHandler={selectedDateRangeHandler}
                             onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                             onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
