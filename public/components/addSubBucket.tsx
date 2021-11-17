@@ -150,21 +150,22 @@ export const AddSubBucket = ({
 
             <EuiSpacer size="m" />
 
-            <EuiFlexGroup style={{ maxWidth: 800 }}>
+            <EuiFlexGroup >
                 <EuiFlexItem>
-                    <EuiFormRow label="Order" >
+                    <EuiFormRow label="Order" fullWidth>
                         <EuiSelect
                             options={order}
                             value={selectedTermsOrder}
                             onChange={(e): any => onTermsOrderChange(e)}
                             disabled={!(isXAxisFieldSelected)}
+                            fullWidth
                         />
                     </EuiFormRow>
                 </EuiFlexItem>
 
             </EuiFlexGroup>
 
-            <EuiSpacer size="s" />
+            <EuiSpacer size="m" />
 
             <EuiFormRow fullWidth hasChildLabel={false}>
                 <EuiSwitch
@@ -189,14 +190,6 @@ export const AddSubBucket = ({
             </EuiFormRow>
 
             <EuiSpacer size="s" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText
-                    name="first"
-                    fullWidth
-                    disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
         </>
     }
     else if (selectedAggregationOptions == 'date_histogram') {
@@ -229,13 +222,7 @@ export const AddSubBucket = ({
                 />
             </EuiFormRow>
 
-            <EuiSpacer size="m" />
-
             <EuiSpacer size="s" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText name="first" fullWidth disabled={!(isXAxisFieldSelected)} />
-            </EuiFormRow>
         </>
     }
     else if (selectedAggregationOptions == 'histogram') {
@@ -283,28 +270,7 @@ export const AddSubBucket = ({
                     min={1}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
                     disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="m" />
-
-            <EuiFormRow fullWidth hasChildLabel={false}>
-                <EuiSwitch
-                    label="Show empty bucket"
-                    name="switch"
-                    checked={stateParams.isSplitedSeperateBucket}
-                    onChange={onSplitedSeperateBucketChange}
-                    disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="m" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText
-                    name="first"
                     fullWidth
-                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
         </>

@@ -24,7 +24,7 @@ export const SubBucketRow = ({
     const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
     const [globalCounter, setGlobalCounter] = useState(splitedGlobalCounter);
 
-    useEffect(() => {   // Stopped here, work with keeping split lines windows, aggregation, field, min_interval.. need to support: Terms: Order, Histogram: Shoe empty buckets, Date_Range: calendar
+    useEffect(() => {   // Stopped here, work with keeping split lines windows, aggregation, field, min_interval, Terms: Order.. need to support: Histogram: Show empty buckets, Date_Range: calendar
         console.log('-------------------------------------------')      // need also to make sure on refresh: dates + XAxis- field appears but not really selected.
         console.log('ids: ', ids)
         console.log('splitedGlobalIds: ', JSON.parse(splitedGlobalIds))
