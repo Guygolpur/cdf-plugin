@@ -78,6 +78,9 @@ export function CdfComponent(props: CdfComponentProps) {
     subBucketArray,
     splitedOrder,
 
+    splitedGlobalCounter,
+    splitedGlobalIds,
+
     // Filters
     filters,
     negativeFilters,
@@ -135,23 +138,27 @@ export function CdfComponent(props: CdfComponentProps) {
         let fieldValue = Object.values(field)
         let aggs: any = {}
         if (value['agg'] == 'terms') {
+          let count = value['order']
+          if (count == undefined) {
+            count = 'desc'
+          }
           aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
                 size: 100000,
-                order: { "_count": splitedOrder }
+                order: { "_count": count }
               }
             }
           }
         }
         else if (value['agg'] == 'histogram') {
-          let extractInterval = Object.values(value['min_interval'])
+          let extractInterval = Number(value['min_interval'])
           aggs = {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                interval: extractInterval[0],
+                interval: extractInterval? extractInterval: 1,
                 min_doc_count: 1
               }
             }
@@ -162,7 +169,8 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                calendar_interval: value['min_interval']
+                calendar_interval: value['min_interval'],
+                min_doc_count: 1
               }
             }
           }
@@ -243,6 +251,9 @@ export function CdfComponent(props: CdfComponentProps) {
     splitedDateHistogramMinInterval,
     subBucketArray,
     splitedOrder,
+
+    splitedGlobalCounter,
+    splitedGlobalIds,
 
     // Filters
     filters,

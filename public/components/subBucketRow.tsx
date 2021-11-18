@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import {
     EuiSpacer,
     EuiText,
@@ -11,16 +11,36 @@ import { AddSubBucket } from './addSubBucket';
 
 export const SubBucketRow = ({
     stateParams, splitedAggregationArr, selectedSplitLinesTermsField,
-    isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler,
+    isXAxisFieldSelected, selectedSplitLinesTermsFieldHandler, splitedGlobalCounter,
     onGeneralValChange, selectedSplitLinesHistogramField, onSplitedSeperateBucketChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectedSplitLinesDateHistogramField,
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
-    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer
+    onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer,
+    splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler,
+    subBucketArray, selectSplitLinesTermsOrder
 }: any) => {
 
-    const [ids, setIds] = useState<any>([]);
-    const [globalCounter, setGlobalCounter] = useState(0);
+    const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
+    const [globalCounter, setGlobalCounter] = useState(splitedGlobalCounter);
+
+    useEffect(() => {   // Stopped here, work with keeping split lines windows, aggregation, field, min_interval, Terms: Order.. need to support: Date_Range: calendar
+        console.log('-------------------------------------------')      // need also to make sure on refresh: dates
+        console.log('ids: ', ids)
+        console.log('splitedGlobalIds: ', JSON.parse(splitedGlobalIds))
+        console.log('-------------------------------------------')
+        console.log('globalCounter: ', globalCounter)
+        console.log('splitedGlobalCounter: ', splitedGlobalCounter)
+        console.log('-------------------------------------------')
+    }, [ids, globalCounter])
+
+    useEffect(() => {
+        splitedGlobalIdsHandler(JSON.stringify(ids))
+    }, [ids])
+
+    useEffect(() => {
+        splitedGlobalCounterHandler(globalCounter)
+    }, [globalCounter])
 
     const deleteHandeler = (removeId: any) => {
         setIds((ids: any) => ids.filter((id: any) => id != removeId));
@@ -72,6 +92,7 @@ export const SubBucketRow = ({
                             selectSplitLinesAggregation={selectSplitLinesAggregation}
                             selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
                             selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                            selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                             selectedDateRangeHandler={selectedDateRangeHandler}
                             onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                             onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
@@ -81,6 +102,7 @@ export const SubBucketRow = ({
                             selectIDtoRemove={extraAction}
                             ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
                             deleteHandeler={deleteHandeler}
+                            subBucketArray={JSON.parse(subBucketArray)}
                         />
                         <EuiSpacer size="m" />
                     </EuiPanel>

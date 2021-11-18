@@ -23,7 +23,8 @@ export const AddSubBucket = ({
     onGeneralValChange, onSplitedSeperateBucketChange, onSplitedShowMissingValuesChange,
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
-    ignoreSubBucketArrayBuffer, deleteHandeler,
+    ignoreSubBucketArrayBuffer, deleteHandeler, subBucketArray,
+    selectSplitLinesTermsOrder
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -43,10 +44,17 @@ export const AddSubBucket = ({
         { value: '1y', text: 'Yearly' },
     ]
 
+    const order = [
+        { value: 'desc', text: 'Descending' },
+        { value: 'asc', text: 'Ascending' },
+    ]
 
-    const [selectedAggregationOptions, setAggregationSelected] = useState(aggregationOptions[0].value);
-    const [selectedFieldOptions, setFieldSelected] = useState<any>([]);
-    const [selectedMinimumInterval, setMinimumIntervalSelected] = useState(min_interval[0].value);
+
+    const [selectedAggregationOptions, setAggregationSelected] = useState(subBucketArray[counter - 1] ? subBucketArray[counter - 1].agg : aggregationOptions[0].value);
+    const [selectedFieldOptions, setFieldSelected] = useState<any>(subBucketArray[counter - 1] ? subBucketArray[counter - 1].field : []);
+    const [selectedMinimumInterval, setMinimumIntervalSelected] = useState((!subBucketArray[counter - 1]) ? (min_interval[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (subBucketArray[counter - 1].min_interval) : (min_interval[0].value)));
+    const [selectedTermsOrder, setSelectedTermsOrder] = useState((!subBucketArray[counter - 1]) ? (order[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('order')) ? (subBucketArray[counter - 1].order) : (order[0].value)));
+
     const [isIgnore, setIsIgnore] = useState(true);
     // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
     const [IdToIgnore, setIdToIgnore] = useState();
@@ -57,6 +65,14 @@ export const AddSubBucket = ({
         }
     }, [isIgnore])
 
+    useEffect(() => {
+        console.log('counter: ', counter)
+        console.log('subBucketArray: ', subBucketArray)
+        console.log('subBucketArray[counter]: ', subBucketArray[counter - 1]?.agg)
+        console.log('type: ', typeof (subBucketArray[counter - 1]?.agg))
+
+        console.log("h: ", (!subBucketArray[counter - 1]) ? (console.log('1: ', counter - 1, min_interval[0].value)) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (console.log('2: ', counter - 1, subBucketArray[counter - 1].min_interval)) : (console.log('3: ', counter - 1, min_interval[0].value))))
+    }, [])
 
     const onAggregationChange = (selected: any) => {
         setAggregationSelected(selected.target.value);
@@ -71,6 +87,11 @@ export const AddSubBucket = ({
     const onGeneralMinimumIntervalChange = (selected: any) => {
         setMinimumIntervalSelected(selected.target.value);
         selectSplitLinesMinimumInterval(selected, counter);
+    };
+
+    const onTermsOrderChange = (selected: any) => {
+        setSelectedTermsOrder(selected.target.value)
+        selectSplitLinesTermsOrder(selected, counter);
     };
 
     const selectedDateRangeHandlerMiddleware = ({ start, end }: any) => {
@@ -129,23 +150,22 @@ export const AddSubBucket = ({
 
             <EuiSpacer size="m" />
 
-            <EuiFlexGroup style={{ maxWidth: 800 }}>
+            <EuiFlexGroup >
                 <EuiFlexItem>
-                    <EuiFormRow label="Order" >
+                    <EuiFormRow label="Order" fullWidth>
                         <EuiSelect
-                            options={[
-                                { value: 'desc', text: 'Descending' },
-                                { value: 'asc', text: 'Ascending' },
-                            ]}
-                            onChange={(e) => onGeneralValChange(e, 'splitedOrder')}
+                            options={order}
+                            value={selectedTermsOrder}
+                            onChange={(e): any => onTermsOrderChange(e)}
                             disabled={!(isXAxisFieldSelected)}
+                            fullWidth
                         />
                     </EuiFormRow>
                 </EuiFlexItem>
 
             </EuiFlexGroup>
 
-            <EuiSpacer size="s" />
+            <EuiSpacer size="m" />
 
             <EuiFormRow fullWidth hasChildLabel={false}>
                 <EuiSwitch
@@ -170,14 +190,6 @@ export const AddSubBucket = ({
             </EuiFormRow>
 
             <EuiSpacer size="s" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText
-                    name="first"
-                    fullWidth
-                    disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
         </>
     }
     else if (selectedAggregationOptions == 'date_histogram') {
@@ -210,13 +222,7 @@ export const AddSubBucket = ({
                 />
             </EuiFormRow>
 
-            <EuiSpacer size="m" />
-
             <EuiSpacer size="s" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText name="first" fullWidth disabled={!(isXAxisFieldSelected)} />
-            </EuiFormRow>
         </>
     }
     else if (selectedAggregationOptions == 'histogram') {
@@ -260,32 +266,11 @@ export const AddSubBucket = ({
 
             <EuiFormRow fullWidth>
                 <EuiFieldNumber
-                    placeholder={'1'}
+                    placeholder={selectedMinimumInterval == '1m' ? '1' : `${selectedMinimumInterval}`}
                     min={1}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
                     disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="m" />
-
-            <EuiFormRow fullWidth hasChildLabel={false}>
-                <EuiSwitch
-                    label="Show empty bucket"
-                    name="switch"
-                    checked={stateParams.isSplitedSeperateBucket}
-                    onChange={onSplitedSeperateBucketChange}
-                    disabled={!(isXAxisFieldSelected)}
-                />
-            </EuiFormRow>
-
-            <EuiSpacer size="m" />
-
-            <EuiFormRow label="Custom label" fullWidth onChange={(e: any) => onGeneralValChange(e, 'splitedCustomLabel')}>
-                <EuiFieldText
-                    name="first"
                     fullWidth
-                    disabled={!(isXAxisFieldSelected)}
                 />
             </EuiFormRow>
         </>

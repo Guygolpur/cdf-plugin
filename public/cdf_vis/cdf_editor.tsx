@@ -54,6 +54,9 @@ interface CounterParams {
   splitedDateHistogramMinInterval: string;
   subBucketArray: string | null;
 
+  splitedGlobalCounter: number;
+  splitedGlobalIds: string;
+
   // Filters
   filters: string | null;
   negativeFilters: string | null;
@@ -70,8 +73,8 @@ export function CDFEditor({
   timeRange
 }: VisEditorOptionsProps<CounterParams>) {
 
-  const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(false);
-  const [selectedHistogramField, setSelectedHistogramField] = useState([]);
+  const [isXAxisFieldSelected, setIsXAxisFieldSelected] = useState(vis.params.field ? true : false);
+  const [selectedHistogramField, setSelectedHistogramField] = useState(vis.params.field ? [{ value: vis.params.field, label: vis.params.field }] : []);
   const [selectedSplitLinesTermsField, setSelectedSplitLinesTermsField] = useState([]);
   const [selectedSplitLinesDateHistogramField, setSelectedSplitLinesDateHistogramField] = useState([]);
   const [selectedSplitLinesDateRangeField, setSelectedSplitLinesDateRangeField] = useState([]);
@@ -90,17 +93,7 @@ export function CDFEditor({
   }
 
   useEffect(() => {
-    setValue('dateFilterFrom', timeRange.from);
-    setValue('dateFilterTo', timeRange.to);
-    setValue('field', '');
-    setValue('isSplitAccordionSearch', false)
-    setValue('splitedAggregation', 'terms')
-    setValue('splitedOrder', 'desc')
-    setValue('subBucketArray', '{}')
-    setValidity(false)
-
-    setValue('indexPattern', vis.data.indexPattern?.title)
-
+    initiateValues()
   }, [])
 
   useEffect(() => {
@@ -120,6 +113,37 @@ export function CDFEditor({
   useEffect(() => {
     queryListener()
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
+
+  const initiateValues = () => {
+    //High-level
+    setValue('dateFilterFrom', timeRange.from);
+    setValue('dateFilterTo', timeRange.to);
+    setValue('indexPattern', vis.data.indexPattern?.title)
+    setValidity(false)
+
+    //X-Axis
+    if (vis.params.field) {
+      setValue('field', vis.params.field);
+    }
+    else {
+      setValue('field', '');
+    }
+
+    if (vis.params.min_interval) {
+      setValue('min_interval', vis.params.min_interval);
+    }
+    else {
+      setValue('min_interval', 1);
+    }
+
+    setValue('isEmptyBucket', vis.params.isEmptyBucket)
+
+    //Splited
+    // setValue('isSplitAccordionSearch', false)
+    // setValue('splitedAggregation', 'terms')
+    // setValue('splitedOrder', 'desc')
+    // setValue('subBucketArray', '{}')
+  }
 
   const queryListener = () => {
     let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
@@ -492,51 +516,27 @@ export function CDFEditor({
 
   const selectSplitLinesAggregation = async (e: any, counter: number) => {
     let subBucketArrayTojson = JSON.parse(stateParams['subBucketArray']);
-    if (subBucketArrayTojson[counter - 1] == undefined) {
-      let splitLinesAggArr;
-      switch (e.target.value) {
-        case 'terms':
-          splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false };
-          break;
-        case 'date_histogram':
-          splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'min_interval': '1m' };
-          break;
-        case 'histogram':
-          splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'min_interval': 1 };
-          break;
-        case 'date_range':
-          splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, date_range: { 'start': 'now-30m', 'end': 'now' } };
-          break;
-        default:
-          splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false };
-      }
-      subBucketArrayTojson[counter - 1] = splitLinesAggArr;
-    }
-    else {
-      //handle default- plus terms only properties
-      subBucketArrayTojson[counter - 1].agg = e.target.value;
-      subBucketArrayTojson[counter - 1].field = [];
-      subBucketArrayTojson[counter - 1].isValid = false
 
-      //handle date_range
-      if (e.target.value != 'date_range' && subBucketArrayTojson[counter - 1].hasOwnProperty('date_range')) {
-        delete subBucketArrayTojson[counter - 1].date_range;
-      }
-      if (e.target.value == 'date_range') {
-        let date_range = { 'start': 'now-30m', 'end': 'now' }
-        subBucketArrayTojson[counter - 1].date_range = date_range
-      }
-
-      //handle min_interval on date_histogram && histogram- plus remove min_interval
-      if (e.target.value == 'date_histogram' || e.target.value == 'histogram') {
-        let min_interval;
-        e.target.value == 'date_histogram' ? min_interval = '1m' : min_interval = '1'
-        subBucketArrayTojson[counter - 1].min_interval = min_interval
-      }
-      else if ('min_interval' in subBucketArrayTojson[counter - 1]) {
-        delete subBucketArrayTojson[counter - 1].min_interval;
-      }
+    let splitLinesAggArr;
+    switch (e.target.value) {
+      case 'terms':
+        splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'order': 'desc' };
+        break;
+      case 'date_histogram':
+        splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'min_interval': '1m' };
+        break;
+      case 'histogram':
+        splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'min_interval': 1 };
+        break;
+      case 'date_range':
+        splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false, 'date_range': { 'start': 'now-30m', 'end': 'now' } };
+        break;
+      default:
+        splitLinesAggArr = { 'agg': e.target.value, field: [], 'isValid': false };
     }
+
+    //handle default- plus terms only properties
+    subBucketArrayTojson[counter - 1] = splitLinesAggArr
 
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
     setValue('subBucketArray', subBucketArrayToString)
@@ -574,12 +574,27 @@ export function CDFEditor({
     setValue('subBucketArray', subBucketArrayToString)
   }
 
+  const selectSplitLinesTermsOrder = (selectedOrder: any, counter: number) => {
+    let subBucketArrayTojson = JSON.parse(stateParams['subBucketArray']);
+    subBucketArrayTojson[counter - 1].order = selectedOrder.target.value;
+    let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
+    setValue('subBucketArray', subBucketArrayToString)
+  }
+
   const selectedDateRangeHandler = ({ start, end }: any, counter: any) => {
     let subBucketArrayTojson = JSON.parse(stateParams['subBucketArray']);
     subBucketArrayTojson[counter - 1].date_range['start'] = start;
     subBucketArrayTojson[counter - 1].date_range['end'] = end;
     let subBucketArrayToString = JSON.stringify(subBucketArrayTojson)
     setValue('subBucketArray', subBucketArrayToString)
+  }
+
+  const splitedGlobalCounterHandler = (counter: any) => {
+    setValue('splitedGlobalCounter', counter)
+  }
+
+  const splitedGlobalIdsHandler = (id: any) => {
+    setValue('splitedGlobalIds', id)
   }
 
   let tabs = [
@@ -608,6 +623,7 @@ export function CDFEditor({
                     field={stateParams.field}
                     isEmptyBucket={stateParams.isEmptyBucket}
                     aggregationArr={numberFieldArr}
+                    storedMinimumInterval={vis.params.min_interval}
                   ></AxisBucket>
                 </EuiAccordion>
               </EuiPanel>
@@ -630,6 +646,7 @@ export function CDFEditor({
                 selectSplitLinesAggregation={selectSplitLinesAggregation}
                 selectedSplitLinesTermsFieldHandler={selectedSplitLinesTermsFieldHandler}
                 selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
+                selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                 selectedDateRangeHandler={selectedDateRangeHandler}
 
                 onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
@@ -640,6 +657,14 @@ export function CDFEditor({
                 onGeneralValChange={(e: any, valName: (keyof CounterParams)) => onGeneralValChange(e, valName)}
                 cleanSubBucketArrayBuffer={cleanSubBucketArrayBuffer}
                 ignoreSubBucketArrayBuffer={ignoreSubBucketArrayBuffer}
+
+                splitedGlobalCounter={vis.params.splitedGlobalCounter}
+                splitedGlobalCounterHandler={splitedGlobalCounterHandler}
+
+                splitedGlobalIds={vis.params.splitedGlobalIds}
+                splitedGlobalIdsHandler={splitedGlobalIdsHandler}
+
+                subBucketArray={vis.params.subBucketArray}
               />
 
               <EuiSpacer size="m" />
