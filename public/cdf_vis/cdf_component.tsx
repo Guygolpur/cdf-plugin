@@ -169,7 +169,8 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                calendar_interval: value['min_interval']
+                calendar_interval: value['min_interval'],
+                min_doc_count: 1
               }
             }
           }
