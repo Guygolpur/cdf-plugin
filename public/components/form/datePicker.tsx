@@ -21,22 +21,27 @@ export const DatePicker = ({
         setStart(e.target.value);
         let isValid = isDateValid(e.target.value)
         setIsStartValid(isValid)
-        console.log('isStartValid: ', isStartValid)
+        sendPickedRanges()
     };
 
     const onEndInputChange = (e: any) => {
         setEnd(e.target.value);
         let isValid = isDateValid(e.target.value)
         setIsEndValid(isValid)
+        sendPickedRanges()
     };
 
+    const sendPickedRanges = () => {
+        selectedDateRangeHandlerMiddleware({ start, end })
+    }
+
     const isDateValid = (startInput: any) => {
-        //here
         let removeSpaces = startInput.replace(/\s/g, '');
         let isSlash = false;
         if (removeSpaces.startsWith("now") && (removeSpaces.endsWith("y") || removeSpaces.endsWith("M") || removeSpaces.endsWith("w") || removeSpaces.endsWith("d") || removeSpaces.endsWith("h") || removeSpaces.endsWith("H") || removeSpaces.endsWith("m") || removeSpaces.endsWith("s"))) {
             removeSpaces = removeSpaces.replace('now', '');
             let seperator = removeSpaces[0]
+            if (removeSpaces.length == 0) { return true }
             switch (seperator) {
                 case '-': case '+':
                     removeSpaces = removeSpaces.replace(seperator, '');
@@ -95,9 +100,13 @@ export const DatePicker = ({
 
             <EuiSpacer size="m" />
 
-            {!(isEndValid && isStartValid) && <EuiCallOut title="Proceed with caution!" color="warning" iconType="help">
+            {!(isEndValid && isStartValid) && <EuiCallOut title="Invalid range input" color="warning" iconType="help">
                 <p>
-                    Wrong Range input
+                    Examples: <br></br>
+                    now<br></br>
+                    now-1d<br></br>
+                    now+24h<br></br>
+                    now/d
                 </p>
             </EuiCallOut>
             }
