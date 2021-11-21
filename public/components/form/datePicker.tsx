@@ -7,7 +7,7 @@ import {
     EuiButtonEmpty,
     EuiCallOut,
 } from '@elastic/eui';
-//
+
 export const DatePicker = ({
     selectedDateRangeHandlerMiddleware, sendValidity
 }: any) => {

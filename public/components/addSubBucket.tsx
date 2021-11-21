@@ -65,15 +65,6 @@ export const AddSubBucket = ({
         }
     }, [isIgnore])
 
-    useEffect(() => {
-        console.log('counter: ', counter)
-        console.log('subBucketArray: ', subBucketArray)
-        console.log('subBucketArray[counter]: ', subBucketArray[counter - 1]?.agg)
-        console.log('type: ', typeof (subBucketArray[counter - 1]?.agg))
-
-        console.log("h: ", (!subBucketArray[counter - 1]) ? (console.log('1: ', counter - 1, min_interval[0].value)) : ((subBucketArray[counter - 1].hasOwnProperty('min_interval')) ? (console.log('2: ', counter - 1, subBucketArray[counter - 1].min_interval)) : (console.log('3: ', counter - 1, min_interval[0].value))))
-    }, [])
-
     const onAggregationChange = (selected: any) => {
         setAggregationSelected(selected.target.value);
         setFieldSelected([]);

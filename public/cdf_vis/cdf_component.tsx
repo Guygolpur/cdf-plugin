@@ -158,7 +158,7 @@ export function CdfComponent(props: CdfComponentProps) {
             [key]: {
               [value['agg']]: {
                 field: fieldValue[0],
-                interval: extractInterval? extractInterval: 1,
+                interval: extractInterval ? extractInterval : 1,
                 min_doc_count: 1
               }
             }
@@ -170,7 +170,8 @@ export function CdfComponent(props: CdfComponentProps) {
               [value['agg']]: {
                 field: fieldValue[0],
                 calendar_interval: value['min_interval'],
-                min_doc_count: 1
+                min_doc_count: 1,
+                time_zone: "Asia/Jerusalem"
               }
             }
           }
@@ -380,8 +381,14 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
     if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array)) {
       if (o[k].hasOwnProperty('buckets') && !graphResponse.hasOwnProperty(o.key)) {
         if (bucketSaw > 0 && bucketSaw !== sizeOfSubs) {
-          if (name.length === 0) { name = `${o.key}` }
-          else { name = name + '//-//' + `${o.key}` }
+          if (o.hasOwnProperty('key_as_string')) {
+            if (name.length === 0) { name = `${o.key_as_string}` }
+            else { name = name + '//-//' + `${o.key_as_string}` }
+          }
+          else {
+            if (name.length === 0) { name = `${o.key}` }
+            else { name = name + '//-//' + `${o.key}` }
+          }
         }
       }
       if (k === 'buckets') { bucketSaw = bucketSaw + 1 }
@@ -395,7 +402,12 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
     }
     else {
       if (bucketSaw === sizeOfSubs && name.length > 0) {
-        name = name + '//-//' + `${o.key}`
+        if (o.hasOwnProperty('key_as_string')) {
+          name = name + '//-//' + `${o.key_as_string}`
+        }
+        else {
+          name = name + '//-//' + `${o.key}`
+        }
         if (graphResponse[name] === undefined) {
           graphResponse[name] = {}
         }
@@ -409,7 +421,12 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
         bucketSaw = bucketSaw + 1
       }
       else if (sizeOfSubs === 1 && bucketSaw === sizeOfSubs) {
-        name = `${o.key}`
+        if (o.hasOwnProperty('key_as_string')) {
+          name = `${o.key_as_string}`
+        }
+        else {
+          name = `${o.key}`
+        }
         if (graphResponse[name] === undefined) {
           graphResponse[name] = {}
         }
