@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 
 import {
     EuiSpacer,
@@ -7,7 +7,7 @@ import {
     EuiButtonEmpty,
     EuiCallOut,
 } from '@elastic/eui';
-
+//
 export const DatePicker = ({
     selectedDateRangeHandlerMiddleware
 }: any) => {
@@ -17,18 +17,20 @@ export const DatePicker = ({
     const [isStartValid, setIsStartValid] = useState(true);
     const [isEndValid, setIsEndValid] = useState(true);
 
+    useEffect(() => {
+        if (isStartValid && isEndValid) { sendPickedRanges() }
+    }, [isStartValid, isEndValid, start, end])
+
     const onStartInputChange = (e: any) => {
         setStart(e.target.value);
         let isValid = isDateValid(e.target.value)
         setIsStartValid(isValid)
-        sendPickedRanges()
     };
 
     const onEndInputChange = (e: any) => {
         setEnd(e.target.value);
         let isValid = isDateValid(e.target.value)
         setIsEndValid(isValid)
-        sendPickedRanges()
     };
 
     const sendPickedRanges = () => {
