@@ -211,7 +211,7 @@ export const AddSubBucket = ({
 
             <EuiSpacer size="m" />
 
-            <EuiFormRow label="Minimum interval" fullWidth>
+            <EuiFormRow label="Interval" fullWidth>
                 <EuiSelect
                     id="selectMinimumInterval"
                     options={min_interval}
