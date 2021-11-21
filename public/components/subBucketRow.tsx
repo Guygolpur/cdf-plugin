@@ -18,7 +18,7 @@ export const SubBucketRow = ({
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
     onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer,
     splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler,
-    subBucketArray, selectSplitLinesTermsOrder
+    subBucketArray, selectSplitLinesTermsOrder, sendValidity
 }: any) => {
 
     const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
@@ -94,6 +94,7 @@ export const SubBucketRow = ({
                             selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
                             selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                             selectedDateRangeHandler={selectedDateRangeHandler}
+                            sendValidity={sendValidity}
                             onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                             onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
                             setDateRangeStart={setDateRangeStart}

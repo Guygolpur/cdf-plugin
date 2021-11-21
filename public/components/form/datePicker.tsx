@@ -9,7 +9,7 @@ import {
 } from '@elastic/eui';
 //
 export const DatePicker = ({
-    selectedDateRangeHandlerMiddleware
+    selectedDateRangeHandlerMiddleware, sendValidity
 }: any) => {
 
     const [start, setStart] = useState('now-30m');
@@ -19,6 +19,7 @@ export const DatePicker = ({
 
     useEffect(() => {
         if (isStartValid && isEndValid) { sendPickedRanges() }
+        sendValidity(isStartValid && isEndValid)
     }, [isStartValid, isEndValid, start, end])
 
     const onStartInputChange = (e: any) => {

@@ -589,6 +589,10 @@ export function CDFEditor({
     setValue('subBucketArray', subBucketArrayToString)
   }
 
+  const sendValidity = (isValid: any) => {
+    setValidity(isValid)
+  }
+
   const splitedGlobalCounterHandler = (counter: any) => {
     setValue('splitedGlobalCounter', counter)
   }
@@ -648,6 +652,7 @@ export function CDFEditor({
                 selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
                 selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                 selectedDateRangeHandler={selectedDateRangeHandler}
+                sendValidity={sendValidity}
 
                 onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                 onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}

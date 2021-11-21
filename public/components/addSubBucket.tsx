@@ -24,7 +24,7 @@ export const AddSubBucket = ({
     selectSplitLinesMinimumInterval, numberFieldArr, selectedDateRangeHandler,
     dateFieldArr, selectSplitLinesAggregation, selectIDtoRemove,
     ignoreSubBucketArrayBuffer, deleteHandeler, subBucketArray,
-    selectSplitLinesTermsOrder
+    selectSplitLinesTermsOrder, sendValidity
 }: any) => {
     let splitedSubAggregationContent;
 
@@ -295,7 +295,7 @@ export const AddSubBucket = ({
             <EuiSpacer size="m" />
 
             {/* < DatePicker disabled={!(isIndexSelected && isXAxisFieldSelected)} start={stateParams.dateRangeStart} end={stateParams.dateRangeEnd} setStart={setDateRangeStart} setEnd={setDateRangeEnd} /> */}
-            < DatePicker selectedDateRangeHandlerMiddleware={selectedDateRangeHandlerMiddleware} />
+            < DatePicker selectedDateRangeHandlerMiddleware={selectedDateRangeHandlerMiddleware} sendValidity={sendValidity}/>
 
             <EuiSpacer size="m" />
 
