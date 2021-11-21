@@ -18,21 +18,11 @@ export const SubBucketRow = ({
     selectedSplitLinesDateRangeField, setDateRangeStart, setDateRangeEnd,
     onSplitedShowMissingValuesChange, cleanSubBucketArrayBuffer, ignoreSubBucketArrayBuffer,
     splitedGlobalCounterHandler, splitedGlobalIds, splitedGlobalIdsHandler,
-    subBucketArray, selectSplitLinesTermsOrder
+    subBucketArray, selectSplitLinesTermsOrder, sendValidity
 }: any) => {
 
     const [ids, setIds] = useState<any>(JSON.parse(splitedGlobalIds));
     const [globalCounter, setGlobalCounter] = useState(splitedGlobalCounter);
-
-    useEffect(() => {   // Stopped here, work with keeping split lines windows, aggregation, field, min_interval, Terms: Order.. need to support: Date_Range: calendar
-        console.log('-------------------------------------------')      // need also to make sure on refresh: dates
-        console.log('ids: ', ids)
-        console.log('splitedGlobalIds: ', JSON.parse(splitedGlobalIds))
-        console.log('-------------------------------------------')
-        console.log('globalCounter: ', globalCounter)
-        console.log('splitedGlobalCounter: ', splitedGlobalCounter)
-        console.log('-------------------------------------------')
-    }, [ids, globalCounter])
 
     useEffect(() => {
         splitedGlobalIdsHandler(JSON.stringify(ids))
@@ -94,6 +84,7 @@ export const SubBucketRow = ({
                             selectSplitLinesMinimumInterval={selectSplitLinesMinimumInterval}
                             selectSplitLinesTermsOrder={selectSplitLinesTermsOrder}
                             selectedDateRangeHandler={selectedDateRangeHandler}
+                            sendValidity={sendValidity}
                             onSplitedSeperateBucketChange={onSplitedSeperateBucketChange}
                             onSplitedShowMissingValuesChange={onSplitedShowMissingValuesChange}
                             setDateRangeStart={setDateRangeStart}
