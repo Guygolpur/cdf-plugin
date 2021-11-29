@@ -111,6 +111,7 @@ export function CDFEditor({
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   useEffect(() => {
+    console.log('vis.type.visConfig.data.query.queryString.getQuery(): ', vis.type.visConfig.data.query.queryString.getQuery())
     queryListener()
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
 
@@ -172,6 +173,7 @@ export function CDFEditor({
   }
 
   function manipulateToESQuery(splitedQueries: any) {
+    console.log('splitedQueries: ', splitedQueries)
     let shouldArr: any = {
       bool: {
         should: []
@@ -195,104 +197,108 @@ export function CDFEditor({
 
       orElement.forEach((andElement: any) => {
         let singleAnd = {}
+        andElement = andElement.replace(/\s/g, '');
+        console.log('andElement: ', andElement)
         let splitString = getSplitedKeyVal(andElement)
+        console.log('splitString: ', splitString)
+        if (splitString !== undefined) {
+          if (andElement.includes(':') && !andElement.includes('*')) {
+            let match = 'match'
+            if (andElement.includes(':"')) {
+              match = 'match_phrase'
+            }
 
-        if (andElement.includes(' : ') && !andElement.includes(' *')) {
-          let match = 'match'
-          if (andElement.includes(' : "')) {
-            match = 'match_phrase'
-          }
-
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [
-                  {
-                    [match]: {
-                      [splitString[0]]: splitString[1]
+            if (!isSingle) {
+              singleAnd = {
+                bool: {
+                  should: [
+                    {
+                      [match]: {
+                        [splitString[0]]: splitString[1]
+                      }
                     }
-                  }
-                ],
-                minimum_should_match: 1
+                  ],
+                  minimum_should_match: 1
+                }
               }
             }
-          }
-          else {
-            singleAnd = {
-              [match]: {
-                [splitString[0]]: splitString[1]
-              }
-            }
-          }
-        }
-
-        else if (andElement.includes(' : ') && andElement.includes(' *')) {
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [
-                  {
-                    exists: {
-                      field: splitString[0]
-                    }
-                  }
-                ],
-                minimum_should_match: 1
-              }
-            }
-          }
-          else {
-            singleAnd = {
-              exists: {
-                field: splitString[0]
-              }
-            }
-          }
-        }
-
-        else {
-          let rangeOp: any
-          if (andElement.includes(' <= ')) {
-            rangeOp = 'lte'
-          }
-          else if (andElement.includes(' >= ')) {
-            rangeOp = 'gte'
-          }
-          else if (andElement.includes(' < ')) {
-            rangeOp = 'lt'
-          }
-          else if (andElement.includes(' > ')) {
-            rangeOp = 'gt'
-          }
-
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [{
-                  range: {
-                    [splitString[0]]: {
-                      [rangeOp]: splitString[1]
-                    }
-                  }
-                }],
-                minimum_should_match: 1
-              }
-            }
-          }
-          else {
-            singleAnd = {
-              range: {
-                [splitString[0]]: {
-                  [rangeOp]: splitString[1]
+            else {
+              singleAnd = {
+                [match]: {
+                  [splitString[0]]: splitString[1]
                 }
               }
             }
           }
-        }
 
-        orSeperatorObj.bool[filterOrShould].push(singleAnd)
-        if (isSingle) {
-          orSeperatorObj.bool.minimum_should_match = 1
+          else if (andElement.includes(':') && andElement.includes('*')) {
+            if (!isSingle) {
+              singleAnd = {
+                bool: {
+                  should: [
+                    {
+                      exists: {
+                        field: splitString[0]
+                      }
+                    }
+                  ],
+                  minimum_should_match: 1
+                }
+              }
+            }
+            else {
+              singleAnd = {
+                exists: {
+                  field: splitString[0]
+                }
+              }
+            }
+          }
+
+          else {
+            let rangeOp: any
+            if (andElement.includes('<=')) {
+              rangeOp = 'lte'
+            }
+            else if (andElement.includes('>=')) {
+              rangeOp = 'gte'
+            }
+            else if (andElement.includes('<')) {
+              rangeOp = 'lt'
+            }
+            else if (andElement.includes('>')) {
+              rangeOp = 'gt'
+            }
+
+            if (!isSingle) {
+              singleAnd = {
+                bool: {
+                  should: [{
+                    range: {
+                      [splitString[0]]: {
+                        [rangeOp]: splitString[1]
+                      }
+                    }
+                  }],
+                  minimum_should_match: 1
+                }
+              }
+            }
+            else {
+              singleAnd = {
+                range: {
+                  [splitString[0]]: {
+                    [rangeOp]: splitString[1]
+                  }
+                }
+              }
+            }
+          }
+
+          orSeperatorObj.bool[filterOrShould].push(singleAnd)
+          if (isSingle) {
+            orSeperatorObj.bool.minimum_should_match = 1
+          }
         }
 
       });
@@ -311,19 +317,20 @@ export function CDFEditor({
   const getSplitedKeyVal = (andElement: any) => {
     let splitString;
 
-    if (andElement.includes(' : ')) {
+    if (andElement.length == 0) { return }
+    if (andElement.includes(':')) {
       splitString = andElement.split(':')
     }
-    else if (andElement.includes(' <= ')) {
+    else if (andElement.includes('<=')) {
       splitString = andElement.split('<=')
     }
-    else if (andElement.includes(' >= ')) {
+    else if (andElement.includes('>=')) {
       splitString = andElement.split('>=')
     }
-    else if (andElement.includes(' < ')) {
+    else if (andElement.includes('<')) {
       splitString = andElement.split('<')
     }
-    else if (andElement.includes(' > ')) {
+    else if (andElement.includes('>')) {
       splitString = andElement.split('>')
     }
     splitString[0] = splitString[0].trim()
