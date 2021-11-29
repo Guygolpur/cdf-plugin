@@ -195,104 +195,118 @@ export function CDFEditor({
 
       orElement.forEach((andElement: any) => {
         let singleAnd = {}
+        andElement = andElement.replace(/\s/g, '');
         let splitString = getSplitedKeyVal(andElement)
+        if (splitString !== undefined) {
+          if (andElement.includes(':') && !andElement.includes('*')) {
+            let match = 'match'
+            if (andElement.includes(':"')) {
+              match = 'match_phrase'
+            }
 
-        if (andElement.includes(' : ') && !andElement.includes(' *')) {
-          let match = 'match'
-          if (andElement.includes(' : "')) {
-            match = 'match_phrase'
-          }
-
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [
-                  {
-                    [match]: {
-                      [splitString[0]]: splitString[1]
+            if (!isSingle) {
+              singleAnd = {
+                bool: {
+                  should: [
+                    {
+                      [match]: {
+                        [splitString[0]]: splitString[1]
+                      }
                     }
-                  }
-                ],
-                minimum_should_match: 1
+                  ],
+                  minimum_should_match: 1
+                }
               }
             }
-          }
-          else {
-            singleAnd = {
-              [match]: {
-                [splitString[0]]: splitString[1]
-              }
-            }
-          }
-        }
-
-        else if (andElement.includes(' : ') && andElement.includes(' *')) {
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [
-                  {
-                    exists: {
-                      field: splitString[0]
-                    }
-                  }
-                ],
-                minimum_should_match: 1
-              }
-            }
-          }
-          else {
-            singleAnd = {
-              exists: {
-                field: splitString[0]
-              }
-            }
-          }
-        }
-
-        else {
-          let rangeOp: any
-          if (andElement.includes(' <= ')) {
-            rangeOp = 'lte'
-          }
-          else if (andElement.includes(' >= ')) {
-            rangeOp = 'gte'
-          }
-          else if (andElement.includes(' < ')) {
-            rangeOp = 'lt'
-          }
-          else if (andElement.includes(' > ')) {
-            rangeOp = 'gt'
-          }
-
-          if (!isSingle) {
-            singleAnd = {
-              bool: {
-                should: [{
-                  range: {
-                    [splitString[0]]: {
-                      [rangeOp]: splitString[1]
-                    }
-                  }
-                }],
-                minimum_should_match: 1
-              }
-            }
-          }
-          else {
-            singleAnd = {
-              range: {
-                [splitString[0]]: {
-                  [rangeOp]: splitString[1]
+            else {
+              singleAnd = {
+                [match]: {
+                  [splitString[0]]: splitString[1]
                 }
               }
             }
           }
-        }
 
-        orSeperatorObj.bool[filterOrShould].push(singleAnd)
-        if (isSingle) {
-          orSeperatorObj.bool.minimum_should_match = 1
+          else if (andElement.includes(':') && andElement.includes('*')) {
+            if (splitString[1].length > 1) {
+              splitString[1] = splitString[1].replace(/([0-9!\^\&\)\(+=.-])/g, '\\$1');
+
+              singleAnd = {
+                query_string: {
+                  fields: [splitString[0]],
+                  query: splitString[1]
+                }
+              }
+            }
+            else {
+              if (!isSingle) {
+                singleAnd = {
+                  bool: {
+                    should: [
+                      {
+                        exists: {
+                          field: splitString[0]
+                        }
+                      }
+                    ],
+                    minimum_should_match: 1
+                  }
+                }
+              }
+              else {
+                singleAnd = {
+                  exists: {
+                    field: splitString[0]
+                  }
+                }
+              }
+            }
+          }
+
+          else {
+            let rangeOp: any
+            if (andElement.includes('<=')) {
+              rangeOp = 'lte'
+            }
+            else if (andElement.includes('>=')) {
+              rangeOp = 'gte'
+            }
+            else if (andElement.includes('<')) {
+              rangeOp = 'lt'
+            }
+            else if (andElement.includes('>')) {
+              rangeOp = 'gt'
+            }
+
+            if (!isSingle) {
+              singleAnd = {
+                bool: {
+                  should: [{
+                    range: {
+                      [splitString[0]]: {
+                        [rangeOp]: splitString[1]
+                      }
+                    }
+                  }],
+                  minimum_should_match: 1
+                }
+              }
+            }
+            else {
+              singleAnd = {
+                range: {
+                  [splitString[0]]: {
+                    [rangeOp]: splitString[1]
+                  }
+                }
+              }
+            }
+          }
+
+          orSeperatorObj.bool[filterOrShould].push(singleAnd)
+          if (isSingle) {
+            orSeperatorObj.bool.minimum_should_match = 1
+          }
         }
 
       });
@@ -311,19 +325,20 @@ export function CDFEditor({
   const getSplitedKeyVal = (andElement: any) => {
     let splitString;
 
-    if (andElement.includes(' : ')) {
+    if (andElement.length == 0) { return }
+    if (andElement.includes(':')) {
       splitString = andElement.split(':')
     }
-    else if (andElement.includes(' <= ')) {
+    else if (andElement.includes('<=')) {
       splitString = andElement.split('<=')
     }
-    else if (andElement.includes(' >= ')) {
+    else if (andElement.includes('>=')) {
       splitString = andElement.split('>=')
     }
-    else if (andElement.includes(' < ')) {
+    else if (andElement.includes('<')) {
       splitString = andElement.split('<')
     }
-    else if (andElement.includes(' > ')) {
+    else if (andElement.includes('>')) {
       splitString = andElement.split('>')
     }
     splitString[0] = splitString[0].trim()
