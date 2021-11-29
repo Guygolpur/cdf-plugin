@@ -111,7 +111,6 @@ export function CDFEditor({
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   useEffect(() => {
-    console.log('vis.type.visConfig.data.query.queryString.getQuery(): ', vis.type.visConfig.data.query.queryString.getQuery())
     queryListener()
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
 
@@ -173,7 +172,6 @@ export function CDFEditor({
   }
 
   function manipulateToESQuery(splitedQueries: any) {
-    console.log('splitedQueries: ', splitedQueries)
     let shouldArr: any = {
       bool: {
         should: []
@@ -198,9 +196,7 @@ export function CDFEditor({
       orElement.forEach((andElement: any) => {
         let singleAnd = {}
         andElement = andElement.replace(/\s/g, '');
-        console.log('andElement: ', andElement)
         let splitString = getSplitedKeyVal(andElement)
-        console.log('splitString: ', splitString)
         if (splitString !== undefined) {
           if (andElement.includes(':') && !andElement.includes('*')) {
             let match = 'match'
@@ -232,24 +228,36 @@ export function CDFEditor({
           }
 
           else if (andElement.includes(':') && andElement.includes('*')) {
-            if (!isSingle) {
+            if (splitString[1].length > 1) {
+              splitString[1] = splitString[1].replace(/([0-9!\^\&\)\(+=.-])/g, '\\$1');
+
               singleAnd = {
-                bool: {
-                  should: [
-                    {
-                      exists: {
-                        field: splitString[0]
-                      }
-                    }
-                  ],
-                  minimum_should_match: 1
+                query_string: {
+                  fields: [splitString[0]],
+                  query: splitString[1]
                 }
               }
             }
             else {
-              singleAnd = {
-                exists: {
-                  field: splitString[0]
+              if (!isSingle) {
+                singleAnd = {
+                  bool: {
+                    should: [
+                      {
+                        exists: {
+                          field: splitString[0]
+                        }
+                      }
+                    ],
+                    minimum_should_match: 1
+                  }
+                }
+              }
+              else {
+                singleAnd = {
+                  exists: {
+                    field: splitString[0]
+                  }
                 }
               }
             }
