@@ -97,8 +97,28 @@ export function CdfComponent(props: CdfComponentProps) {
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
     let searchShouldToJson = JSON.parse(searchShould)
+    let rangeFiltersToJson = JSON.parse(rangeFilters)
 
-    filterToJson.push(
+    let uniteFilters: any = []
+
+    if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
+      uniteFilters.push(searchShouldToJson[0])
+      uniteFilters.push(rangeFiltersToJson[1])
+    }
+    else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
+      uniteFilters = []
+    }
+    else if (searchShouldToJson.length > 0 && rangeFiltersToJson.length == 0) {
+      uniteFilters = searchShouldToJson
+    }
+    else {
+      uniteFilters = rangeFiltersToJson
+    }
+    if (filterToJson.length > 0) {
+      uniteFilters.push(filterToJson[0])
+    }
+
+    uniteFilters.push(
       {
         range: {
           time: {
@@ -111,8 +131,8 @@ export function CdfComponent(props: CdfComponentProps) {
     let data: any = {
       query: {
         bool: {
-          must: filterToJson,
-          filter: searchShouldToJson, should: [], must_not: negativeFilterToJson
+          must: [],
+          filter: uniteFilters, should: [], must_not: negativeFilterToJson
         }
       },
       size: 0,
