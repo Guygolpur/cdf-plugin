@@ -346,6 +346,9 @@ export function CDFEditor({
     else if (andElement.includes('>')) {
       splitString = andElement.split('>')
     }
+    else {
+      return
+    }
     splitString[0] = splitString[0].trim()
     splitString[1] = splitString[1].trim()
     splitString[1] = splitString[1].replaceAll('"', '')
