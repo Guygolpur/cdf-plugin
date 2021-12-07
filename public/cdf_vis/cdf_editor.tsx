@@ -154,9 +154,11 @@ export function CDFEditor({
       let esQuery = manipulateToESQuery(splitedQueries);
       let esQueryToString = JSON.stringify([esQuery])
       setValue('searchShould', esQueryToString)
+      vis.params.searchShould = esQueryToString
     }
     else {
       setValue('searchShould', '[]')
+      vis.params.searchShould = '[]'
     }
   }
 
