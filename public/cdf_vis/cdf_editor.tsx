@@ -104,6 +104,8 @@ export function CDFEditor({
   useEffect(() => {
     setValue('dateFilterFrom', timeRange.from);
     setValue('dateFilterTo', timeRange.to);
+    vis.params.dateFilterFrom = timeRange.from
+    vis.params.dateFilterTo = timeRange.to
   }, [timeRange.from, timeRange.to])
 
   useEffect(() => {
