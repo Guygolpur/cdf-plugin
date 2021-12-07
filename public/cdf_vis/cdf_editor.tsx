@@ -102,9 +102,12 @@ export function CDFEditor({
   }, [stateParams.indexPattern])
 
   useEffect(() => {
-    setValue('dateFilterFrom', timeRange.from);
-    setValue('dateFilterTo', timeRange.to);
-  }, [timeRange.from, timeRange.to])
+    vis.type.visConfig.data.query.timefilter.timefilter._time
+    setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+    setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+    vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+  }, [vis.type.visConfig.data.query.timefilter.timefilter._time])
 
   useEffect(() => {
     filterListener()
@@ -152,9 +155,11 @@ export function CDFEditor({
       let esQuery = manipulateToESQuery(splitedQueries);
       let esQueryToString = JSON.stringify([esQuery])
       setValue('searchShould', esQueryToString)
+      vis.params.searchShould = esQueryToString
     }
     else {
       setValue('searchShould', '[]')
+      vis.params.searchShould = '[]'
     }
   }
 
@@ -341,19 +346,22 @@ export function CDFEditor({
     else if (andElement.includes('>')) {
       splitString = andElement.split('>')
     }
+    else {
+      return
+    }
     splitString[0] = splitString[0].trim()
     splitString[1] = splitString[1].trim()
     splitString[1] = splitString[1].replaceAll('"', '')
     return splitString
   }
 
-  const filterListener = () => {
+  const filterListener = async () => {
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
     if (filters.length > 0) {
       let filterTojson: any = [];
       let negativeFilters: any = [];
       let rangeFilters: any = [{ 'match_all': {} }];
-      Object.values(filters).forEach((key: any, val: any) => {
+      Object.values(await filters).forEach((key: any, val: any) => {
         if (!key.meta.disabled) {
           if (key.hasOwnProperty('exists')) {
             let existsObj = {
@@ -406,18 +414,25 @@ export function CDFEditor({
       })
 
       let rangeFilterToString = JSON.stringify(rangeFilters)
-      setValue('rangeFilters', rangeFilterToString)
-
-      let negativeFilterToString = JSON.stringify(negativeFilters)
-      setValue('negativeFilters', negativeFilterToString)
-
       let filterToString = JSON.stringify(filterTojson)
+      let negativeFilterToString = JSON.stringify(negativeFilters)
+
+      setValue('rangeFilters', rangeFilterToString)
+      setValue('negativeFilters', negativeFilterToString)
       setValue('filters', filterToString)
+
+      vis.params.rangeFilters = rangeFilterToString
+      vis.params.negativeFilters = negativeFilterToString
+      vis.params.filters = filterToString
     }
     else {
       setValue('rangeFilters', '[]')
       setValue('negativeFilters', '[]')
       setValue('filters', '[{"match_all": {}}]')
+
+      vis.params.rangeFilters = '[]'
+      vis.params.negativeFilters = '[]'
+      vis.params.filters = '[{"match_all": {}}]'
     }
   }
 
