@@ -102,11 +102,12 @@ export function CDFEditor({
   }, [stateParams.indexPattern])
 
   useEffect(() => {
-    setValue('dateFilterFrom', timeRange.from);
-    setValue('dateFilterTo', timeRange.to);
-    vis.params.dateFilterFrom = timeRange.from
-    vis.params.dateFilterTo = timeRange.to
-  }, [timeRange.from, timeRange.to])
+    vis.type.visConfig.data.query.timefilter.timefilter._time
+    setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+    setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+    vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+  }, [vis.type.visConfig.data.query.timefilter.timefilter._time])
 
   useEffect(() => {
     filterListener()
