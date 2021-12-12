@@ -84,7 +84,7 @@ export const AxisBucket = ({
       <EuiSpacer size="xs" />
 
       <EuiFormRow fullWidth>
-        <EuiFieldNumber placeholder={storedMinimumInterval} min={1} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth />
+        <EuiFieldNumber placeholder={storedMinimumInterval} min={0} onChange={(e) => onGeneralValChange(e, 'min_interval')} fullWidth step={0.01}/>
       </EuiFormRow>
 
       <EuiSpacer size="m" />

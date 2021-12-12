@@ -257,11 +257,12 @@ export const AddSubBucket = ({
 
             <EuiFormRow fullWidth>
                 <EuiFieldNumber
-                    placeholder={selectedMinimumInterval == '1m' ? '1' : `${selectedMinimumInterval}`}
-                    min={1}
+                    placeholder={selectedMinimumInterval == '1m' ? '0' : `${selectedMinimumInterval}`}
+                    min={0}
                     onChange={(e: any) => onGeneralMinimumIntervalChange(e)}
                     disabled={!(isXAxisFieldSelected)}
                     fullWidth
+                    step={0.01}
                 />
             </EuiFormRow>
         </>
