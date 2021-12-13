@@ -150,9 +150,13 @@ export function CDFEditor({
   const queryListener = () => {
     let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
     if (queries.length > 0) {
+      let splitedParenthesis = splitParenthesis(queries)
       let splitedQueries = splitQueries(queries)
+      // console.log('splitedQueries: ', splitedQueries)
       let esQuery = manipulateToESQuery(splitedQueries);
+      // console.log('esQuery: ', esQuery)
       let esQueryToString = JSON.stringify([esQuery])
+      // console.log('esQueryToString: ', esQueryToString)
 
       setValue('searchShould', esQueryToString)
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
@@ -167,11 +171,59 @@ export function CDFEditor({
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
       setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
       setValue('searchShould', '[]')
-      
+
       vis.params.searchShould = '[]'
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
+  }
+
+  function splitParenthesis(queries: any) {
+
+    // console.log('queries: ', queries)
+    // let pattern = /\((.*?)\)/
+    // let hasParenthesis = pattern.test(queries)
+    // if (!hasParenthesis) { return queries }
+
+    // let dividedByColon = queries.split(":");
+    // console.log('dividedByColon: ', dividedByColon)
+    // let extractedFieldsArray: any = []
+    // let manipulatedQueries = ''
+
+    // for (var i = 0; i < dividedByColon.length; i++) {
+    //   if (pattern.test(dividedByColon[i])) {
+    //     let splitByWords = dividedByColon[i - 1].split(' ')
+    //     const filterSpaces = splitByWords.filter((e: any) => e);
+    //     let numberOfWords = filterSpaces.length
+    //     let extractedField = filterSpaces[Number(numberOfWords - 1)]
+    //     extractedFieldsArray.push(extractedField)
+    //   }
+    //   else {
+    //     manipulatedQueries += dividedByColon[i]
+    //   }
+    // }
+    // console.log('extractedFieldsArray: ', extractedFieldsArray)
+
+
+    // let dividedParenthesisArray = [...queries.matchAll(/\((.*?)\)/g)];
+    // console.log('dividedParenthesis: ', dividedParenthesisArray)
+
+    // dividedParenthesisArray.forEach((element, index) => {
+
+    //   if (!element[1].includes(":")) {
+    //     const orRegex = / or /ig;
+    //     const andRegex = / and /ig;
+    //     let withFields = element[1].replaceAll(orRegex, ' or ' + `${extractedFieldsArray[index]} : `)
+    //     let withOrAndFields = withFields.replaceAll(andRegex, ' and ' + `${extractedFieldsArray[index]} : `)
+    //     manipulatedQueries += extractedFieldsArray[index] + ' : ' + withOrAndFields
+    //   }
+    //   else {
+
+    //   }
+    // });
+    // console.log('manipulatedQueries: ', manipulatedQueries)
+
+
   }
 
   function splitQueries(queries: any) {
