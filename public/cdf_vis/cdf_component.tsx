@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, useState, useMemo } from 'react';
+import React, { useEffect, Fragment, useState, useMemo, useLayoutEffect } from 'react';
 import { CDFVisParams } from '../cdf_vis_fn';
 import { KIBANA_METRICS } from './test_dataset_kibana';
 import axios from 'axios';
@@ -38,12 +38,16 @@ export function CdfComponent(props: CdfComponentProps) {
     props.renderComplete();
   })
 
-  // useEffect(() => {
-  //   let tooltipStyle = document.getElementsByClassName('echLegendListContainer');
-  //   if (tooltipStyle.length > 0) {
-  //     tooltipStyle[0].style.background = "red";
-  //   }
-  // },[]);
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      let tooltipStyle = document.getElementsByClassName('echLegendListContainer');
+      if (tooltipStyle.length > 0) {
+        tooltipStyle[0].style.height = '114px';
+        tooltipStyle[0].style.maxHeight = '114px';
+        tooltipStyle[0].style.marginBottom = '-86px';
+      }
+    }, 100);
+  });
 
   const {
     // High level
