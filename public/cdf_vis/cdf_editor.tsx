@@ -101,11 +101,11 @@ export function CDFEditor({
   }, [stateParams.indexPattern])
 
   useEffect(() => {
-    // setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-    // setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+    setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+    setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
 
-    stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-    stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+    // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
 
     vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
     vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
@@ -157,36 +157,31 @@ export function CDFEditor({
       let esQuery = manipulateToESQuery(splitedQueries);
       let esQueryToString = JSON.stringify([esQuery])
 
+      setValue('searchShould', esQueryToString)
+      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+
       vis.params.searchShould = esQueryToString
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
 
-      stateParams.searchShould = esQueryToString
-      stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-
-      // setValue('searchShould', esQueryToString)
-      // setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      // setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-
-
+      // stateParams.searchShould = esQueryToString
+      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
     else {
+
+      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+      setValue('searchShould', '[]')
 
       vis.params.searchShould = '[]'
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
 
-      // setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      // setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      // setValue('searchShould', '[]')
-
-
-      stateParams.searchShould = '[]'
-      stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      
-
+      // stateParams.searchShould = '[]'
+      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
   }
 
@@ -444,17 +439,17 @@ export function CDFEditor({
       let filterToString = JSON.stringify(filterTojson)
       let negativeFilterToString = JSON.stringify(negativeFilters)
 
-      // setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      // setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      // setValue('rangeFilters', rangeFilterToString)
-      // setValue('negativeFilters', negativeFilterToString)
-      // setValue('filters', filterToString)
+      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+      setValue('rangeFilters', rangeFilterToString)
+      setValue('negativeFilters', negativeFilterToString)
+      setValue('filters', filterToString)
 
-      stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      stateParams.rangeFilters = rangeFilterToString
-      stateParams.negativeFilters = negativeFilterToString
-      stateParams.filters = filterToString
+      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+      // stateParams.rangeFilters = rangeFilterToString
+      // stateParams.negativeFilters = negativeFilterToString
+      // stateParams.filters = filterToString
 
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
@@ -463,17 +458,17 @@ export function CDFEditor({
       vis.params.filters = filterToString
     }
     else {
-      // setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      // setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      // setValue('rangeFilters', '[]')
-      // setValue('negativeFilters', '[]')
-      // setValue('filters', '[{"match_all": {}}]')
+      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+      setValue('rangeFilters', '[]')
+      setValue('negativeFilters', '[]')
+      setValue('filters', '[{"match_all": {}}]')
 
-      stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      stateParams.rangeFilters = '[]'
-      stateParams.negativeFilters = '[]'
-      stateParams.filters = '[{"match_all": {}}]'
+      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+      // stateParams.rangeFilters = '[]'
+      // stateParams.negativeFilters = '[]'
+      // stateParams.filters = '[{"match_all": {}}]'
 
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
