@@ -18,6 +18,17 @@ import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 import { useEffect } from 'react';
 
+import { toExpression } from '../../../../bazel/kibana/packages/kbn-interpreter/src/common/index.js'
+import { toElasticsearchQuery } from '../../../../src/plugins/data/target/types/common/es_query/kuery/ast/ast.d'
+
+import {
+  IndexPattern,
+  QueryStringInput,
+  IDataPluginServices,
+  Query,
+  esKuery,
+} from '../../../../src/plugins/data/public';
+
 interface CounterParams {
   // High level
   indexPattern: string;
@@ -142,20 +153,19 @@ export function CDFEditor({
     }
 
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
-
-    //Splited
-    // setValue('isSplitAccordionSearch', false)
-    // setValue('splitedAggregation', 'terms')
-    // setValue('splitedOrder', 'desc')
-    // setValue('subBucketArray', '{}')
   }
 
   const queryListener = () => {
-    let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
-    if (queries.length > 0) {
-      let splitedQueries = splitQueries(queries)
-      let esQuery = manipulateToESQuery(splitedQueries);
-      let esQueryToString = JSON.stringify([esQuery])
+    let esQueryToString: any
+    if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string') {
+      const dsl = esKuery.toElasticsearchQuery(
+        esKuery.fromKueryExpression(vis.type.visConfig.data.query.queryString.getQuery().query as string),
+        vis.data.indexPattern
+      );
+      // JSON representation of query will be handled by existing logic.
+      // TODO clean this up and handle it in the data fetch layer once
+      // it moved to typescript.
+      esQueryToString = JSON.stringify([dsl])
 
       setValue('searchShould', esQueryToString)
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
@@ -169,6 +179,26 @@ export function CDFEditor({
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
+    // let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
+    // if (queries.length > 0) {
+    //   let splitedQueries = splitQueries(queries)
+    //   let esQuery = manipulateToESQuery(splitedQueries);
+    //   let esQueryToString = JSON.stringify([esQuery])
+
+    //   console.log('esQueryToString: ', esQueryToString)
+
+    //   setValue('searchShould', esQueryToString)
+    //   setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+    //   setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+
+    //   vis.params.searchShould = esQueryToString
+    //   vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    //   vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+
+    //   // stateParams.searchShould = esQueryToString
+    //   // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    //   // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+    // }
     else {
 
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
