@@ -18,15 +18,13 @@ import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 import { useEffect } from 'react';
 
-import { toExpression } from '../../../../bazel/kibana/packages/kbn-interpreter/src/common/index.js'
-import { toElasticsearchQuery } from '../../../../src/plugins/data/target/types/common/es_query/kuery/ast/ast.d'
-
 import {
   IndexPattern,
   QueryStringInput,
   IDataPluginServices,
   Query,
   esKuery,
+  esQuery,
 } from '../../../../src/plugins/data/public';
 
 interface CounterParams {
@@ -154,7 +152,7 @@ export function CDFEditor({
 
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
   }
-
+// from here pushed
   const queryListener = () => {
     let esQueryToString: any
     if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string') {
@@ -199,20 +197,25 @@ export function CDFEditor({
     //   // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
     //   // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     // }
-    else {
-
-      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      setValue('searchShould', '[]')
-
-      vis.params.searchShould = '[]'
-      vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-
-      // stateParams.searchShould = '[]'
-      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+    else if (vis.type.visConfig.data.query.queryString.getQuery().language === 'lucene') {
+      let z = esQuery.luceneStringToDsl(vis.type.visConfig.data.query.queryString.getQuery().query as string);
+      console.log('z: ', z)
+      console.log('esQuery: ', esQuery)
     }
+    // else {
+
+    //   setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+    //   setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+    //   setValue('searchShould', '[]')
+
+    //   vis.params.searchShould = '[]'
+    //   vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    //   vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+
+    //   // stateParams.searchShould = '[]'
+    //   // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+    //   // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+    // }
   }
 
   function splitQueries(queries: any) {
