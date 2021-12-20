@@ -18,6 +18,15 @@ import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 import { useEffect } from 'react';
 
+import {
+  IndexPattern,
+  QueryStringInput,
+  IDataPluginServices,
+  Query,
+  esKuery,
+  esQuery,
+} from '../../../../src/plugins/data/public';
+
 interface CounterParams {
   // High level
   indexPattern: string;
@@ -142,20 +151,19 @@ export function CDFEditor({
     }
 
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
-
-    //Splited
-    // setValue('isSplitAccordionSearch', false)
-    // setValue('splitedAggregation', 'terms')
-    // setValue('splitedOrder', 'desc')
-    // setValue('subBucketArray', '{}')
   }
-
+  // from here pushed
   const queryListener = () => {
-    let queries = vis.type.visConfig.data.query.queryString.getQuery().query;
-    if (queries.length > 0) {
-      let splitedQueries = splitQueries(queries)
-      let esQuery = manipulateToESQuery(splitedQueries);
-      let esQueryToString = JSON.stringify([esQuery])
+    let esQueryToString: any
+    if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string') {
+      const dsl = esKuery.toElasticsearchQuery(
+        esKuery.fromKueryExpression(vis.type.visConfig.data.query.queryString.getQuery().query as string),
+        vis.data.indexPattern
+      );
+      // JSON representation of query will be handled by existing logic.
+      // TODO clean this up and handle it in the data fetch layer once
+      // it moved to typescript.
+      esQueryToString = JSON.stringify([dsl])
 
       setValue('searchShould', esQueryToString)
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
@@ -168,6 +176,24 @@ export function CDFEditor({
       // stateParams.searchShould = esQueryToString
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+    }
+    else if (vis.type.visConfig.data.query.queryString.getQuery().language === 'lucene') {
+      console.log('raw: ', vis.type.visConfig.data.query.queryString.getQuery().query)
+      let luceneToDSL = esQuery.luceneStringToDsl(vis.type.visConfig.data.query.queryString.getQuery().query as string);
+      console.log('z: ', luceneToDSL)
+      let luceneDSLToString = JSON.stringify([luceneToDSL])
+
+      setValue('searchShould', luceneDSLToString)
+      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
+      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+
+      vis.params.searchShould = luceneDSLToString
+      vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
+
+      //   // stateParams.searchShould = esQueryToString
+      //   // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
+      //   // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
     else {
 
@@ -183,198 +209,6 @@ export function CDFEditor({
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
-  }
-
-  function splitQueries(queries: any) {
-    let splitedQueriesByOr: any = []
-    let splitedQueriesByand: any = []
-
-    splitedQueriesByOr = queries.split(' or ')
-
-    splitedQueriesByOr.forEach((element: any) => {
-      splitedQueriesByand.push(element.split(' and '))
-    });
-
-    return splitedQueriesByand;
-  }
-
-  function manipulateToESQuery(splitedQueries: any) {
-    let shouldArr: any = {
-      bool: {
-        should: []
-      }
-    }
-
-    splitedQueries.forEach((orElement: any) => {
-      let isSingle: boolean = true
-      let filterOrShould = 'should'
-
-      if (orElement.length > 1) {
-        isSingle = false
-        filterOrShould = 'filter'
-      }
-
-      let orSeperatorObj: any = {
-        bool: {
-          [filterOrShould]: []
-        }
-      }
-
-      orElement.forEach((andElement: any) => {
-        let singleAnd = {}
-        andElement = andElement.replace(/\s/g, '');
-        let splitString = getSplitedKeyVal(andElement)
-        if (splitString !== undefined) {
-          if (andElement.includes(':') && !andElement.includes('*')) {
-            let match = 'match'
-            if (andElement.includes(':"')) {
-              match = 'match_phrase'
-            }
-
-            if (!isSingle) {
-              singleAnd = {
-                bool: {
-                  should: [
-                    {
-                      [match]: {
-                        [splitString[0]]: splitString[1]
-                      }
-                    }
-                  ],
-                  minimum_should_match: 1
-                }
-              }
-            }
-            else {
-              singleAnd = {
-                [match]: {
-                  [splitString[0]]: splitString[1]
-                }
-              }
-            }
-          }
-
-          else if (andElement.includes(':') && andElement.includes('*')) {
-            if (splitString[1].length > 1) {
-              splitString[1] = splitString[1].replace(/([0-9!\^\&\)\(+=.-])/g, '\\$1');
-
-              singleAnd = {
-                query_string: {
-                  fields: [splitString[0]],
-                  query: splitString[1]
-                }
-              }
-            }
-            else {
-              if (!isSingle) {
-                singleAnd = {
-                  bool: {
-                    should: [
-                      {
-                        exists: {
-                          field: splitString[0]
-                        }
-                      }
-                    ],
-                    minimum_should_match: 1
-                  }
-                }
-              }
-              else {
-                singleAnd = {
-                  exists: {
-                    field: splitString[0]
-                  }
-                }
-              }
-            }
-          }
-
-          else {
-            let rangeOp: any
-            if (andElement.includes('<=')) {
-              rangeOp = 'lte'
-            }
-            else if (andElement.includes('>=')) {
-              rangeOp = 'gte'
-            }
-            else if (andElement.includes('<')) {
-              rangeOp = 'lt'
-            }
-            else if (andElement.includes('>')) {
-              rangeOp = 'gt'
-            }
-
-            if (!isSingle) {
-              singleAnd = {
-                bool: {
-                  should: [{
-                    range: {
-                      [splitString[0]]: {
-                        [rangeOp]: splitString[1]
-                      }
-                    }
-                  }],
-                  minimum_should_match: 1
-                }
-              }
-            }
-            else {
-              singleAnd = {
-                range: {
-                  [splitString[0]]: {
-                    [rangeOp]: splitString[1]
-                  }
-                }
-              }
-            }
-          }
-
-          orSeperatorObj.bool[filterOrShould].push(singleAnd)
-          if (isSingle) {
-            orSeperatorObj.bool.minimum_should_match = 1
-          }
-        }
-
-      });
-
-      shouldArr.bool.should.push(orSeperatorObj)
-    });
-    shouldArr.bool.minimum_should_match = 1
-    if (splitedQueries.length > 1 || splitedQueries[0].length > 1) {
-      return shouldArr;
-    }
-    else {
-      return shouldArr.bool.should[0];
-    }
-  }
-
-  const getSplitedKeyVal = (andElement: any) => {
-    let splitString;
-
-    if (andElement.length == 0) { return }
-    if (andElement.includes(':')) {
-      splitString = andElement.split(':')
-    }
-    else if (andElement.includes('<=')) {
-      splitString = andElement.split('<=')
-    }
-    else if (andElement.includes('>=')) {
-      splitString = andElement.split('>=')
-    }
-    else if (andElement.includes('<')) {
-      splitString = andElement.split('<')
-    }
-    else if (andElement.includes('>')) {
-      splitString = andElement.split('>')
-    }
-    else {
-      return
-    }
-    splitString[0] = splitString[0].trim()
-    splitString[1] = splitString[1].trim()
-    splitString[1] = splitString[1].replaceAll('"', '')
-    return splitString
   }
 
   const filterListener = async () => {
