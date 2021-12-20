@@ -153,13 +153,19 @@ export function CDFEditor({
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
   }
   // from here pushed
-  const queryListener = () => {
+  const queryListener = () => { // referance at: x-pack\plugins\infra\public\containers\logs\log_stream\index.ts
     let esQueryToString: any
     if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string') {
-      const dsl = esKuery.toElasticsearchQuery(
-        esKuery.fromKueryExpression(vis.type.visConfig.data.query.queryString.getQuery().query as string),
-        vis.data.indexPattern
-      );
+      var dsl: any
+      try {
+        dsl = esKuery.toElasticsearchQuery(
+          esKuery.fromKueryExpression(vis.type.visConfig.data.query.queryString.getQuery().query as string),
+          vis.data.indexPattern
+        );
+      } catch {
+        console.log('invalid KQL')
+      }
+
       // JSON representation of query will be handled by existing logic.
       // TODO clean this up and handle it in the data fetch layer once
       // it moved to typescript.
