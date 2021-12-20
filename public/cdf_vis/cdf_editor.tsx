@@ -155,7 +155,7 @@ export function CDFEditor({
   // from here pushed
   const queryListener = () => { // referance at: x-pack\plugins\infra\public\containers\logs\log_stream\index.ts
     let esQueryToString: any
-    if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string') {
+    if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string' && vis.type.visConfig.data.query.queryString.getQuery().query.length > 0) {
       var dsl: any
       try {
         dsl = esKuery.toElasticsearchQuery(
@@ -183,10 +183,8 @@ export function CDFEditor({
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
     }
-    else if (vis.type.visConfig.data.query.queryString.getQuery().language === 'lucene') {
-      console.log('raw: ', vis.type.visConfig.data.query.queryString.getQuery().query)
+    else if (vis.type.visConfig.data.query.queryString.getQuery().language === 'lucene' && vis.type.visConfig.data.query.queryString.getQuery().query.length > 0) {
       let luceneToDSL = esQuery.luceneStringToDsl(vis.type.visConfig.data.query.queryString.getQuery().query as string);
-      console.log('z: ', luceneToDSL)
       let luceneDSLToString = JSON.stringify([luceneToDSL])
 
       setValue('searchShould', luceneDSLToString)

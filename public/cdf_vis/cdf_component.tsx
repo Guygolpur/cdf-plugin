@@ -98,17 +98,20 @@ export function CdfComponent(props: CdfComponentProps) {
     if (isEmptyBucket) {
       emptyBucket = 0
     }
-
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
     let searchShouldToJson = JSON.parse(searchShould)
     let rangeFiltersToJson = JSON.parse(rangeFilters)
 
+    let lengthFiltersObject = 0
     let uniteFilters: any = []
-
     if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
-      uniteFilters.push(searchShouldToJson[0])
-      uniteFilters.push(rangeFiltersToJson[1])
+      uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
+      lengthFiltersObject += uniteFilters.length
+      if (rangeFiltersToJson[1]) {
+        uniteFilters[lengthFiltersObject] = rangeFiltersToJson[1]
+        lengthFiltersObject = uniteFilters.length
+      }
     }
     else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
       uniteFilters = []
@@ -117,12 +120,17 @@ export function CdfComponent(props: CdfComponentProps) {
       uniteFilters = searchShouldToJson
     }
     else {
-      uniteFilters = rangeFiltersToJson
+      for (const [key, value] of Object.entries(rangeFiltersToJson)) {
+        uniteFilters[Number(key) + lengthFiltersObject] = value
+      }
     }
     if (filterToJson.length > 0) {
-      uniteFilters.push(filterToJson[0])
+      let filtersGroup = filterToJson.map(a => a);
+      lengthFiltersObject = uniteFilters.length
+      for (const [key, value] of Object.entries(filtersGroup)) {
+        uniteFilters[Number(key) + lengthFiltersObject] = value
+      }
     }
-
     uniteFilters.push(
       {
         range: {
