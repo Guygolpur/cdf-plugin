@@ -1,5 +1,5 @@
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useLayoutEffect, useState } from 'react';
 import axios from 'axios';
 import {
   EuiCheckbox,
@@ -113,6 +113,11 @@ export function CDFEditor({
     setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
     setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
 
+    let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+    setTimeout(() => {
+      saveBtnEvent.click();
+    }, 50);
+
     // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
     // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
 
@@ -124,7 +129,7 @@ export function CDFEditor({
     filterListener()
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     queryListener()
   }, [vis.type.visConfig.data.query.queryString.getQuery()])
 
@@ -152,7 +157,7 @@ export function CDFEditor({
 
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
   }
-  // from here pushed
+  
   const queryListener = () => { // referance at: x-pack\plugins\infra\public\containers\logs\log_stream\index.ts
     let esQueryToString: any
     if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string' && vis.type.visConfig.data.query.queryString.getQuery().query.length > 0) {
@@ -165,15 +170,16 @@ export function CDFEditor({
       } catch {
         console.log('invalid KQL')
       }
-
-      // JSON representation of query will be handled by existing logic.
-      // TODO clean this up and handle it in the data fetch layer once
-      // it moved to typescript.
       esQueryToString = JSON.stringify([dsl])
 
       setValue('searchShould', esQueryToString)
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
       setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
+
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
 
       vis.params.searchShould = esQueryToString
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
@@ -191,6 +197,11 @@ export function CDFEditor({
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
       setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
 
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
+
       vis.params.searchShould = luceneDSLToString
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
@@ -204,6 +215,11 @@ export function CDFEditor({
       setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
       setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
       setValue('searchShould', '[]')
+
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
 
       vis.params.searchShould = '[]'
       vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
@@ -283,6 +299,11 @@ export function CDFEditor({
       setValue('negativeFilters', negativeFilterToString)
       setValue('filters', filterToString)
 
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
+
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
       // stateParams.rangeFilters = rangeFilterToString
@@ -301,6 +322,11 @@ export function CDFEditor({
       setValue('rangeFilters', '[]')
       setValue('negativeFilters', '[]')
       setValue('filters', '[{"match_all": {}}]')
+
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
 
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
