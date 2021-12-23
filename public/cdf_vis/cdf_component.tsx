@@ -33,10 +33,21 @@ interface CdfComponentProps {
 export function CdfComponent(props: CdfComponentProps) {
   const [aggLineData, setAggLineData] = useState([]);
   const [colors, setColors] = useState<Record<SeriesKey, Color | null>>({});
+  const {
+    // High level
+    indexPattern,
 
-  useEffect(() => {
-    props.renderComplete();
-  })
+    // X-axis
+    aggregation, field, min_interval, isEmptyBucket, isExtendBounds, customLabel, jsonInput,
+
+    // Metrix & Axes
+    isAxisExtents, xMin, xMax, isSplitAccordionSearch, splitedAggregation, splitedField, isVerticalGrid,
+    isHorizontalGrid, dateFilterFrom, dateFilterTo, dateRangeStart, dateRangeEnd, splitedHistogramMinInterval, splitedDateHistogramMinInterval,
+    subBucketArray, splitedOrder, splitedGlobalCounter, splitedGlobalIds,
+
+    // Filters
+    filters, negativeFilters, rangeFilters, searchShould,
+  } = props.visParams
 
   useLayoutEffect(() => {
     setTimeout(() => {
@@ -49,51 +60,13 @@ export function CdfComponent(props: CdfComponentProps) {
     }, 100);
   });
 
-  const {
-    // High level
-    indexPattern,
-
-    // X-axis
-    aggregation,
-    field,
-    min_interval,
-    isEmptyBucket,
-    isExtendBounds,
-    customLabel,
-    jsonInput,
-
-    // Metrix & Axes
-    isAxisExtents,
-    xMin,
-    xMax,
-
-    isSplitAccordionSearch,
-
-    splitedAggregation,
-    splitedField,
-    isVerticalGrid,
-    isHorizontalGrid,
-    dateFilterFrom,
-    dateFilterTo,
-    dateRangeStart,
-    dateRangeEnd,
-    splitedHistogramMinInterval,
-    splitedDateHistogramMinInterval,
-
-    subBucketArray,
-    splitedOrder,
-
-    splitedGlobalCounter,
-    splitedGlobalIds,
-
-    // Filters
-    filters,
-    negativeFilters,
-    rangeFilters,
-    searchShould,
-  } = props.visParams
-
   useEffect(() => {
+    props.renderComplete();
+  })
+
+  //23/12
+  useEffect(() => {
+    let isDashboard = document.getElementsByClassName('dashboardViewport')
     let emptyBucket = 1
     if (isEmptyBucket) {
       emptyBucket = 0
@@ -135,12 +108,13 @@ export function CdfComponent(props: CdfComponentProps) {
       {
         range: {
           time: {
-            gte: dateFilterFrom,
-            lt: dateFilterTo
+            gte: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].from : dateFilterFrom,
+            lt: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].to : dateFilterTo
           }
         }
       }
     )
+    console.log('uniteFilters: ', uniteFilters)
     let data: any = {
       query: {
         bool: {
@@ -297,6 +271,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
     dateRangeStart,
     dateRangeEnd,
+    localStorage.getItem("kibana.timepicker.timeHistory")
   ]);
 
   const allIgnored = (element: any) => element.isValid === true

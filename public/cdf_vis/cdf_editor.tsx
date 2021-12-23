@@ -104,6 +104,8 @@ export function CDFEditor({
     initiateValues()
   }, [])
 
+  //console.log('vis.type.visConfig.data.query.queryString.storage.store: ', vis.type.visConfig.data.query.queryString.storage.store)
+
   useEffect(() => {
     setValidity(true)
     if (stateParams.indexPattern !== null) { indicesMappingHandler() }
@@ -157,7 +159,7 @@ export function CDFEditor({
 
     setValue('isEmptyBucket', vis.params.isEmptyBucket)
   }
-  
+
   const queryListener = () => { // referance at: x-pack\plugins\infra\public\containers\logs\log_stream\index.ts
     let esQueryToString: any
     if (vis.type.visConfig.data.query.queryString.getQuery().language === 'kuery' && typeof vis.type.visConfig.data.query.queryString.getQuery().query === 'string' && vis.type.visConfig.data.query.queryString.getQuery().query.length > 0) {
