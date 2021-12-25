@@ -25,6 +25,11 @@ import {
   EuiButton,
 } from '@elastic/eui';
 
+import {
+  esKuery,
+  esQuery,
+} from '../../../../src/plugins/data/public';
+
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
@@ -64,9 +69,13 @@ export function CdfComponent(props: CdfComponentProps) {
     props.renderComplete();
   })
 
-  //23/12
   useEffect(() => {
     let isDashboard = document.getElementsByClassName('dashboardViewport')
+    let DashboardSearch: any
+    if (isDashboard) {
+      DashboardSearch = getDashboardGlobalSearch()
+    }
+
     let emptyBucket = 1
     if (isEmptyBucket) {
       emptyBucket = 0
@@ -103,6 +112,11 @@ export function CdfComponent(props: CdfComponentProps) {
       for (const [key, value] of Object.entries(filtersGroup)) {
         uniteFilters[Number(key) + lengthFiltersObject] = value
       }
+    }
+    if (DashboardSearch) {
+      console.log('DashboardSearch: ', DashboardSearch)
+      lengthFiltersObject = uniteFilters.length
+      uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
     }
     uniteFilters.push(
       {
@@ -271,8 +285,70 @@ export function CdfComponent(props: CdfComponentProps) {
 
     dateRangeStart,
     dateRangeEnd,
-    localStorage.getItem("kibana.timepicker.timeHistory")
+    localStorage.getItem("kibana.timepicker.timeHistory"),
+    localStorage.getItem("typeahead:dashboard-kuery"),
+    localStorage.getItem("typeahead:dashboard-lucene")
   ]);
+
+  //here ready to extracted 25/12
+  const getDashboardGlobalSearch = async () => {
+    debugger
+    let isDashboard = document.getElementsByClassName('dashboardViewport')
+    if (isDashboard.length > 0) {
+      const queryString = window.location.hash;
+      console.log('queryString: ', queryString)
+      const urlParams = new URLSearchParams(queryString);
+      console.log('urlParams: ', urlParams)
+      const dashboardFilters = urlParams.get('_a')
+      console.log('dashboardFilters: ', dashboardFilters)
+      const dashboardFiltersToString = JSON.stringify(dashboardFilters)
+      console.log('dashboardFiltersToString: ', dashboardFiltersToString)
+      let extractedSearch = await extractword(dashboardFiltersToString, 'query:(', ')', 1)
+      console.log('extractedSearch: ', extractedSearch)
+      let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
+      console.log('extractedLanguage: ', extractedLanguage)
+      let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
+      console.log('extractedQuery: ', extractedQuery)
+      extractedQuery = extractedQuery.replace(/\\"/g, '"');
+      console.log('extractedQuery: ', extractedQuery)
+      var query = extractedQuery.substring(
+        extractedQuery.indexOf("'") + 1,
+        extractedQuery.lastIndexOf("'")
+      );
+      console.log('query: ', query)
+
+      if (extractedLanguage.includes('kuery')) {
+        let esQueryToString: any
+        var dsl: any
+
+        try {
+          dsl = esKuery.toElasticsearchQuery(
+            esKuery.fromKueryExpression(query),
+            // vis.data.indexPattern
+          );
+        } catch {
+          console.log('invalid KQL')
+        }
+        esQueryToString = JSON.stringify([dsl])
+
+        return esQueryToString
+      }
+      else if (extractedLanguage.includes('lucene')) {
+        let luceneToDSL = esQuery.luceneStringToDsl(query);
+        let luceneDSLToString = JSON.stringify([luceneToDSL])
+
+        return luceneDSLToString
+      }
+
+    }
+  }
+
+  const extractword = (str: any, start: any, end: any, carrier: any) => {
+    var startindex = str.indexOf(start);
+    var endindex = str.indexOf(end, startindex);
+    if (startindex != -1 && endindex != -1 && endindex > startindex)
+      return str.substring(startindex, endindex + carrier)
+  }
 
   const allIgnored = (element: any) => element.isValid === true
 
