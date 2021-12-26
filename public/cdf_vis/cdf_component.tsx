@@ -71,181 +71,185 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useEffect(() => {
     let isDashboard = document.getElementsByClassName('dashboardViewport')
-    let DashboardSearch: any
-    if (isDashboard) {
-      DashboardSearch = getDashboardGlobalSearch()
-    }
-
     let emptyBucket = 1
-    if (isEmptyBucket) {
-      emptyBucket = 0
-    }
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
     let searchShouldToJson = JSON.parse(searchShould)
     let rangeFiltersToJson = JSON.parse(rangeFilters)
-
     let lengthFiltersObject = 0
     let uniteFilters: any = []
-    if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
-      uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
-      lengthFiltersObject += uniteFilters.length
-      if (rangeFiltersToJson[1]) {
-        uniteFilters[lengthFiltersObject] = rangeFiltersToJson[1]
-        lengthFiltersObject = uniteFilters.length
-      }
-    }
-    else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
-      uniteFilters = []
-    }
-    else if (searchShouldToJson.length > 0 && rangeFiltersToJson.length == 0) {
-      uniteFilters = searchShouldToJson
-    }
-    else {
-      for (const [key, value] of Object.entries(rangeFiltersToJson)) {
-        uniteFilters[Number(key) + lengthFiltersObject] = value
-      }
-    }
-    if (filterToJson.length > 0) {
-      let filtersGroup = filterToJson.map(a => a);
-      lengthFiltersObject = uniteFilters.length
-      for (const [key, value] of Object.entries(filtersGroup)) {
-        uniteFilters[Number(key) + lengthFiltersObject] = value
-      }
-    }
-    if (DashboardSearch) {
-      console.log('DashboardSearch: ', DashboardSearch)
-      lengthFiltersObject = uniteFilters.length
-      uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
-    }
-    uniteFilters.push(
-      {
-        range: {
-          time: {
-            gte: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].from : dateFilterFrom,
-            lt: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].to : dateFilterTo
-          }
-        }
-      }
-    )
-    console.log('uniteFilters: ', uniteFilters)
-    let data: any = {
-      query: {
-        bool: {
-          must: [],
-          filter: uniteFilters, should: [], must_not: negativeFilterToJson
-        }
-      },
-      size: 0,
-      aggs: {
-        cdfAgg: {
-          histogram: {
-            field: field,
-            interval: min_interval,
-            min_doc_count: emptyBucket
-          }
-        }
-      }
-    }
-
-    let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    let data: any
+    let parsedSubBucketArray: any
     let sizeOfSubs = 0
-    if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
-      let toInsertObj: any = {}
-      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
-        if (!value.isValid) { continue; }
-        sizeOfSubs = sizeOfSubs + 1;
-        let field = Object.values(value['field'][0])
-        let fieldValue = Object.values(field)
-        let aggs: any = {}
-        if (value['agg'] == 'terms') {
-          let count = value['order']
-          if (count == undefined) {
-            count = 'desc'
-          }
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                size: 100000,
-                order: { "_count": count }
-              }
-            }
-          }
+
+    async function parseQuery() {
+      if (isEmptyBucket) { emptyBucket = 0 }
+      if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
+        uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
+        lengthFiltersObject += uniteFilters.length
+        if (rangeFiltersToJson[1]) {
+          uniteFilters[lengthFiltersObject] = rangeFiltersToJson[1]
+          lengthFiltersObject = uniteFilters.length
         }
-        else if (value['agg'] == 'histogram') {
-          let extractInterval = Number(value['min_interval'])
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                interval: extractInterval ? extractInterval : 1,
-                min_doc_count: 1
-              }
-            }
-          }
-        }
-        else if (value['agg'] == 'date_histogram') {
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                calendar_interval: value['min_interval'],
-                min_doc_count: 1,
-                time_zone: "Asia/Jerusalem"
-              }
-            }
-          }
-        }
-        else if (value['agg'] == 'date_range') {
-          let extractDates = Object.values(value['date_range'])
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                format: "MM-yyy",
-                ranges: [
-                  { to: extractDates[1] },
-                  { from: extractDates[0] }
-                ]
-              }
-            }
-          }
-        }
-        if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
-          aggs[key].aggs = toInsertObj
-        }
-        toInsertObj = aggs
       }
-      if (Object.values(parsedSubBucketArray).some(allIgnored)) { data.aggs.cdfAgg['aggs'] = toInsertObj; }
+      else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
+        uniteFilters = []
+      }
+      else if (searchShouldToJson.length > 0 && rangeFiltersToJson.length == 0) {
+        uniteFilters = searchShouldToJson
+      }
       else {
-        data = data
+        for (const [key, value] of Object.entries(rangeFiltersToJson)) {
+          uniteFilters[Number(key) + lengthFiltersObject] = value
+        }
+      }
+      if (filterToJson.length > 0) {
+        let filtersGroup = filterToJson.map(a => a);
+        lengthFiltersObject = uniteFilters.length
+        for (const [key, value] of Object.entries(filtersGroup)) {
+          uniteFilters[Number(key) + lengthFiltersObject] = value
+        }
+      }
+      if (isDashboard) {
+        await getDashboardGlobalSearch().then(DashboardSearch => {
+          if (DashboardSearch) {
+            lengthFiltersObject = uniteFilters.length
+            uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
+          }
+        })
       }
 
+      await uniteFilters.push(
+        {
+          range: {
+            time: {
+              gte: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].from : dateFilterFrom,
+              lt: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].to : dateFilterTo
+            }
+          }
+        }
+      )
+      data = {
+        query: {
+          bool: {
+            must: [],
+            filter: uniteFilters, should: [], must_not: negativeFilterToJson
+          }
+        },
+        size: 0,
+        aggs: {
+          cdfAgg: {
+            histogram: {
+              field: field,
+              interval: min_interval,
+              min_doc_count: emptyBucket
+            }
+          }
+        }
+      }
+
+      parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+      if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
+        let toInsertObj: any = {}
+        for (const [key, value] of Object.entries(parsedSubBucketArray)) {
+          if (!value.isValid) { continue; }
+          sizeOfSubs = sizeOfSubs + 1;
+          let field = Object.values(value['field'][0])
+          let fieldValue = Object.values(field)
+          let aggs: any = {}
+          if (value['agg'] == 'terms') {
+            let count = value['order']
+            if (count == undefined) {
+              count = 'desc'
+            }
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  size: 100000,
+                  order: { "_count": count }
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'histogram') {
+            let extractInterval = Number(value['min_interval'])
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  interval: extractInterval ? extractInterval : 1,
+                  min_doc_count: 1
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'date_histogram') {
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  calendar_interval: value['min_interval'],
+                  min_doc_count: 1,
+                  time_zone: "Asia/Jerusalem"
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'date_range') {
+            let extractDates = Object.values(value['date_range'])
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  format: "MM-yyy",
+                  ranges: [
+                    { to: extractDates[1] },
+                    { from: extractDates[0] }
+                  ]
+                }
+              }
+            }
+          }
+          if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
+            aggs[key].aggs = toInsertObj
+          }
+          toInsertObj = aggs
+        }
+        if (Object.values(parsedSubBucketArray).some(allIgnored)) { data.aggs.cdfAgg['aggs'] = toInsertObj; }
+        else {
+          data = data
+        }
+      }
+      return data;
     }
 
-    axios({
-      method: "POST",
-      url: "/api/search",
-      data: { data: JSON.stringify(data), indexPattern: indexPattern },
-      headers: { "kbn-xsrf": "true" },
-    })
-      .then(function (response) {
-        let aggLineDataObj: any = {};
-        if ((Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) || !Object.values(parsedSubBucketArray).some(allIgnored)) {
-          aggLineDataObj[field] = {
-            points: parseSingleResponseData(response.data)
+    parseQuery().then(resData => {
+      axios({
+        method: "POST",
+        url: "/api/search",
+        data: { data: JSON.stringify(resData), indexPattern: indexPattern },
+        headers: { "kbn-xsrf": "true" },
+      })
+        .then(function (response) {
+          let aggLineDataObj: any = {};
+          if ((Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) || !Object.values(parsedSubBucketArray).some(allIgnored)) {
+            aggLineDataObj[field] = {
+              points: parseSingleResponseData(response.data)
+            }
+          } else {
+            aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
           }
-        } else {
-          aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
-        }
-        if (isAxisExtents) {
-          aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
-        }
-        setAggLineData(aggLineDataObj);
-      }).catch(function (error) {
-        console.log('error', error);
-      });
+          if (isAxisExtents) {
+            aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
+          }
+          setAggLineData(aggLineDataObj);
+        }).catch(function (error) {
+          console.log('error', error);
+        });
+    })
+
+
 
   }, [
     // X-axis
@@ -290,33 +294,21 @@ export function CdfComponent(props: CdfComponentProps) {
     localStorage.getItem("typeahead:dashboard-lucene")
   ]);
 
-  //here ready to extracted 25/12
+  //here ready to extracted 25/12 last- falling on line 306, 26/12
   const getDashboardGlobalSearch = async () => {
     debugger
     let isDashboard = document.getElementsByClassName('dashboardViewport')
     if (isDashboard.length > 0) {
       const queryString = window.location.hash;
-      console.log('queryString: ', queryString)
-      const urlParams = new URLSearchParams(queryString);
-      console.log('urlParams: ', urlParams)
-      const dashboardFilters = urlParams.get('_a')
-      console.log('dashboardFilters: ', dashboardFilters)
-      const dashboardFiltersToString = JSON.stringify(dashboardFilters)
-      console.log('dashboardFiltersToString: ', dashboardFiltersToString)
-      let extractedSearch = await extractword(dashboardFiltersToString, 'query:(', ')', 1)
-      console.log('extractedSearch: ', extractedSearch)
+      let parsed = await parseUrl(queryString)
+      let extractedSearch = await extractword(parsed, 'query:(', ')', 1)
       let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
-      console.log('extractedLanguage: ', extractedLanguage)
       let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
-      console.log('extractedQuery: ', extractedQuery)
       extractedQuery = extractedQuery.replace(/\\"/g, '"');
-      console.log('extractedQuery: ', extractedQuery)
       var query = extractedQuery.substring(
         extractedQuery.indexOf("'") + 1,
         extractedQuery.lastIndexOf("'")
       );
-      console.log('query: ', query)
-
       if (extractedLanguage.includes('kuery')) {
         let esQueryToString: any
         var dsl: any
@@ -336,10 +328,19 @@ export function CdfComponent(props: CdfComponentProps) {
       else if (extractedLanguage.includes('lucene')) {
         let luceneToDSL = esQuery.luceneStringToDsl(query);
         let luceneDSLToString = JSON.stringify([luceneToDSL])
-
         return luceneDSLToString
       }
+      // }
+      return
 
+    }
+  }
+
+  const parseUrl = async (url: any) => {
+    try {
+      return decodeURIComponent(url.replace(/\+/g, ' '));
+    } catch (e) {
+      console.error(e);
     }
   }
 
