@@ -296,7 +296,6 @@ export function CdfComponent(props: CdfComponentProps) {
 
   //here ready to extracted 25/12 last- falling on line 306, 26/12
   const getDashboardGlobalSearch = async () => {
-    debugger
     let isDashboard = document.getElementsByClassName('dashboardViewport')
     if (isDashboard.length > 0) {
       const queryString = window.location.hash;
