@@ -127,7 +127,7 @@ export function CdfComponent(props: CdfComponentProps) {
           uniteFilters[Number(key) + lengthFiltersObject] = value
         }
       }
-      if (isDashboard) {
+      if (isDashboard.length > 0) {
         await getDashboardGlobalSearch().then(DashboardSearch => {
           if (DashboardSearch) {
             lengthFiltersObject = uniteFilters.length
@@ -315,6 +315,7 @@ export function CdfComponent(props: CdfComponentProps) {
   const getDashboardGlobalSearch = async () => {
     const queryString = window.location.hash;
     let parsed = await parseUrl(queryString)
+    parsed = parsed?.substring(parsed?.indexOf('_a=') + 1);
     let extractedSearch = await extractword(parsed, 'query:(', ')', 1)
     let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
     let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
