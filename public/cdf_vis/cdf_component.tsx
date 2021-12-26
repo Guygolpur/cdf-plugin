@@ -25,6 +25,11 @@ import {
   EuiButton,
 } from '@elastic/eui';
 
+import {
+  esKuery,
+  esQuery,
+} from '../../../../src/plugins/data/public';
+
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
@@ -64,174 +69,204 @@ export function CdfComponent(props: CdfComponentProps) {
     props.renderComplete();
   })
 
-  //23/12
   useEffect(() => {
     let isDashboard = document.getElementsByClassName('dashboardViewport')
     let emptyBucket = 1
-    if (isEmptyBucket) {
-      emptyBucket = 0
-    }
     let filterToJson = Object.values(JSON.parse(props.visParams.filters))
     let negativeFilterToJson = JSON.parse(negativeFilters)
     let searchShouldToJson = JSON.parse(searchShould)
     let rangeFiltersToJson = JSON.parse(rangeFilters)
-
     let lengthFiltersObject = 0
     let uniteFilters: any = []
-    if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
-      uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
-      lengthFiltersObject += uniteFilters.length
-      if (rangeFiltersToJson[1]) {
-        uniteFilters[lengthFiltersObject] = rangeFiltersToJson[1]
-        lengthFiltersObject = uniteFilters.length
-      }
-    }
-    else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
-      uniteFilters = []
-    }
-    else if (searchShouldToJson.length > 0 && rangeFiltersToJson.length == 0) {
-      uniteFilters = searchShouldToJson
-    }
-    else {
-      for (const [key, value] of Object.entries(rangeFiltersToJson)) {
-        uniteFilters[Number(key) + lengthFiltersObject] = value
-      }
-    }
-    if (filterToJson.length > 0) {
-      let filtersGroup = filterToJson.map(a => a);
-      lengthFiltersObject = uniteFilters.length
-      for (const [key, value] of Object.entries(filtersGroup)) {
-        uniteFilters[Number(key) + lengthFiltersObject] = value
-      }
-    }
-    uniteFilters.push(
-      {
-        range: {
-          time: {
-            gte: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].from : dateFilterFrom,
-            lt: isDashboard.length > 0 ? JSON.parse(localStorage.getItem("kibana.timepicker.timeHistory"))[0].to : dateFilterTo
-          }
-        }
-      }
-    )
-    console.log('uniteFilters: ', uniteFilters)
-    let data: any = {
-      query: {
-        bool: {
-          must: [],
-          filter: uniteFilters, should: [], must_not: negativeFilterToJson
-        }
-      },
-      size: 0,
-      aggs: {
-        cdfAgg: {
-          histogram: {
-            field: field,
-            interval: min_interval,
-            min_doc_count: emptyBucket
-          }
-        }
-      }
-    }
-
-    let parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+    let data: any
+    let parsedSubBucketArray: any
     let sizeOfSubs = 0
-    if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
-      let toInsertObj: any = {}
-      for (const [key, value] of Object.entries(parsedSubBucketArray)) {
-        if (!value.isValid) { continue; }
-        sizeOfSubs = sizeOfSubs + 1;
-        let field = Object.values(value['field'][0])
-        let fieldValue = Object.values(field)
-        let aggs: any = {}
-        if (value['agg'] == 'terms') {
-          let count = value['order']
-          if (count == undefined) {
-            count = 'desc'
-          }
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                size: 100000,
-                order: { "_count": count }
-              }
-            }
-          }
-        }
-        else if (value['agg'] == 'histogram') {
-          let extractInterval = Number(value['min_interval'])
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                interval: extractInterval ? extractInterval : 1,
-                min_doc_count: 1
-              }
-            }
-          }
-        }
-        else if (value['agg'] == 'date_histogram') {
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                calendar_interval: value['min_interval'],
-                min_doc_count: 1,
-                time_zone: "Asia/Jerusalem"
-              }
-            }
-          }
-        }
-        else if (value['agg'] == 'date_range') {
-          let extractDates = Object.values(value['date_range'])
-          aggs = {
-            [key]: {
-              [value['agg']]: {
-                field: fieldValue[0],
-                format: "MM-yyy",
-                ranges: [
-                  { to: extractDates[1] },
-                  { from: extractDates[0] }
-                ]
-              }
-            }
-          }
-        }
-        if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
-          aggs[key].aggs = toInsertObj
-        }
-        toInsertObj = aggs
-      }
-      if (Object.values(parsedSubBucketArray).some(allIgnored)) { data.aggs.cdfAgg['aggs'] = toInsertObj; }
-      else {
-        data = data
-      }
 
+    async function extractTime() {
+      const queryString = window.location.hash;
+      let parsed = await parseUrl(queryString)
+
+      let extractedtime = await extractword(parsed, 'time:(', ')', 1)
+      let extractedFrom = await extractword(extractedtime, 'from:', ',', 0)
+      extractedFrom = extractedFrom.substring(extractedFrom.indexOf(':') + 1);
+      let extractedTo = await extractword(extractedtime, ',', ')', 0)
+      extractedTo = extractedTo.substring(extractedTo.indexOf(':') + 1);
+      return { from: extractedFrom, to: extractedTo }
     }
 
-    axios({
-      method: "POST",
-      url: "/api/search",
-      data: { data: JSON.stringify(data), indexPattern: indexPattern },
-      headers: { "kbn-xsrf": "true" },
-    })
-      .then(function (response) {
-        let aggLineDataObj: any = {};
-        if ((Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) || !Object.values(parsedSubBucketArray).some(allIgnored)) {
-          aggLineDataObj[field] = {
-            points: parseSingleResponseData(response.data)
+    async function parseQuery() {
+      let globalTime = {from: 'now-15m', to: 'now'}
+      extractTime().then(extractedTime=> {
+        globalTime = extractedTime
+      })
+      
+      if (isEmptyBucket) { emptyBucket = 0 }
+      if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
+        uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
+        lengthFiltersObject += uniteFilters.length
+        if (rangeFiltersToJson[1]) {
+          uniteFilters[lengthFiltersObject] = rangeFiltersToJson[1]
+          lengthFiltersObject = uniteFilters.length
+        }
+      }
+      else if (searchShouldToJson.length == 0 && rangeFiltersToJson.length == 0) {
+        uniteFilters = []
+      }
+      else if (searchShouldToJson.length > 0 && rangeFiltersToJson.length == 0) {
+        uniteFilters = searchShouldToJson
+      }
+      else {
+        for (const [key, value] of Object.entries(rangeFiltersToJson)) {
+          uniteFilters[Number(key) + lengthFiltersObject] = value
+        }
+      }
+      if (filterToJson.length > 0) {
+        let filtersGroup = filterToJson.map(a => a);
+        lengthFiltersObject = uniteFilters.length
+        for (const [key, value] of Object.entries(filtersGroup)) {
+          uniteFilters[Number(key) + lengthFiltersObject] = value
+        }
+      }
+      if (isDashboard) {
+        await getDashboardGlobalSearch().then(DashboardSearch => {
+          if (DashboardSearch) {
+            lengthFiltersObject = uniteFilters.length
+            uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
           }
-        } else {
-          aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
+        })
+      }
+
+      await uniteFilters.push(
+        {
+          range: {
+            time: {
+              gte: isDashboard.length > 0 ? globalTime.from : dateFilterFrom,
+              lt: isDashboard.length > 0 ? globalTime.to : dateFilterTo
+            }
+          }
         }
-        if (isAxisExtents) {
-          aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
+      )
+      data = {
+        query: {
+          bool: {
+            must: [],
+            filter: uniteFilters, should: [], must_not: negativeFilterToJson
+          }
+        },
+        size: 0,
+        aggs: {
+          cdfAgg: {
+            histogram: {
+              field: field,
+              interval: min_interval,
+              min_doc_count: emptyBucket
+            }
+          }
         }
-        setAggLineData(aggLineDataObj);
-      }).catch(function (error) {
-        console.log('error', error);
-      });
+      }
+
+      parsedSubBucketArray = JSON.parse(props.visParams.subBucketArray)
+      if (!(Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object)) {
+        let toInsertObj: any = {}
+        for (const [key, value] of Object.entries(parsedSubBucketArray)) {
+          if (!value.isValid) { continue; }
+          sizeOfSubs = sizeOfSubs + 1;
+          let field = Object.values(value['field'][0])
+          let fieldValue = Object.values(field)
+          let aggs: any = {}
+          if (value['agg'] == 'terms') {
+            let count = value['order']
+            if (count == undefined) {
+              count = 'desc'
+            }
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  size: 100000,
+                  order: { "_count": count }
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'histogram') {
+            let extractInterval = Number(value['min_interval'])
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  interval: extractInterval ? extractInterval : 1,
+                  min_doc_count: 1
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'date_histogram') {
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  calendar_interval: value['min_interval'],
+                  min_doc_count: 1,
+                  time_zone: "Asia/Jerusalem"
+                }
+              }
+            }
+          }
+          else if (value['agg'] == 'date_range') {
+            let extractDates = Object.values(value['date_range'])
+            aggs = {
+              [key]: {
+                [value['agg']]: {
+                  field: fieldValue[0],
+                  format: "MM-yyy",
+                  ranges: [
+                    { to: extractDates[1] },
+                    { from: extractDates[0] }
+                  ]
+                }
+              }
+            }
+          }
+          if (!(Object.keys(toInsertObj).length === 0 && toInsertObj.constructor === Object)) {
+            aggs[key].aggs = toInsertObj
+          }
+          toInsertObj = aggs
+        }
+        if (Object.values(parsedSubBucketArray).some(allIgnored)) { data.aggs.cdfAgg['aggs'] = toInsertObj; }
+        else {
+          data = data
+        }
+      }
+      return data;
+    }
+
+    parseQuery().then(resData => {
+      axios({
+        method: "POST",
+        url: "/api/search",
+        data: { data: JSON.stringify(resData), indexPattern: indexPattern },
+        headers: { "kbn-xsrf": "true" },
+      })
+        .then(function (response) {
+          let aggLineDataObj: any = {};
+          if ((Object.keys(parsedSubBucketArray).length === 0 && parsedSubBucketArray.constructor === Object) || !Object.values(parsedSubBucketArray).some(allIgnored)) {
+            aggLineDataObj[field] = {
+              points: parseSingleResponseData(response.data)
+            }
+          } else {
+            aggLineDataObj = parseMultiResponseData(response.data, sizeOfSubs)
+          }
+          if (isAxisExtents) {
+            aggLineDataObj = filterbyXAxis(aggLineDataObj, xMin, xMax)
+          }
+          setAggLineData(aggLineDataObj);
+        }).catch(function (error) {
+          console.log('error', error);
+        });
+    })
+
+
 
   }, [
     // X-axis
@@ -271,8 +306,61 @@ export function CdfComponent(props: CdfComponentProps) {
 
     dateRangeStart,
     dateRangeEnd,
-    localStorage.getItem("kibana.timepicker.timeHistory")
+    localStorage.getItem("kibana.timepicker.timeHistory"),
+    localStorage.getItem("typeahead:dashboard-kuery"),
+    localStorage.getItem("typeahead:dashboard-lucene")
   ]);
+
+  //here ready to extracted 25/12 last- falling on line 306, 26/12
+  const getDashboardGlobalSearch = async () => {
+    const queryString = window.location.hash;
+    let parsed = await parseUrl(queryString)
+    let extractedSearch = await extractword(parsed, 'query:(', ')', 1)
+    let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
+    let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
+    extractedQuery = extractedQuery.replace(/\\"/g, '"');
+    var query = extractedQuery.substring(
+      extractedQuery.indexOf("'") + 1,
+      extractedQuery.lastIndexOf("'")
+    );
+    if (extractedLanguage.includes('kuery')) {
+      let esQueryToString: any
+      var dsl: any
+
+      try {
+        dsl = esKuery.toElasticsearchQuery(
+          esKuery.fromKueryExpression(query),
+          // vis.data.indexPattern
+        );
+      } catch {
+        console.log('invalid KQL')
+      }
+      esQueryToString = JSON.stringify([dsl])
+
+      return esQueryToString
+    }
+    else if (extractedLanguage.includes('lucene')) {
+      let luceneToDSL = esQuery.luceneStringToDsl(query);
+      let luceneDSLToString = JSON.stringify([luceneToDSL])
+      return luceneDSLToString
+    }
+    return
+  }
+
+  const parseUrl = async (url: any) => {
+    try {
+      return decodeURIComponent(url.replace(/\+/g, ' '));
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  const extractword = (str: any, start: any, end: any, carrier: any) => {
+    var startindex = str.indexOf(start);
+    var endindex = str.indexOf(end, startindex);
+    if (startindex != -1 && endindex != -1 && endindex > startindex)
+      return str.substring(startindex, endindex + carrier)
+  }
 
   const allIgnored = (element: any) => element.isValid === true
 
