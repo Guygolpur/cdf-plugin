@@ -306,9 +306,10 @@ export function CdfComponent(props: CdfComponentProps) {
 
     dateRangeStart,
     dateRangeEnd,
-    localStorage.getItem("kibana.timepicker.timeHistory"),
-    localStorage.getItem("typeahead:dashboard-kuery"),
-    localStorage.getItem("typeahead:dashboard-lucene")
+    // localStorage.getItem("kibana.timepicker.timeHistory"),
+    // localStorage.getItem("typeahead:dashboard-kuery"),
+    // localStorage.getItem("typeahead:dashboard-lucene")
+    window.location.hash
   ]);
 
   //here ready to extracted 25/12 last- falling on line 306, 26/12
