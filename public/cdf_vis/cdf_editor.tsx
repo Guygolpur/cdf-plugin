@@ -17,6 +17,7 @@ import { AxisBucket } from '../components/xAxisBucket';
 import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 import { useEffect } from 'react';
+import { filterListener } from '../processor/filter'
 
 import {
   IndexPattern,
@@ -120,15 +121,29 @@ export function CDFEditor({
       saveBtnEvent.click();
     }, 50);
 
-    // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-    // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-
     vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
     vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
   }, [vis.type.visConfig.data.query.timefilter.timefilter._time])
 
   useEffect(() => {
-    filterListener()
+    filterListener(vis).then(parsedFilters => {
+      setValue('dateFilterFrom', parsedFilters[0]);
+      setValue('dateFilterTo', parsedFilters[1]);
+      setValue('rangeFilters', parsedFilters[2])
+      setValue('negativeFilters', parsedFilters[3])
+      setValue('filters', parsedFilters[4])
+
+      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
+      setTimeout(() => {
+        saveBtnEvent.click();
+      }, 50);
+
+      vis.params.dateFilterFrom = parsedFilters[0]
+      vis.params.dateFilterTo = parsedFilters[1]
+      vis.params.rangeFilters = parsedFilters[2]
+      vis.params.negativeFilters = parsedFilters[3]
+      vis.params.filters = parsedFilters[4]
+    })
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
   useLayoutEffect(() => {
@@ -230,117 +245,6 @@ export function CDFEditor({
       // stateParams.searchShould = '[]'
       // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
       // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-    }
-  }
-
-  const filterListener = async () => {
-    let filters = vis.type.visConfig.data.query.filterManager.getFilters()
-    if (filters.length > 0) {
-      let filterTojson: any = [];
-      let negativeFilters: any = [];
-      let rangeFilters: any = [{ 'match_all': {} }];
-      Object.values(await filters).forEach((key: any, val: any) => {
-        if (!key.meta.disabled) {
-          if (key.hasOwnProperty('exists')) {
-            let existsObj = {
-              exists: key.exists
-            }
-            if (key.meta.negate === false) {
-              {
-                filterTojson.push(existsObj);
-              }
-            }
-            else {
-              negativeFilters.push(existsObj)
-            }
-          }
-          else if (key.hasOwnProperty('query')) {
-            if (key.query.hasOwnProperty('match_phrase') || key.query.hasOwnProperty('bool')) {
-              let queryObj
-              if (key.query.hasOwnProperty('bool')) {
-                queryObj = {
-                  bool: key.query.bool
-                }
-              }
-              else { queryObj = key.query }
-              if (key.meta.negate === false) { filterTojson.push(queryObj); }
-              else {
-                if (key.query.hasOwnProperty('bool')) {
-                  queryObj = {
-                    bool: key.query.bool
-                  }
-                }
-                else {
-                  queryObj = {
-                    match_phrase: key.query.match_phrase
-                  }
-                }
-                negativeFilters.push(queryObj)
-              }
-            }
-          }
-          else if (key.hasOwnProperty('range')) {
-            let rangeObj = {
-              range: key.range
-            }
-            if (key.meta.negate === false) { rangeFilters.push(rangeObj); }
-            else {
-              negativeFilters.push(rangeObj)
-            }
-          }
-        }
-      })
-
-      let rangeFilterToString = JSON.stringify(rangeFilters)
-      let filterToString = JSON.stringify(filterTojson)
-      let negativeFilterToString = JSON.stringify(negativeFilters)
-
-      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      setValue('rangeFilters', rangeFilterToString)
-      setValue('negativeFilters', negativeFilterToString)
-      setValue('filters', filterToString)
-
-      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
-      setTimeout(() => {
-        saveBtnEvent.click();
-      }, 50);
-
-      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      // stateParams.rangeFilters = rangeFilterToString
-      // stateParams.negativeFilters = negativeFilterToString
-      // stateParams.filters = filterToString
-
-      vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      vis.params.rangeFilters = rangeFilterToString
-      vis.params.negativeFilters = negativeFilterToString
-      vis.params.filters = filterToString
-    }
-    else {
-      setValue('dateFilterFrom', vis.type.visConfig.data.query.timefilter.timefilter._time.from);
-      setValue('dateFilterTo', vis.type.visConfig.data.query.timefilter.timefilter._time.to);
-      setValue('rangeFilters', '[]')
-      setValue('negativeFilters', '[]')
-      setValue('filters', '[{"match_all": {}}]')
-
-      let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
-      setTimeout(() => {
-        saveBtnEvent.click();
-      }, 50);
-
-      // stateParams.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      // stateParams.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      // stateParams.rangeFilters = '[]'
-      // stateParams.negativeFilters = '[]'
-      // stateParams.filters = '[{"match_all": {}}]'
-
-      vis.params.dateFilterFrom = vis.type.visConfig.data.query.timefilter.timefilter._time.from
-      vis.params.dateFilterTo = vis.type.visConfig.data.query.timefilter.timefilter._time.to
-      vis.params.rangeFilters = '[]'
-      vis.params.negativeFilters = '[]'
-      vis.params.filters = '[{"match_all": {}}]'
     }
   }
 
