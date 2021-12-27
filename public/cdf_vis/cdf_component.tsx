@@ -30,6 +30,8 @@ import {
   esQuery,
 } from '../../../../src/plugins/data/public';
 
+import { filterListener } from '../processor/filter_builder'
+
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
@@ -56,7 +58,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useLayoutEffect(() => {
     setTimeout(() => {
-      let tooltipStyle = document.getElementsByClassName('echLegendListContainer');
+      let tooltipStyle = Array.from(document.getElementsByClassName('echLegendListContainer') as HTMLCollectionOf<HTMLElement>);
       if (tooltipStyle.length > 0) {
         tooltipStyle[0].style.height = '114px';
         tooltipStyle[0].style.maxHeight = '114px';
@@ -95,11 +97,11 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     async function parseQuery() {
-      let globalTime = {from: 'now-15m', to: 'now'}
-      extractTime().then(extractedTime=> {
+      let globalTime = { from: 'now-15m', to: 'now' }
+      extractTime().then(extractedTime => {
         globalTime = extractedTime
       })
-      
+
       if (isEmptyBucket) { emptyBucket = 0 }
       if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
         uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
@@ -242,6 +244,7 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     parseQuery().then(resData => {
+      console.log('resData: ', resData)
       axios({
         method: "POST",
         url: "/api/search",

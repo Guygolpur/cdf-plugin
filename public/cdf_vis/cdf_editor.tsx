@@ -17,7 +17,7 @@ import { AxisBucket } from '../components/xAxisBucket';
 import { SubBucketRow } from '../components/subBucketRow';
 import { MetrixAndAxes } from '../components/metrixAndAxes';
 import { useEffect } from 'react';
-import { filterListener } from '../processor/filter'
+import { filterListener } from '../processor/filter_builder'
 
 import {
   IndexPattern,
@@ -129,20 +129,20 @@ export function CDFEditor({
     filterListener(vis).then(parsedFilters => {
       setValue('dateFilterFrom', parsedFilters[0]);
       setValue('dateFilterTo', parsedFilters[1]);
-      setValue('rangeFilters', parsedFilters[2])
-      setValue('negativeFilters', parsedFilters[3])
-      setValue('filters', parsedFilters[4])
+      setValue('rangeFilters', parsedFilters[2]);
+      setValue('negativeFilters', parsedFilters[3]);
+      setValue('filters', parsedFilters[4]);
 
       let saveBtnEvent: HTMLElement = document.querySelectorAll('[data-test-subj="visualizeEditorRenderButton"].euiButton')[0] as HTMLElement;
       setTimeout(() => {
         saveBtnEvent.click();
       }, 50);
 
-      vis.params.dateFilterFrom = parsedFilters[0]
-      vis.params.dateFilterTo = parsedFilters[1]
-      vis.params.rangeFilters = parsedFilters[2]
-      vis.params.negativeFilters = parsedFilters[3]
-      vis.params.filters = parsedFilters[4]
+      vis.params.dateFilterFrom = parsedFilters[0];
+      vis.params.dateFilterTo = parsedFilters[1];
+      vis.params.rangeFilters = parsedFilters[2];
+      vis.params.negativeFilters = parsedFilters[3];
+      vis.params.filters = parsedFilters[4];
     })
   }, [vis.type.visConfig.data.query.filterManager.filters])
 
