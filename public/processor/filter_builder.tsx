@@ -1,3 +1,4 @@
+// listening to any local visualization changes and building a DSL filter
 export const filterListener = async (vis: any) => {
     let filters = vis.type.visConfig.data.query.filterManager.getFilters()
     if (filters.length > 0) {
