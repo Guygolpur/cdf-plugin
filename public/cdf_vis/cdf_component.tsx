@@ -30,6 +30,8 @@ import {
   esQuery,
 } from '../../../../src/plugins/data/public';
 
+import { extractTime, getDashboardGlobalSearch, getDashboardGlobalFilters } from '../processor/global_handler'
+
 interface CdfComponentProps {
   renderComplete(): void;
   visParams: CDFVisParams;
@@ -56,7 +58,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
   useLayoutEffect(() => {
     setTimeout(() => {
-      let tooltipStyle = document.getElementsByClassName('echLegendListContainer');
+      let tooltipStyle = Array.from(document.getElementsByClassName('echLegendListContainer') as HTMLCollectionOf<HTMLElement>);
       if (tooltipStyle.length > 0) {
         tooltipStyle[0].style.height = '114px';
         tooltipStyle[0].style.maxHeight = '114px';
@@ -72,34 +74,22 @@ export function CdfComponent(props: CdfComponentProps) {
   useEffect(() => {
     let isDashboard = document.getElementsByClassName('dashboardViewport')
     let emptyBucket = 1
-    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
-    let negativeFilterToJson = JSON.parse(negativeFilters)
-    let searchShouldToJson = JSON.parse(searchShould)
     let rangeFiltersToJson = JSON.parse(rangeFilters)
+    let negativeFilterToJson = JSON.parse(negativeFilters)
+    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
+    let searchShouldToJson = JSON.parse(searchShould)
     let lengthFiltersObject = 0
     let uniteFilters: any = []
     let data: any
     let parsedSubBucketArray: any
     let sizeOfSubs = 0
 
-    async function extractTime() {
-      const queryString = window.location.hash;
-      let parsed = await parseUrl(queryString)
-
-      let extractedtime = await extractword(parsed, 'time:(', ')', 1)
-      let extractedFrom = await extractword(extractedtime, 'from:', ',', 0)
-      extractedFrom = extractedFrom.substring(extractedFrom.indexOf(':') + 1);
-      let extractedTo = await extractword(extractedtime, ',', ')', 0)
-      extractedTo = extractedTo.substring(extractedTo.indexOf(':') + 1);
-      return { from: extractedFrom, to: extractedTo }
-    }
-
     async function parseQuery() {
-      let globalTime = {from: 'now-15m', to: 'now'}
-      extractTime().then(extractedTime=> {
+      let globalTime = { from: 'now-15m', to: 'now' }
+      extractTime().then(extractedTime => {
         globalTime = extractedTime
       })
-      
+
       if (isEmptyBucket) { emptyBucket = 0 }
       if (searchShouldToJson.length > 0 && rangeFiltersToJson.length > 0) {
         uniteFilters[lengthFiltersObject] = searchShouldToJson[0]
@@ -128,11 +118,47 @@ export function CdfComponent(props: CdfComponentProps) {
         }
       }
       if (isDashboard.length > 0) {
-        await getDashboardGlobalSearch().then(DashboardSearch => {
+        await getDashboardGlobalSearch(esKuery, esQuery).then(DashboardSearch => {
           if (DashboardSearch) {
             lengthFiltersObject = uniteFilters.length
             uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
           }
+        }).catch((error) => {
+          console.error('getDashboardGlobalSearch: ', error);
+        })
+        await getDashboardGlobalFilters().then(DashboardFilter => {
+          if (DashboardFilter) {
+            let rangeFiltersToJsonDash = JSON.parse(DashboardFilter[0])
+            let negativeFilterToJsonDash = JSON.parse(DashboardFilter[1])
+            let filterToJsonDash = Object.values(JSON.parse(DashboardFilter[2]))
+
+            if (rangeFiltersToJsonDash.length > 1) {
+              rangeFiltersToJsonDash.forEach((value:any, key:any) => {
+                if(key !== 0) {
+                  lengthFiltersObject = uniteFilters.length
+                  uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[key]
+                }
+              });
+
+            }
+            if (negativeFilterToJsonDash.length > 0) {
+              negativeFilterToJsonDash.forEach((element: any) => {
+                let lengthNegativeFiltersObject = negativeFilterToJson.length
+                negativeFilterToJson[lengthNegativeFiltersObject] = element
+              });
+            }
+            if (filterToJsonDash.length > 0) {
+              filterToJsonDash.forEach((element: any) => {
+                lengthFiltersObject = uniteFilters.length
+                uniteFilters[lengthFiltersObject] = element
+              })
+
+            }
+
+
+          }
+        }).catch((error) => {
+          console.error('getDashboardGlobalFilters: ', error);
         })
       }
 
@@ -242,6 +268,7 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     parseQuery().then(resData => {
+      console.log('resData: ', resData)
       axios({
         method: "POST",
         url: "/api/search",
@@ -265,9 +292,6 @@ export function CdfComponent(props: CdfComponentProps) {
           console.log('error', error);
         });
     })
-
-
-
   }, [
     // X-axis
     aggregation,
@@ -308,60 +332,9 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     localStorage.getItem("kibana.timepicker.timeHistory"),
     localStorage.getItem("typeahead:dashboard-kuery"),
-    localStorage.getItem("typeahead:dashboard-lucene")
-    // window.location.hash
+    localStorage.getItem("typeahead:dashboard-lucene"),
+    window.location.hash
   ]);
-
-  const getDashboardGlobalSearch = async () => {
-    const queryString = window.location.hash;
-    let parsed = await parseUrl(queryString)
-    parsed = parsed?.substring(parsed?.indexOf('_a=') + 1);
-    let extractedSearch = await extractword(parsed, 'query:(', ')', 1)
-    let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
-    let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
-    extractedQuery = extractedQuery.replace(/\\"/g, '"');
-    var query = extractedQuery.substring(
-      extractedQuery.indexOf("'") + 1,
-      extractedQuery.lastIndexOf("'")
-    );
-    if (extractedLanguage.includes('kuery')) {
-      let esQueryToString: any
-      var dsl: any
-
-      try {
-        dsl = esKuery.toElasticsearchQuery(
-          esKuery.fromKueryExpression(query),
-          // vis.data.indexPattern
-        );
-      } catch {
-        console.log('invalid KQL')
-      }
-      esQueryToString = JSON.stringify([dsl])
-
-      return esQueryToString
-    }
-    else if (extractedLanguage.includes('lucene')) {
-      let luceneToDSL = esQuery.luceneStringToDsl(query);
-      let luceneDSLToString = JSON.stringify([luceneToDSL])
-      return luceneDSLToString
-    }
-    return
-  }
-
-  const parseUrl = async (url: any) => {
-    try {
-      return decodeURIComponent(url.replace(/\+/g, ' '));
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  const extractword = (str: any, start: any, end: any, carrier: any) => {
-    var startindex = str.indexOf(start);
-    var endindex = str.indexOf(end, startindex);
-    if (startindex != -1 && endindex != -1 && endindex > startindex)
-      return str.substring(startindex, endindex + carrier)
-  }
 
   const allIgnored = (element: any) => element.isValid === true
 
