@@ -133,11 +133,15 @@ export function CdfComponent(props: CdfComponentProps) {
             let filterToJsonDash = Object.values(JSON.parse(DashboardFilter[2]))
 
             if (rangeFiltersToJsonDash.length > 1) {
-              lengthFiltersObject = uniteFilters.length
-              uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[1]
+              rangeFiltersToJsonDash.forEach((value:any, key:any) => {
+                if(key !== 0) {
+                  lengthFiltersObject = uniteFilters.length
+                  uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[key]
+                }
+              });
+
             }
             if (negativeFilterToJsonDash.length > 0) {
-              console.log('negativeFilterToJsonDash: ', negativeFilterToJsonDash)
               negativeFilterToJsonDash.forEach((element: any) => {
                 let lengthNegativeFiltersObject = negativeFilterToJson.length
                 negativeFilterToJson[lengthNegativeFiltersObject] = element
