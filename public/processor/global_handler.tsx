@@ -1,4 +1,5 @@
 import { extractword, parseUrl } from './string_handler'
+import { filterListener } from './filter_builder'
 
 export const extractTime = async () => {
     const queryString = window.location.hash;
@@ -46,4 +47,32 @@ export const getDashboardGlobalSearch = async (esKuery: any, esQuery: any) => {
         return luceneDSLToString
     }
     return
+}
+
+export const getDashboardGlobalFilters = async () => {
+    let targetPath = '_a'
+    let url = window.location.href
+    targetPath = targetPath.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + targetPath + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    let extractedPath = decodeURIComponent(results[2].replace(/\+/g, ' '));
+    return filterListener(extractedPath).then(res => {
+        return res
+    }).catch((error) => {
+        console.error('filterListener: ', error);
+        return 
+    })
+    // const queryString = window.location.hash;
+    // console.log('queryString: ', queryString)
+    // let parsed = await parseUrl(queryString)
+    // parsed = parsed?.substring(parsed?.indexOf('_a=') + 1);
+    // let extractedSearch = await extractword(parsed, 'filters:', 'fullScreenMode:', -1)
+    // console.log('extractedSearch: ', extractedSearch)
+    // filterListener(extractedSearch).then(res => {
+
+    // })
+
+
 }

@@ -30,7 +30,7 @@ import {
   esQuery,
 } from '../../../../src/plugins/data/public';
 
-import { extractTime, getDashboardGlobalSearch } from '../processor/global_handler'
+import { extractTime, getDashboardGlobalSearch, getDashboardGlobalFilters } from '../processor/global_handler'
 
 interface CdfComponentProps {
   renderComplete(): void;
@@ -74,10 +74,10 @@ export function CdfComponent(props: CdfComponentProps) {
   useEffect(() => {
     let isDashboard = document.getElementsByClassName('dashboardViewport')
     let emptyBucket = 1
-    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
-    let negativeFilterToJson = JSON.parse(negativeFilters)
-    let searchShouldToJson = JSON.parse(searchShould)
     let rangeFiltersToJson = JSON.parse(rangeFilters)
+    let negativeFilterToJson = JSON.parse(negativeFilters)
+    let filterToJson = Object.values(JSON.parse(props.visParams.filters))
+    let searchShouldToJson = JSON.parse(searchShould)
     let lengthFiltersObject = 0
     let uniteFilters: any = []
     let data: any
@@ -123,6 +123,33 @@ export function CdfComponent(props: CdfComponentProps) {
             lengthFiltersObject = uniteFilters.length
             uniteFilters[lengthFiltersObject] = JSON.parse(DashboardSearch)[0]
           }
+        }).catch((error) => {
+          console.error('getDashboardGlobalSearch: ', error);
+        })
+        await getDashboardGlobalFilters().then(DashboardFilter => {
+          debugger
+          if (DashboardFilter) {
+            let rangeFiltersToJsonDash = JSON.parse(DashboardFilter[0])
+            let negativeFilterToJsonDash = JSON.parse(DashboardFilter[1])
+            let filterToJsonDash = Object.values(JSON.parse(DashboardFilter[2]))
+
+            if (rangeFiltersToJsonDash.length > 1) {
+              lengthFiltersObject = uniteFilters.length
+              uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash
+            }
+            if (negativeFilterToJsonDash.length > 0) {
+              lengthFiltersObject = uniteFilters.length
+              uniteFilters[lengthFiltersObject] = negativeFilterToJsonDash
+            }
+            if (filterToJsonDash.length > 0) {
+              lengthFiltersObject = uniteFilters.length
+              uniteFilters[lengthFiltersObject] = filterToJsonDash
+            }
+
+
+          }
+        }).catch((error) => {
+          console.error('getDashboardGlobalFilters: ', error);
         })
       }
 
@@ -296,8 +323,8 @@ export function CdfComponent(props: CdfComponentProps) {
     dateRangeEnd,
     localStorage.getItem("kibana.timepicker.timeHistory"),
     localStorage.getItem("typeahead:dashboard-kuery"),
-    localStorage.getItem("typeahead:dashboard-lucene")
-    // window.location.hash
+    localStorage.getItem("typeahead:dashboard-lucene"),
+    window.location.hash
   ]);
 
   const allIgnored = (element: any) => element.isValid === true

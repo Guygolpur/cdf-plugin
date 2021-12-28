@@ -12,3 +12,64 @@ export const parseUrl = async (url: any) => {
     console.error(e);
   }
 }
+
+export const extractBetweenParentheses = (str: any) => {
+  try {
+    var regExp = /\(([^)]+)\)/;
+    return regExp.exec(str);
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
+
+export const objectBuilder = (str: any) => {
+  try {
+    var obj: any = {}
+    if (str.indexOf(':') !== -1) {
+      var extractedKey = str.substring(
+        str.indexOf(":"),
+        str.lastIndexOf(str.length)
+      );
+      var value = str.split(':')[1];
+      let parsedValue = value.replace(/'/g, '');
+
+      obj[extractedKey] = parsedValue
+    }
+    return obj
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
+
+export const mulObjectBuilder = (str: any, target: any, keyName: any) => {
+  try {
+    let splitedByTarget = str.split(target)
+    let splitedArr: any = []
+    let objTmp: any
+    splitedByTarget.forEach((value: any, key: any) => {
+      if (splitedByTarget.length > 1 && key > 0) {
+        let insideContent = extractBetweenParentheses(value)
+        if (insideContent) {
+          objTmp = objectBuilder(insideContent[1])
+          let innerObj: any = {}
+          innerObj[target] = objTmp
+          splitedArr.push(innerObj)
+        }
+      }
+      else if (splitedByTarget.length == 1) {
+        let insideContent = extractBetweenParentheses(value)
+        if (insideContent) {
+          let innerObj: any = {}
+          innerObj[keyName] = insideContent[1]
+          splitedArr.push(innerObj)
+        }
+      }
+    });
+    return splitedArr
+  }
+  catch (e) {
+    console.error(e);
+  }
+}
