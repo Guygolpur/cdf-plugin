@@ -137,8 +137,11 @@ export function CdfComponent(props: CdfComponentProps) {
               uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[1]
             }
             if (negativeFilterToJsonDash.length > 0) {
-              let lengthNegativeFiltersObject = negativeFilterToJson.length
-              negativeFilterToJson[lengthNegativeFiltersObject] = negativeFilterToJsonDash[0]
+              console.log('negativeFilterToJsonDash: ', negativeFilterToJsonDash)
+              negativeFilterToJsonDash.forEach((element: any) => {
+                let lengthNegativeFiltersObject = negativeFilterToJson.length
+                negativeFilterToJson[lengthNegativeFiltersObject] = element
+              });
             }
             if (filterToJsonDash.length > 0) {
               lengthFiltersObject = uniteFilters.length
