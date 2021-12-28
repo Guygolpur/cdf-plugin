@@ -148,8 +148,11 @@ export function CdfComponent(props: CdfComponentProps) {
               });
             }
             if (filterToJsonDash.length > 0) {
-              lengthFiltersObject = uniteFilters.length
-              uniteFilters[lengthFiltersObject] = filterToJsonDash[0]
+              filterToJsonDash.forEach((element: any) => {
+                lengthFiltersObject = uniteFilters.length
+                uniteFilters[lengthFiltersObject] = element
+              })
+
             }
 
 
