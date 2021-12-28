@@ -137,8 +137,8 @@ export function CdfComponent(props: CdfComponentProps) {
               uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[1]
             }
             if (negativeFilterToJsonDash.length > 0) {
-              lengthFiltersObject = uniteFilters.length
-              uniteFilters[lengthFiltersObject] = negativeFilterToJsonDash
+              let lengthNegativeFiltersObject = negativeFilterToJson.length
+              negativeFilterToJson[lengthNegativeFiltersObject] = negativeFilterToJsonDash[0]
             }
             if (filterToJsonDash.length > 0) {
               lengthFiltersObject = uniteFilters.length
