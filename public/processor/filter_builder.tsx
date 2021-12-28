@@ -162,9 +162,15 @@ export const filterListener = async (vis: any) => {
                             let key = Object.keys(objectBuilder(rangeExtractedObj[1]))[0]
                             let startWithValue = rangeExtractedObj[0].substring(1)
                             let extractedRange = mulObjectBuilder(startWithValue, 'range', key)
+                            let value = Object.values(extractedRange[0])
+                            let res = convertStringToObject(value[0])
+                            let innerObj:any = {     }
+                            innerObj[key]= res
+
                             let rangeObj = {
-                                range: extractedRange[0]
+                                range: innerObj
                             }
+
                             if (filter.includes("negate:!f")) { rangeFilters.push(rangeObj); }
                             else {
                                 negativeFilters.push(rangeObj)
@@ -192,4 +198,30 @@ export const filterListener = async (vis: any) => {
             ]
         }
     }
+}
+
+function convertStringToObject(string: any) {
+    const responseObject:any = {};
+    const keysAndValues = string.split(",");
+    for (let keyAndValue of keysAndValues) {
+        const splittedKeyAndValue = keyAndValue.split(":");
+        const key = splittedKeyAndValue[0];
+        const value = splittedKeyAndValue[1];
+        if (isNumeric(value)) {
+            if (value.indexOf(".") !== -1) {
+                responseObject[key] = parseFloat(value);
+            } else {
+                responseObject[key] = parseInt(value);
+            }
+        } else {
+            responseObject[key] = value;
+        }
+    }
+    return responseObject;
+}
+
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) &&
+        !isNaN(parseFloat(str))
 }

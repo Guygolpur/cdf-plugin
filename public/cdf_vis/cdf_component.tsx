@@ -127,7 +127,6 @@ export function CdfComponent(props: CdfComponentProps) {
           console.error('getDashboardGlobalSearch: ', error);
         })
         await getDashboardGlobalFilters().then(DashboardFilter => {
-          debugger
           if (DashboardFilter) {
             let rangeFiltersToJsonDash = JSON.parse(DashboardFilter[0])
             let negativeFilterToJsonDash = JSON.parse(DashboardFilter[1])
@@ -135,7 +134,7 @@ export function CdfComponent(props: CdfComponentProps) {
 
             if (rangeFiltersToJsonDash.length > 1) {
               lengthFiltersObject = uniteFilters.length
-              uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash
+              uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[1]
             }
             if (negativeFilterToJsonDash.length > 0) {
               lengthFiltersObject = uniteFilters.length
