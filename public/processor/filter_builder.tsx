@@ -129,7 +129,12 @@ export const filterListener = async (vis: any) => {
                                 }
                             }
                             else {
-                                let matchObj = extractword(extractedQuery, "match_phrase:(", ")", 1)
+                                let parenthesesCounter = (extractedQuery.match(/[)]/g) || []).length;
+                                let carrier = 1
+                                if (parenthesesCounter > 3) {
+                                    carrier = parenthesesCounter - 2
+                                }
+                                let matchObj = extractword(extractedQuery, "match_phrase:(", ")", carrier)
                                 matchObj = extractBetweenParentheses(matchObj)
                                 let parsedObj = objectBuilder(matchObj[1])
                                 queryObj['match_phrase'] = parsedObj
@@ -164,8 +169,8 @@ export const filterListener = async (vis: any) => {
                             let extractedRange = mulObjectBuilder(startWithValue, 'range', key)
                             let value = Object.values(extractedRange[0])
                             let res = convertStringToObject(value[0])
-                            let innerObj:any = {     }
-                            innerObj[key]= res
+                            let innerObj: any = {}
+                            innerObj[key] = res
 
                             let rangeObj = {
                                 range: innerObj
@@ -201,7 +206,7 @@ export const filterListener = async (vis: any) => {
 }
 
 function convertStringToObject(string: any) {
-    const responseObject:any = {};
+    const responseObject: any = {};
     const keysAndValues = string.split(",");
     for (let keyAndValue of keysAndValues) {
         const splittedKeyAndValue = keyAndValue.split(":");
