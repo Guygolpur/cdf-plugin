@@ -130,11 +130,6 @@ export const filterListener = async (vis: any) => {
                             }
                             else {
                                 let matchObj = extractword(extractedQuery, "match_phrase:(", ")", 1)
-                                let closeParenthesesCounter = (matchObj.match(/[)]/g) || []).length;
-                                let openParenthesesCounter = (matchObj.match(/[(]/g) || []).length;
-                                if (openParenthesesCounter > closeParenthesesCounter) {
-                                    matchObj = matchObj + ")"
-                                }
                                 matchObj = extractBetweenParentheses(matchObj)
                                 let parsedObj = objectBuilder(matchObj[1])
                                 queryObj['match_phrase'] = parsedObj
