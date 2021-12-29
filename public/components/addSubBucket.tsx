@@ -32,7 +32,7 @@ export const AddSubBucket = ({
         { value: 'terms', text: 'Terms' },
         { value: 'date_histogram', text: 'Date Histogram' },
         { value: 'histogram', text: 'Histogram' },
-        { value: 'date_range', text: 'Date Range' },
+        // { value: 'date_range', text: 'Date Range' },     //  Uncomment for supporting date_range
     ];
 
     const min_interval = [
@@ -287,7 +287,7 @@ export const AddSubBucket = ({
             <EuiSpacer size="m" />
 
             {/* < DatePicker disabled={!(isIndexSelected && isXAxisFieldSelected)} start={stateParams.dateRangeStart} end={stateParams.dateRangeEnd} setStart={setDateRangeStart} setEnd={setDateRangeEnd} /> */}
-            < DatePicker selectedDateRangeHandlerMiddleware={selectedDateRangeHandlerMiddleware} sendValidity={sendValidity}/>
+            < DatePicker selectedDateRangeHandlerMiddleware={selectedDateRangeHandlerMiddleware} sendValidity={sendValidity} />
 
             <EuiSpacer size="m" />
 
