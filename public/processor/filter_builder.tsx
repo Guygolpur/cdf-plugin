@@ -129,12 +129,12 @@ export const filterListener = async (vis: any) => {
                                 }
                             }
                             else {
-                                let parenthesesCounter = (extractedQuery.match(/[)]/g) || []).length;
-                                let carrier = 1
-                                if (parenthesesCounter > 3) {
-                                    carrier = parenthesesCounter - 2
+                                let matchObj = extractword(extractedQuery, "match_phrase:(", ")", 1)
+                                let closeParenthesesCounter = (matchObj.match(/[)]/g) || []).length;
+                                let openParenthesesCounter = (matchObj.match(/[(]/g) || []).length;
+                                if (openParenthesesCounter > closeParenthesesCounter) {
+                                    matchObj = matchObj + ")"
                                 }
-                                let matchObj = extractword(extractedQuery, "match_phrase:(", ")", carrier)
                                 matchObj = extractBetweenParentheses(matchObj)
                                 let parsedObj = objectBuilder(matchObj[1])
                                 queryObj['match_phrase'] = parsedObj
