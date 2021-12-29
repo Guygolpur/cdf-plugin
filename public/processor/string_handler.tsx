@@ -16,7 +16,16 @@ export const parseUrl = async (url: any) => {
 export const extractBetweenParentheses = (str: any) => {
   try {
     var regExp = /\(([^)]+)\)/;
-    return regExp.exec(str);
+    let extracted = regExp.exec(str);
+    if (extracted) {
+      let closeParenthesesCounter = (extracted[1].match(/[)]/g) || []).length;
+      let openParenthesesCounter = (extracted[1].match(/[(]/g) || []).length;
+      if (openParenthesesCounter > closeParenthesesCounter) {
+        extracted[1] = extracted[1] + ")"
+      }
+    }
+
+    return extracted
   }
   catch (e) {
     console.error(e);
