@@ -17,7 +17,7 @@ export const getDashboardGlobalSearch = async (esKuery: any, esQuery: any) => {
     const queryString = window.location.hash;
     let parsed = await parseUrl(queryString)
     parsed = parsed?.substring(parsed?.indexOf('_a=') + 1);
-    let extractedSearch = await extractword(parsed, 'query:(', ')', 1)
+    let extractedSearch = await extractword(parsed, 'query:(language:', ')', 1)
     let extractedLanguage = await extractword(extractedSearch, 'language:', ',', 0)
     let extractedQuery = await extractword(extractedSearch, ',query:', ')', 0)
     extractedQuery = extractedQuery.replace(/\\"/g, '"');
