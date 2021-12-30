@@ -69,7 +69,7 @@ export class CDFPlugin implements Plugin<CDFPluginSetup, CDFPluginStart> {
 
           splitedHistogramMinInterval: 1,
 
-          splitedGlobalCounter: 0,
+          splitedGlobalCounter: 1,
           splitedGlobalIds: '[]',
 
           // Filters
