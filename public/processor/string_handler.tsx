@@ -36,10 +36,11 @@ export const objectBuilder = (str: any) => {
   try {
     var obj: any = {}
     if (str && str.indexOf(':') !== -1) {
-      var extractedKey = str.substring(
-        str.indexOf(":"),
-        str.lastIndexOf(str.length)
-      );
+      // var extractedKey = str.substring(
+      //   str.indexOf(":"),
+      //   str.lastIndexOf(str.length)
+      // );
+      var extractedKey = str.split(":")[0];
       var value = str.split(':')[1];
       let parsedValue = value.replace(/'/g, '');
 
