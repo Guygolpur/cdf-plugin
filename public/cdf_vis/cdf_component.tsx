@@ -465,8 +465,8 @@ function iter(o: any, sizeOfSubs: any, bucketSaw: number, xPoint: any, root: any
       iter(o[k], sizeOfSubs, bucketSaw, xPoint, root);
 
       if (o[k] !== null && (o[k] instanceof Object || o[k] instanceof Array) && k !== 'buckets') {
-        var removeFromName = name.substr(0, name.lastIndexOf("//-//"));
-        name = removeFromName
+        var removeFromName = name.split("//-//").slice(0, sizeOfSubs);
+        name = removeFromName[0]
       }
       return;
     }
