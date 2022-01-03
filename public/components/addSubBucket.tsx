@@ -56,7 +56,6 @@ export const AddSubBucket = ({
     const [selectedTermsOrder, setSelectedTermsOrder] = useState((!subBucketArray[counter - 1]) ? (order[0].value) : ((subBucketArray[counter - 1].hasOwnProperty('order')) ? (subBucketArray[counter - 1].order) : (order[0].value)));
 
     const [isIgnore, setIsIgnore] = useState(true);
-    // const [IdToIgnore, setIdToIgnore] = useState<any>([]);
     const [IdToIgnore, setIdToIgnore] = useState();
 
     useEffect(() => {
@@ -90,7 +89,6 @@ export const AddSubBucket = ({
     }
 
     const ignoreHandeler = (removeId: any) => {
-        // setIdToIgnore((ids: any) => ids.filter((id: any) => id != removeId));
         setIdToIgnore(removeId)
         setIsIgnore(!isIgnore);
     };

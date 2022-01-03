@@ -133,8 +133,8 @@ export function CdfComponent(props: CdfComponentProps) {
             let filterToJsonDash = Object.values(JSON.parse(DashboardFilter[2]))
 
             if (rangeFiltersToJsonDash.length > 1) {
-              rangeFiltersToJsonDash.forEach((value:any, key:any) => {
-                if(key !== 0) {
+              rangeFiltersToJsonDash.forEach((value: any, key: any) => {
+                if (key !== 0) {
                   lengthFiltersObject = uniteFilters.length
                   uniteFilters[lengthFiltersObject] = rangeFiltersToJsonDash[key]
                 }
@@ -268,7 +268,6 @@ export function CdfComponent(props: CdfComponentProps) {
     }
 
     parseQuery().then(resData => {
-      console.log('resData: ', resData)
       axios({
         method: "POST",
         url: "/api/search",
@@ -443,6 +442,7 @@ function parseSingleResponseData(data: any): any {
   return aggLineData;
 }
 
+// Manipulates the data recieved from elastic and building object of CDF lines (xPoint, doc_count)
 let graphResponse: any = {}
 let name = ''
 let xPoint: any = null
