@@ -62,7 +62,7 @@ export const getDashboardGlobalFilters = async () => {
         return res
     }).catch((error) => {
         console.error('filterListener: ', error);
-        return 
+        return
     })
     // const queryString = window.location.hash;
     // console.log('queryString: ', queryString)

@@ -10,7 +10,7 @@ interface FieldPickerComponentProps {
     fullWidth: boolean;
     options: any[],
     value: string;
-    onFieldChange(e:any): any;
+    onFieldChange(e: any): any;
 }
 
 export function FieldPicker(props: FieldPickerComponentProps) {
